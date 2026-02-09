@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VED – Real Multi Pair Engine (Fixed)</title>
+
+<style>
+:root{
+  --yellow:#f5b301;
+  --green:#22c55e;
+  --red:#ef4444;
+  --text:#eaf6ff;
+}
+body{
+  margin:0;
+  font-family:system-ui;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.15), transparent 40%),
+    linear-gradient(180deg,#0ea5e9 0%, #0369a1 40%, #020617 100%);
+  min-height:100vh;
+}
+header{
+  padding:16px 24px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:900;
+}
+.clock{color:#7dd3fc;font-size:18px}
+.wrap{padding:20px}
+.grid{
+  display:grid;
+  grid-template-columns:1.4fr 1.8fr 1.8fr;
+  gap:20px;
+}
+.card{
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:22px;
+  padding:22px;
+  backdrop-filter:blur(6px);
+}
+.brand{
+  background:linear-gradient(160deg,#facc15,#f59e0b);
+  color:#020617;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  font-weight:900;
+}
+.circle{
+  --deg:0deg;
+  width:140px;height:140px;
+  border-radius:50%;
+  background:
+    conic-gradient(var(--yellow) var(--deg),rgba(255,255,255,.2) 0);
+  display:flex;align-items:center;justify-content:center;margin:auto;
+}
+.circle span{
+  width:96px;height:96px;border-radius:50%;
+  background:#020617;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:900;
+}
+.barWrap{height:18px;border-radius:12px;background:rgba(255,255,255,.25)}
+.bar{height:100%;width:0%;background:var(--green);border-radius:12px}
+.signalBox{text-align:center}
+.timer{font-size:56px;font-weight:900;color:#7dd3fc}
+.signal{font-size:52px;font-weight:900}
+.big{color:var(--green)}
+.small{color:var(--red)}
+.skip{color:#fde047}
+.filter{
+  position:absolute;top:16px;right:16px;
+  padding:8px 16px;border-radius:14px;
+  font-size:13px;font-weight:900;
+}
+.safe{background:#22c55e;color:#020617}
+.biasBig{font-size:34px;font-weight:900;text-align:center}
+.bottom{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:20px;margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="clock" id="clock">IST --:--:--</div>
+  <div id="date">-- --- ----</div>
+</header>
+
+<div class="wrap">
+<div class="grid">
+
+  <div class="card brand">VED</div>
+
+  <div class="card">
+    <h3>Real Confidence</h3>
+    <div class="circle" id="accCircle"><span id="accVal">--%</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Strength %</h3>
+    <div style="font-size:46px;font-weight:900" id="confText">--%</div>
+    <div class="barWrap"><div class="bar" id="confBar"></div></div>
+  </div>
+
+  <div class="card signalBox" style="grid-column:1/-1;position:relative">
+    <div class="filter safe">HIGH VOLATILITY MODE</div>
+    <h3>30 Second Signal</h3>
+    <div class="timer" id="timer">30</div>
+    <div class="signal skip" id="signal">SKIP</div>
+    <div style="opacity:.7">Locks at 20s</div>
+  </div>
+
+</div>
+
+<div class="bottom">
+  <div class="card">
+    <h3>API Health</h3>
+    <div id="apiHealth" style="font-size:28px;font-weight:900">WAIT</div>
+  </div>
+
+  <div class="card">
+    <h3>Active Pair</h3>
+    <div id="biasText" class="biasBig">--</div>
+  </div>
+
+  <div class="card">
+    <h3>Direction</h3>
+    <div style="font-size:34px;font-weight:900" id="nextMinute">WAIT</div>
+  </div>
+</div>
+</div>
+
+<script>
+/* CLOCK */
+const clock = document.getElementById('clock');
+const date = document.getElementById('date');
+setInterval(()=>{
+  const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  clock.textContent="IST "+d.toTimeString().slice(0,8);
+  date.textContent=d.toDateString();
+},1000);
+
+/* ================= CONFIG ================= */
+const API_KEY = "7d8ec8ca7bf8483b81ff4490c76dfe88"; // Single key for all pairs - replace with yours
+const PAIRS = ["XAU/USD", "GBP/JPY", "EUR/JPY"];
+
+/* ============== EMA Function ============== */
+function calculateEMA(prices, period = 5) {
+  if (prices.length < period) return 0;
+  const k = 2 / (period + 1);
+  let ema = prices[0];
+  for (let i = 1; i < prices.length; i++) {
+    ema = (prices[i] * k) + (ema * (1 - k));
+  }
+  return ema;
+}
+
+/* ============== RSI Function ============== */
+function calculateRSI(closes, period = 6) {
+  if (closes.length < period + 1) return 50;
+  let gains = 0, losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const change = closes[i] - closes[i-1];
+    if (change > 0) gains += change;
+    else losses -= change;
+  }
+  const avgGain = gains / period;
+  const avgLoss = losses / period;
+  const rs = avgGain / avgLoss;
+  return 100 - (100 / (1 + rs));
+}
+
+/* ============== IMPROVED STRENGTH ============== */
+async function getPairStrength(symbol){
+  try {
+    const r = await fetch(
+      `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1min&outputsize=15&apikey=${API_KEY}`
+    );
+    const j = await r.json();
+    if (j.status !== 'ok' || !j.values || j.values.length < 10) {
+      console.error('API Error for', symbol, j);
+      return null;
+    }
+
+    const closes = j.values.slice(0, 10).map(v => +v.close).reverse(); // Last 10 closes, oldest first
+
+    // EMA momentum
+    const ema5 = calculateEMA(closes.slice(-6), 5); // Last 6 for EMA5
+    const ema10 = calculateEMA(closes, 10);
+    const emaMomentum = ((ema5 - ema10) / ema10) * 100;
+
+    // Recent % changes (improved: weighted recent)
+    const recentChanges = [];
+    for (let i = 0; i < 5; i++) {
+      const change = ((closes[9 - i] - closes[8 - i]) / closes[8 - i]) * 100;
+      recentChanges.push(change * (i + 1)); // Weight recent more
+    }
+    const weightedRecent = recentChanges.reduce((a, b) => a + b, 0) / 15; // Normalize
+
+    // RSI
+    const rsi = calculateRSI(closes.slice(-7), 6);
+
+    const netStrength = Math.abs(emaMomentum * 0.5 + weightedRecent * 0.3 + (rsi - 50) * 0.2);
+    
+    // Better threshold: >0.3% strong for 1min forex (typical pip moves)
+    if (netStrength < 0.3) return null;
+
+    return {
+      symbol,
+      direction: emaMomentum > 0 ? "BIG" : "SMALL",
+      strength: netStrength,
+      rsi
+    };
+  } catch(e) {
+    console.error('Fetch error', e);
+    return null;
+  }
+}
+
+/* ============== TOP 3 ================= */
+async function getTop3(){
+  const arr = [];
+  for(const p of PAIRS){
+    const s = await getPairStrength(p);
+    if(s) arr.push(s);
+  }
+  arr.sort((a,b)=>b.strength - a.strength);
+  return arr.slice(0,3);
+}
+
+/* ============== CONFIDENCE ============== */
+function calcConfidence(str, rsi){
+  const base = Math.min(95, str * 200); // Scale 0.3% -> ~60, 1% ->95
+  const rsiBonus = Math.abs(rsi - 50) / 50 * 20; // RSI extreme +20%
+  return Math.round(base + rsiBonus);
+}
+
+/* ============== ENGINE ============== */
+let locked = null;
+let lastFetchTime = 0;
+
+async function engine(){
+  const now = new Date();
+  const sec = now.getSeconds();
+  const elapsed = sec % 30;
+  const rem = 30 - elapsed;
+  document.getElementById('timer').textContent = rem;
+
+  if (elapsed === 0) locked = null;
+
+  // Fetch ONLY at exactly 20s remaining (10s elapsed)
+  if (rem === 20 && now - lastFetchTime > 30000) { // Debounce 30s
+    lastFetchTime = now;
+    try {
+      const top = await getTop3();
+      if (!top[0]) {
+        document.getElementById('apiHealth').textContent = "NO DATA";
+        document.getElementById('apiHealth').style.color = "var(--red)";
+        return;
+      }
+      const best = top[0];
+      const conf = calcConfidence(best.strength, best.rsi);
+
+      document.getElementById('confText').textContent = conf + "%";
+      document.getElementById('confBar').style.width = conf + "%";
+      document.getElementById('accCircle').style.setProperty("--deg", conf * 3.6 + "deg");
+      document.getElementById('accVal').textContent = conf + "%";
+
+      document.getElementById('biasText').textContent = best.symbol;
+      document.getElementById('nextMinute').textContent = best.direction;
+      document.getElementById('nextMinute').style.color = best.direction === "BIG" ? "var(--green)" : "var(--red)";
+
+      document.getElementById('apiHealth').textContent = "CONNECTED";
+      document.getElementById('apiHealth').style.color = "var(--green)";
+
+      // Lock signal if conf >=35
+      locked = conf >= 35 ? best.direction : "SKIP";
+      
+    } catch(e) {
+      console.error(e);
+      document.getElementById('apiHealth').textContent = "API ERROR";
+      document.getElementById('apiHealth').style.color = "var(--red)";
+    }
+  }
+
+  // Update signal display
+  const signalEl = document.getElementById('signal');
+  signalEl.textContent = locked || "SKIP";
+  signalEl.className = "signal " + 
+    (locked === "BIG" ? "big" : locked === "SMALL" ? "small" : "skip");
+}
+
+setInterval(engine, 1000);
+engine(); // Initial run
+</script>
+
+</body>
+</html>
