@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Pattern Analyzer - 200 Trends</title>
+    <title>🔥 AI Pattern Analyzer - 400 Trends + Strong AI 🔥</title>
     <style>
         * {
             margin: 0;
@@ -28,10 +28,35 @@
             text-align: center;
             font-size: 24px;
             margin-bottom: 20px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px #4ecdc4); }
+            to { filter: drop-shadow(0 0 20px #a855f7); }
+        }
+        
+        .ai-badge {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .ai-badge span {
+            background: linear-gradient(135deg, #ff6b6b, #a855f7);
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
         .input-section {
@@ -152,6 +177,11 @@
             font-size: 16px;
             color: #fff;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+        
+        .result-ball:hover {
+            transform: scale(1.2);
         }
         
         .ball-0 { background: linear-gradient(135deg, #9333ea, #7c3aed); }
@@ -164,6 +194,137 @@
         .ball-7 { background: linear-gradient(135deg, #22c55e, #16a34a); }
         .ball-8 { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .ball-9 { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        
+        .ai-prediction-main {
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 3px solid #a855f7;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-prediction-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .ai-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .ai-title {
+            font-size: 22px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .ai-confidence {
+            display: inline-block;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .ai-main-prediction {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        
+        .ai-number-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            border: 2px solid;
+            min-width: 120px;
+            transition: transform 0.3s;
+        }
+        
+        .ai-number-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ai-number-card.rank-1 { border-color: #fbbf24; box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
+        .ai-number-card.rank-2 { border-color: #94a3b8; box-shadow: 0 0 15px rgba(148, 163, 184, 0.5); }
+        .ai-number-card.rank-3 { border-color: #f97316; box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
+        
+        .ai-rank {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .ai-big-number {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 10px;
+            color: #fff;
+        }
+        
+        .ai-percent {
+            font-size: 24px;
+            font-weight: bold;
+            color: #22c55e;
+        }
+        
+        .ai-category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-category-card {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #3a3a5a;
+        }
+        
+        .ai-category-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .ai-category-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .ai-category-percent {
+            font-size: 14px;
+            margin-top: 5px;
+        }
         
         .prediction-section {
             background: linear-gradient(145deg, #1a1a2e, #252540);
@@ -193,6 +354,12 @@
             padding: 15px;
             text-align: center;
             border: 1px solid #4a4a6a;
+            transition: all 0.3s;
+        }
+        
+        .prediction-item:hover {
+            transform: scale(1.05);
+            border-color: #a855f7;
         }
         
         .prediction-number {
@@ -215,126 +382,6 @@
         .percent-high { color: #22c55e; }
         .percent-medium { color: #f59e0b; }
         .percent-low { color: #ef4444; }
-        
-        .best-prediction {
-            background: linear-gradient(145deg, #1e3a2e, #2a4a3e);
-            border: 2px solid #22c55e;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .best-title {
-            font-size: 16px;
-            color: #4ecdc4;
-            margin-bottom: 10px;
-        }
-        
-        .best-numbers {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .best-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .best-ball {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #fff;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-        }
-        
-        .matched-patterns {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid #3a3a5a;
-            margin-bottom: 20px;
-        }
-        
-        .patterns-title {
-            font-size: 18px;
-            color: #f59e0b;
-            margin-bottom: 15px;
-        }
-        
-        .patterns-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .pattern-item {
-            background: linear-gradient(145deg, #252535, #353545);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid;
-        }
-        
-        .pattern-high { border-color: #22c55e; }
-        .pattern-medium { border-color: #f59e0b; }
-        .pattern-low { border-color: #ef4444; }
-        
-        .pattern-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .pattern-match {
-            font-size: 14px;
-            color: #888;
-        }
-        
-        .pattern-next {
-            font-size: 14px;
-            color: #4ecdc4;
-            margin-top: 5px;
-        }
-        
-        .category-predictions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .category-box {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #3a3a5a;
-        }
-        
-        .category-title {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 10px;
-        }
-        
-        .category-value {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .category-percent {
-            font-size: 14px;
-            margin-top: 5px;
-        }
         
         .stats-section {
             display: grid;
@@ -385,6 +432,190 @@
             transform: scale(1.1);
         }
         
+        .matched-patterns {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #3a3a5a;
+            margin-bottom: 20px;
+        }
+        
+        .patterns-title {
+            font-size: 18px;
+            color: #f59e0b;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .patterns-count {
+            background: #f59e0b;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .patterns-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .pattern-item {
+            background: linear-gradient(145deg, #252535, #353545);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+        
+        .pattern-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .pattern-high { border-color: #22c55e; }
+        .pattern-medium { border-color: #f59e0b; }
+        .pattern-low { border-color: #ef4444; }
+        
+        .pattern-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pattern-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: #22c55e;
+            color: #000;
+        }
+        
+        .pattern-match {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .pattern-next {
+            font-size: 14px;
+            color: #4ecdc4;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .next-balls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .next-ball {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .hot-cold-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .hot-cold-box {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid #3a3a5a;
+        }
+        
+        .hot-cold-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .hot-title { color: #ef4444; }
+        .cold-title { color: #3b82f6; }
+        
+        .hot-cold-numbers {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .trend-indicator {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3a5a;
+        }
+        
+        .trend-title {
+            font-size: 18px;
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .trend-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .trend-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .trend-label {
+            width: 80px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .trend-progress {
+            flex: 1;
+            height: 25px;
+            background: #1a1a2e;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .trend-fill {
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        
+        .trend-fill.green { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .trend-fill.red { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        .trend-fill.big { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+        .trend-fill.small { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        
         .all-patterns-section {
             background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
             border-radius: 15px;
@@ -403,12 +634,17 @@
         }
         
         .toggle-btn {
-            background: #3a3a5a;
+            background: linear-gradient(135deg, #3a3a5a, #4a4a6a);
             border: none;
             color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 8px 20px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .toggle-btn:hover {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
         }
         
         .patterns-grid {
@@ -428,6 +664,12 @@
             border-radius: 8px;
             padding: 10px;
             font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .mini-pattern:hover {
+            background: #353545;
+            transform: translateY(-2px);
         }
         
         .mini-pattern-name {
@@ -439,6 +681,28 @@
         .mini-pattern-seq {
             color: #888;
         }
+        
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            background: #3a3a5a;
+            color: #fff;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+        }
 
         ::-webkit-scrollbar {
             width: 8px;
@@ -449,7 +713,7 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #4a4a6a;
+            background: linear-gradient(180deg, #4a4a6a, #a855f7);
             border-radius: 4px;
         }
         
@@ -458,19 +722,32 @@
                 grid-template-columns: repeat(5, 1fr);
             }
             
-            .category-predictions {
+            .ai-category-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
             .stats-section {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .ai-main-prediction {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .quick-add {
+                grid-template-columns: repeat(5, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎯 AI PATTERN ANALYZER - 200 TRENDS 🎯</h1>
+        <h1>🔥 AI PATTERN ANALYZER - 400 TRENDS 🔥</h1>
+        
+        <div class="ai-badge">
+            <span>🤖 STRONG AI v2.0 - Advanced Pattern Detection</span>
+        </div>
         
         <div class="input-section">
             <div class="input-row">
@@ -503,7 +780,7 @@
         <div class="stats-section">
             <div class="stat-box">
                 <div class="stat-value" id="statBig">0</div>
-                <div class="stat-label">Big (6-9)</div>
+                <div class="stat-label">Big (5-9)</div>
             </div>
             <div class="stat-box">
                 <div class="stat-value" id="statSmall">0</div>
@@ -519,37 +796,55 @@
             </div>
         </div>
         
-        <div class="best-prediction" id="bestPrediction" style="display: none;">
-            <div class="best-title">🎯 AI RECOMMENDED PREDICTIONS 🎯</div>
-            <div class="best-numbers" id="bestNumbers"></div>
+        <div class="ai-prediction-main" id="aiPrediction" style="display: none;">
+            <div class="ai-header">
+                <div class="ai-title">🤖 AI STRONG PREDICTION 🤖</div>
+                <div class="ai-confidence" id="aiConfidence">Confidence: 0%</div>
+            </div>
+            
+            <div class="ai-main-prediction" id="aiMainPrediction"></div>
+            
+            <div class="ai-category-grid" id="aiCategoryGrid"></div>
+        </div>
+        
+        <div class="trend-indicator" id="trendIndicator" style="display: none;">
+            <div class="trend-title">📊 TREND ANALYSIS</div>
+            <div class="trend-bars" id="trendBars"></div>
+        </div>
+        
+        <div class="hot-cold-section" id="hotColdSection" style="display: none;">
+            <div class="hot-cold-box">
+                <div class="hot-cold-title hot-title">🔥 HOT NUMBERS</div>
+                <div class="hot-cold-numbers" id="hotNumbers"></div>
+            </div>
+            <div class="hot-cold-box">
+                <div class="hot-cold-title cold-title">❄️ COLD NUMBERS</div>
+                <div class="hot-cold-numbers" id="coldNumbers"></div>
+            </div>
         </div>
         
         <div class="prediction-section" id="predictionSection" style="display: none;">
-            <div class="prediction-title">📈 NUMBER PREDICTION PROBABILITIES</div>
+            <div class="prediction-title">📈 ALL NUMBER PROBABILITIES</div>
             <div class="prediction-grid" id="predictionGrid"></div>
         </div>
         
-        <div class="category-predictions" id="categoryPredictions" style="display: none;">
-            <div class="category-box">
-                <div class="category-title">SIZE PREDICTION</div>
-                <div class="category-value" id="sizePrediction">-</div>
-                <div class="category-percent" id="sizePercent">-</div>
-            </div>
-            <div class="category-box">
-                <div class="category-title">COLOR PREDICTION</div>
-                <div class="category-value" id="colorPrediction">-</div>
-                <div class="category-percent" id="colorPercent">-</div>
-            </div>
-        </div>
-        
         <div class="matched-patterns" id="matchedPatterns" style="display: none;">
-            <div class="patterns-title">🔥 MATCHED PATTERNS (Sorted by Match %)</div>
+            <div class="patterns-title">
+                <span>🎯 MATCHED PATTERNS</span>
+                <span class="patterns-count" id="patternsCount">0</span>
+            </div>
+            <div class="filter-section">
+                <button class="filter-btn active" onclick="filterPatterns('all')">All</button>
+                <button class="filter-btn" onclick="filterPatterns('high')">High Match (80%+)</button>
+                <button class="filter-btn" onclick="filterPatterns('medium')">Medium (60-80%)</button>
+                <button class="filter-btn" onclick="filterPatterns('low')">Low (50-60%)</button>
+            </div>
             <div class="patterns-list" id="patternsList"></div>
         </div>
         
         <div class="all-patterns-section">
             <div class="all-patterns-title">
-                📋 ALL 200 PATTERNS
+                📋 ALL 400 PATTERNS DATABASE
                 <button class="toggle-btn" onclick="togglePatterns()">Show/Hide</button>
             </div>
             <div class="patterns-grid" id="allPatternsGrid"></div>
@@ -557,8 +852,9 @@
     </div>
 
     <script>
-        // All 200 Patterns Definition
+        // Complete 400 Patterns Database
         const ALL_PATTERNS = [
+            // Basic Trends (1-24)
             { name: "Single Trend", sequence: [6,1,8,3,6,1], categories: ["RB","GS","RB","GS","RB","GS"] },
             { name: "Double Trend", sequence: [6,8,1,3,6,8,1,3], categories: ["RB","RB","GS","GS","RB","RB","GS","GS"] },
             { name: "Triple Trend", sequence: [6,8,6,1,3,1,6,8,6], categories: ["RB","RB","RB","GS","GS","GS","RB","RB","RB"] },
@@ -570,207 +866,430 @@
             { name: "Two One Trend", sequence: [6,8,1,6,8,1,6,8,1], categories: ["RB","RB","GS","RB","RB","GS","RB","RB","GS"] },
             { name: "Three One Trend", sequence: [2,4,2,7,2,4,2,7], categories: ["RS","RS","RS","GB","RS","RS","RS","GB"] },
             { name: "Three Two Trend", sequence: [6,8,6,1,3,6,8,6,1,3], categories: ["RB","RB","RB","GS","GS","RB","RB","RB","GS","GS"] },
-            { name: "Long Trend Red Big", sequence: [6,8,6,8,6,8,6,8,6,8], categories: ["RB","RB","RB","RB","RB","RB","RB","RB","RB","RB"] },
-            { name: "Long Trend Green Small", sequence: [1,3,1,3,1,3,1,3,1,3], categories: ["GS","GS","GS","GS","GS","GS","GS","GS","GS","GS"] },
-            { name: "Single Trend Reverse", sequence: [7,2,9,4,7,2], categories: ["GB","RS","GB","RS","GB","RS"] },
-            { name: "Double Trend Reverse", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
-            { name: "Triple Trend Reverse", sequence: [7,9,7,2,4,2,7,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB","GB"] },
-            { name: "Quadra Trend Reverse", sequence: [7,9,7,9,2,4,2,4], categories: ["GB","GB","GB","GB","RS","RS","RS","RS"] },
-            { name: "Three In One Trend", sequence: [7,9,7,2,7,9,7], categories: ["GB","GB","GB","RS","GB","GB","GB"] },
-            { name: "Two In One Trend", sequence: [2,4,7,2,4,7,2,4], categories: ["RS","RS","GB","RS","RS","GB","RS","RS"] },
-            { name: "Three In Two Trend", sequence: [7,9,7,2,4,7,9,7], categories: ["GB","GB","GB","RS","RS","GB","GB","GB"] },
-            { name: "Four In One Trend", sequence: [2,4,2,4,7,2,4,2,4], categories: ["RS","RS","RS","RS","GB","RS","RS","RS","RS"] },
-            { name: "Four In Two Trend", sequence: [7,9,7,9,2,4,7,9,7,9], categories: ["GB","GB","GB","GB","RS","RS","GB","GB","GB","GB"] },
-            { name: "Long Trend Green Big", sequence: [7,9,7,9,7,9,7,9,7,9], categories: ["GB","GB","GB","GB","GB","GB","GB","GB","GB","GB"] },
-            { name: "Long Trend Red Small", sequence: [2,4,2,4,2,4,2,4,2,4], categories: ["RS","RS","RS","RS","RS","RS","RS","RS","RS","RS"] },
-            { name: "Micro Wave Trend", sequence: [2,7,4,2,9,4], categories: ["RS","GB","RS","RS","GB","RS"] },
-            { name: "Tsunami Wave Trend", sequence: [7,9,7,2,4,9,7,9,7,2], categories: ["GB","GB","GB","RS","RS","GB","GB","GB","GB","RS"] },
-            { name: "Reverse Tsunami Trend", sequence: [2,4,2,7,9,2,4,2,4,7], categories: ["RS","RS","RS","GB","GB","RS","RS","RS","RS","GB"] },
-            { name: "Pulse Wave Trend", sequence: [1,6,3,7,2,1,8], categories: ["GS","RB","GS","GB","RS","GS","RB"] },
-            { name: "Echo Wave Trend", sequence: [6,1,3,8,1,3,6], categories: ["RB","GS","GS","RB","GS","GS","RB"] },
-            { name: "Sharp Zigzag Trend", sequence: [7,2,6,1,9,4,8,3], categories: ["GB","RS","RB","GS","GB","RS","RB","GS"] },
-            { name: "Soft Zigzag Trend", sequence: [2,1,4,3,2,1], categories: ["RS","GS","RS","GS","RS","GS"] },
-            { name: "Double Zigzag Trend", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
-            { name: "Cross Zigzag Trend", sequence: [6,7,2,1,8,9], categories: ["RB","GB","RS","GS","RB","GB"] },
-            { name: "Inverse Zigzag Trend", sequence: [1,6,7,2,3,8,9,4], categories: ["GS","RB","GB","RS","GS","RB","GB","RS"] },
-            { name: "Ascending Pyramid Trend", sequence: [2,7,9,7,9,7], categories: ["RS","GB","GB","GB","GB","GB"] },
-            { name: "Descending Pyramid Trend", sequence: [9,7,9,7,2,4], categories: ["GB","GB","GB","GB","RS","RS"] },
-            { name: "Double Pyramid Trend", sequence: [2,7,9,7,4,2,9,7,9,2], categories: ["RS","GB","GB","GB","RS","RS","GB","GB","GB","RS"] },
-            { name: "Inverted Pyramid Trend", sequence: [7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","RS","RS","RS","RS","RS"] },
-            { name: "Step Pyramid Trend", sequence: [2,7,4,7,9,2,7,9,7], categories: ["RS","GB","RS","GB","GB","RS","GB","GB","GB"] },
-            { name: "Inner Spiral Trend", sequence: [7,2,1,6,9,4,3], categories: ["GB","RS","GS","RB","GB","RS","GS"] },
-            { name: "Outer Spiral Trend", sequence: [6,1,2,7,8,3,4,9], categories: ["RB","GS","RS","GB","RB","GS","RS","GB"] },
-            { name: "Double Spiral Trend", sequence: [7,9,2,1,6,8,7,9], categories: ["GB","GB","RS","GS","RB","RB","GB","GB"] },
-            { name: "Reverse Spiral Trend", sequence: [2,7,6,1,4,9,8], categories: ["RS","GB","RB","GS","RS","GB","RB"] },
-            { name: "Infinity Spiral Trend", sequence: [7,2,4,9,7,2,4,9], categories: ["GB","RS","RS","GB","GB","RS","RS","GB"] },
-            { name: "Full Diamond Trend", sequence: [2,7,9,7,2,4,2,7], categories: ["RS","GB","GB","GB","RS","RS","RS","GB"] },
-            { name: "Half Diamond Trend", sequence: [7,9,7,2,4], categories: ["GB","GB","GB","RS","RS"] },
-            { name: "Broken Diamond Trend", sequence: [2,7,4,7,9,2,7,4], categories: ["RS","GB","RS","GB","GB","RS","GB","RS"] },
-            { name: "Double Diamond Trend", sequence: [7,9,2,7,9,4,2,7,9], categories: ["GB","GB","RS","GB","GB","RS","RS","GB","GB"] },
-            { name: "Crystal Diamond Trend", sequence: [2,4,7,9,7,9,2,4], categories: ["RS","RS","GB","GB","GB","GB","RS","RS"] },
-            { name: "Chaos Fusion Trend", sequence: [7,6,1,2,9,8,3,4], categories: ["GB","RB","GS","RS","GB","RB","GS","RS"] },
-            { name: "Order Fusion Trend", sequence: [2,4,1,3,6,8,7,9], categories: ["RS","RS","GS","GS","RB","RB","GB","GB"] },
-            { name: "Mixed Fusion Trend", sequence: [7,2,6,1,9,4], categories: ["GB","RS","RB","GS","GB","RS"] },
-            { name: "Quantum Fusion Trend", sequence: [6,7,2,1,8,9,4,3], categories: ["RB","GB","RS","GS","RB","GB","RS","GS"] },
-            { name: "Parallel Fusion Trend", sequence: [7,1,6,2,9,3,8,4], categories: ["GB","GS","RB","RS","GB","GS","RB","RS"] },
-            { name: "Mega Surge Trend", sequence: [7,9,7,9,7,2,9,7,9,7], categories: ["GB","GB","GB","GB","GB","RS","GB","GB","GB","GB"] },
-            { name: "Mega Crash Trend", sequence: [2,4,2,4,2,7,4,2,4,2], categories: ["RS","RS","RS","RS","RS","GB","RS","RS","RS","RS"] },
+            { name: "Long Red Big", sequence: [6,8,6,8,6,8,6,8,6,8], categories: ["RB","RB","RB","RB","RB","RB","RB","RB","RB","RB"] },
+            { name: "Long Green Small", sequence: [1,3,1,3,1,3,1,3,1,3], categories: ["GS","GS","GS","GS","GS","GS","GS","GS","GS","GS"] },
+            { name: "Single Reverse", sequence: [7,2,9,4,7,2], categories: ["GB","RS","GB","RS","GB","RS"] },
+            { name: "Double Reverse", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
+            { name: "Triple Reverse", sequence: [7,9,7,2,4,2,7,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB","GB"] },
+            { name: "Quadra Reverse", sequence: [7,9,7,9,2,4,2,4], categories: ["GB","GB","GB","GB","RS","RS","RS","RS"] },
+            { name: "Three In One", sequence: [7,9,7,2,7,9,7], categories: ["GB","GB","GB","RS","GB","GB","GB"] },
+            { name: "Two In One", sequence: [2,4,7,2,4,7,2,4], categories: ["RS","RS","GB","RS","RS","GB","RS","RS"] },
+            { name: "Three In Two", sequence: [7,9,7,2,4,7,9,7], categories: ["GB","GB","GB","RS","RS","GB","GB","GB"] },
+            { name: "Four In One", sequence: [2,4,2,4,7,2,4,2,4], categories: ["RS","RS","RS","RS","GB","RS","RS","RS","RS"] },
+            { name: "Four In Two", sequence: [7,9,7,9,2,4,7,9,7,9], categories: ["GB","GB","GB","GB","RS","RS","GB","GB","GB","GB"] },
+            { name: "Long Green Big", sequence: [7,9,7,9,7,9,7,9,7,9], categories: ["GB","GB","GB","GB","GB","GB","GB","GB","GB","GB"] },
+            { name: "Long Red Small", sequence: [2,4,2,4,2,4,2,4,2,4], categories: ["RS","RS","RS","RS","RS","RS","RS","RS","RS","RS"] },
+            
+            // Wave Patterns (25-50)
+            { name: "Micro Wave", sequence: [2,7,4,2,9,4], categories: ["RS","GB","RS","RS","GB","RS"] },
+            { name: "Tsunami Wave", sequence: [7,9,7,2,4,9,7,9,7,2], categories: ["GB","GB","GB","RS","RS","GB","GB","GB","GB","RS"] },
+            { name: "Reverse Tsunami", sequence: [2,4,2,7,9,2,4,2,4,7], categories: ["RS","RS","RS","GB","GB","RS","RS","RS","RS","GB"] },
+            { name: "Pulse Wave", sequence: [1,6,3,7,2,1,8], categories: ["GS","RB","GS","GB","RS","GS","RB"] },
+            { name: "Echo Wave", sequence: [6,1,3,8,1,3,6], categories: ["RB","GS","GS","RB","GS","GS","RB"] },
+            { name: "Alpha Wave", sequence: [7,9,2,4,7,2,9], categories: ["GB","GB","RS","RS","GB","RS","GB"] },
+            { name: "Beta Wave", sequence: [2,4,7,9,2,7,4], categories: ["RS","RS","GB","GB","RS","GB","RS"] },
+            { name: "Gamma Wave", sequence: [7,2,9,7,4,2,9], categories: ["GB","RS","GB","GB","RS","RS","GB"] },
+            { name: "Delta Wave", sequence: [2,7,4,2,7,9,4], categories: ["RS","GB","RS","RS","GB","GB","RS"] },
+            { name: "Omega Wave", sequence: [7,9,7,2,9,4,2], categories: ["GB","GB","GB","RS","GB","RS","RS"] },
+            { name: "Sigma Wave", sequence: [2,4,2,7,4,9,7], categories: ["RS","RS","RS","GB","RS","GB","GB"] },
+            { name: "Theta Wave", sequence: [7,2,4,9,7,9,2], categories: ["GB","RS","RS","GB","GB","GB","RS"] },
+            { name: "Lambda Wave", sequence: [2,7,9,4,2,4,7], categories: ["RS","GB","GB","RS","RS","RS","GB"] },
+            { name: "Epsilon Wave", sequence: [7,9,2,7,4,7,9], categories: ["GB","GB","RS","GB","RS","GB","GB"] },
+            { name: "Zeta Wave", sequence: [2,4,7,2,9,4,2], categories: ["RS","RS","GB","RS","GB","RS","RS"] },
+            { name: "Rising Sun", sequence: [2,4,2,7,9,7,9,7], categories: ["RS","RS","RS","GB","GB","GB","GB","GB"] },
+            { name: "Setting Sun", sequence: [7,9,7,9,7,2,4,2], categories: ["GB","GB","GB","GB","GB","RS","RS","RS"] },
+            { name: "Morning Star", sequence: [2,4,7,9,7,9,2], categories: ["RS","RS","GB","GB","GB","GB","RS"] },
+            { name: "Evening Star", sequence: [7,9,2,4,2,4,7], categories: ["GB","GB","RS","RS","RS","RS","GB"] },
+            { name: "North Star", sequence: [7,2,9,7,9,4,7], categories: ["GB","RS","GB","GB","GB","RS","GB"] },
+            { name: "South Star", sequence: [2,7,4,2,4,9,2], categories: ["RS","GB","RS","RS","RS","GB","RS"] },
+            { name: "Ocean Wave", sequence: [7,9,2,4,7,9,2], categories: ["GB","GB","RS","RS","GB","GB","RS"] },
+            { name: "Beach Tide", sequence: [2,4,7,9,2,4,7], categories: ["RS","RS","GB","GB","RS","RS","GB"] },
+            { name: "Wave Pattern A", sequence: [7,9,2,7,9,4], categories: ["GB","GB","RS","GB","GB","RS"] },
+            { name: "Wave Pattern B", sequence: [2,4,7,2,4,9], categories: ["RS","RS","GB","RS","RS","GB"] },
+            { name: "Wave Pattern C", sequence: [7,2,9,4,7,2], categories: ["GB","RS","GB","RS","GB","RS"] },
+            
+            // Zigzag Patterns (51-75)
+            { name: "Sharp Zigzag", sequence: [7,2,6,1,9,4,8,3], categories: ["GB","RS","RB","GS","GB","RS","RB","GS"] },
+            { name: "Soft Zigzag", sequence: [2,1,4,3,2,1], categories: ["RS","GS","RS","GS","RS","GS"] },
+            { name: "Double Zigzag", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
+            { name: "Cross Zigzag", sequence: [6,7,2,1,8,9], categories: ["RB","GB","RS","GS","RB","GB"] },
+            { name: "Inverse Zigzag", sequence: [1,6,7,2,3,8,9,4], categories: ["GS","RB","GB","RS","GS","RB","GB","RS"] },
+            { name: "Snake Pattern", sequence: [7,2,4,9,7,2,4,9], categories: ["GB","RS","RS","GB","GB","RS","RS","GB"] },
+            { name: "Ladder Up", sequence: [2,7,4,9,2,7,4,9], categories: ["RS","GB","RS","GB","RS","GB","RS","GB"] },
+            { name: "Ladder Down", sequence: [7,2,9,4,7,2,9,4], categories: ["GB","RS","GB","RS","GB","RS","GB","RS"] },
+            { name: "Zig Pattern", sequence: [7,2,4,9,2,4,7], categories: ["GB","RS","RS","GB","RS","RS","GB"] },
+            { name: "Zag Pattern", sequence: [2,7,9,4,7,9,2], categories: ["RS","GB","GB","RS","GB","GB","RS"] },
             { name: "Flash Trend", sequence: [7,2,9,4,7,2,9], categories: ["GB","RS","GB","RS","GB","RS","GB"] },
             { name: "Thunder Trend", sequence: [6,8,6,1,3,6,8,6], categories: ["RB","RB","RB","GS","GS","RB","RB","RB"] },
             { name: "Storm Trend", sequence: [7,2,4,9,2,4,7,2], categories: ["GB","RS","RS","GB","RS","RS","GB","RS"] },
-            { name: "Red Violet Entry Trend", sequence: [0,7,9,2,7], categories: ["RV","GB","GB","RS","GB"] },
-            { name: "Green Violet Entry Trend", sequence: [5,2,4,7,2], categories: ["GV","RS","RS","GB","RS"] },
-            { name: "Double Violet Trend", sequence: [0,7,9,5,2,4], categories: ["RV","GB","GB","GV","RS","RS"] },
-            { name: "Violet Sandwich Trend", sequence: [7,0,9,5,2], categories: ["GB","RV","GB","GV","RS"] },
-            { name: "Triple Violet Trend", sequence: [0,7,5,2,0,9], categories: ["RV","GB","GV","RS","RV","GB"] },
-            { name: "Fibonacci Trend", sequence: [7,9,2,7,4,9,7,2], categories: ["GB","GB","RS","GB","RS","GB","GB","RS"] },
+            { name: "East Wind", sequence: [7,9,2,7,4,2,9,7], categories: ["GB","GB","RS","GB","RS","RS","GB","GB"] },
+            { name: "West Wind", sequence: [2,4,7,2,9,7,4,2], categories: ["RS","RS","GB","RS","GB","GB","RS","RS"] },
+            { name: "Hurricane", sequence: [7,9,2,4,2,7,9,4,2], categories: ["GB","GB","RS","RS","RS","GB","GB","RS","RS"] },
+            { name: "Tornado", sequence: [2,4,7,9,7,4,2,9,7], categories: ["RS","RS","GB","GB","GB","RS","RS","GB","GB"] },
+            { name: "Cyclone", sequence: [7,2,9,4,7,2,9,4], categories: ["GB","RS","GB","RS","GB","RS","GB","RS"] },
+            { name: "Typhoon", sequence: [2,7,4,9,2,7,4,9], categories: ["RS","GB","RS","GB","RS","GB","RS","GB"] },
+            { name: "Blizzard", sequence: [7,9,7,9,2,4,7,9], categories: ["GB","GB","GB","GB","RS","RS","GB","GB"] },
+            { name: "Avalanche", sequence: [2,4,2,4,7,9,2,4], categories: ["RS","RS","RS","RS","GB","GB","RS","RS"] },
+            { name: "Earthquake", sequence: [7,2,4,9,7,2,4,9], categories: ["GB","RS","RS","GB","GB","RS","RS","GB"] },
+            { name: "Volcano", sequence: [2,7,9,4,2,7,9,4], categories: ["RS","GB","GB","RS","RS","GB","GB","RS"] },
+            { name: "Bounce Pattern", sequence: [2,4,7,9,2,4,7,9], categories: ["RS","RS","GB","GB","RS","RS","GB","GB"] },
+            { name: "Reverse Bounce", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
+            
+            // Pyramid Patterns (76-100)
+            { name: "Ascending Pyramid", sequence: [2,7,9,7,9,7], categories: ["RS","GB","GB","GB","GB","GB"] },
+            { name: "Descending Pyramid", sequence: [9,7,9,7,2,4], categories: ["GB","GB","GB","GB","RS","RS"] },
+            { name: "Double Pyramid", sequence: [2,7,9,7,4,2,9,7,9,2], categories: ["RS","GB","GB","GB","RS","RS","GB","GB","GB","RS"] },
+            { name: "Inverted Pyramid", sequence: [7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","RS","RS","RS","RS","RS"] },
+            { name: "Step Pyramid", sequence: [2,7,4,7,9,2,7,9,7], categories: ["RS","GB","RS","GB","GB","RS","GB","GB","GB"] },
+            { name: "Crown Pattern", sequence: [7,2,9,7,9,4,7], categories: ["GB","RS","GB","GB","GB","RS","GB"] },
+            { name: "Shield Pattern", sequence: [2,7,4,2,4,9,2], categories: ["RS","GB","RS","RS","RS","GB","RS"] },
+            { name: "Arrow Up", sequence: [2,4,7,9,7,9,7], categories: ["RS","RS","GB","GB","GB","GB","GB"] },
+            { name: "Arrow Down", sequence: [7,9,2,4,2,4,2], categories: ["GB","GB","RS","RS","RS","RS","RS"] },
+            { name: "Mountain", sequence: [2,7,9,7,9,7,2], categories: ["RS","GB","GB","GB","GB","GB","RS"] },
+            { name: "Valley", sequence: [7,2,4,2,4,2,9], categories: ["GB","RS","RS","RS","RS","RS","GB"] },
+            { name: "Plateau", sequence: [7,9,7,9,7,9,2], categories: ["GB","GB","GB","GB","GB","GB","RS"] },
+            { name: "Cliff", sequence: [2,4,2,4,2,4,7], categories: ["RS","RS","RS","RS","RS","RS","GB"] },
+            { name: "Peak Valley", sequence: [7,9,7,2,4,2,7,9], categories: ["GB","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Valley Peak", sequence: [2,4,2,7,9,7,2,4], categories: ["RS","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Staircase Up", sequence: [2,7,9,7,9,7,9], categories: ["RS","GB","GB","GB","GB","GB","GB"] },
+            { name: "Staircase Down", sequence: [7,2,4,2,4,2,4], categories: ["GB","RS","RS","RS","RS","RS","RS"] },
+            { name: "Heart Pattern", sequence: [7,9,7,2,7,9,7], categories: ["GB","GB","GB","RS","GB","GB","GB"] },
+            { name: "Broken Heart", sequence: [2,4,2,7,2,4,2], categories: ["RS","RS","RS","GB","RS","RS","RS"] },
+            { name: "Greater Than", sequence: [7,9,7,2,4,2], categories: ["GB","GB","GB","RS","RS","RS"] },
+            { name: "Less Than", sequence: [2,4,2,7,9,7], categories: ["RS","RS","RS","GB","GB","GB"] },
+            { name: "Mountain Peak", sequence: [7,9,7,9,7,2,4], categories: ["GB","GB","GB","GB","GB","RS","RS"] },
+            { name: "Valley Floor", sequence: [2,4,2,4,2,7,9], categories: ["RS","RS","RS","RS","RS","GB","GB"] },
+            { name: "Phoenix Rising", sequence: [2,4,2,4,7,9,7,9,7,9], categories: ["RS","RS","RS","RS","GB","GB","GB","GB","GB","GB"] },
+            { name: "Dragon Tail", sequence: [7,9,7,9,2,7,4,9,2], categories: ["GB","GB","GB","GB","RS","GB","RS","GB","RS"] },
+            
+            // Spiral Patterns (101-125)
+            { name: "Inner Spiral", sequence: [7,2,1,6,9,4,3], categories: ["GB","RS","GS","RB","GB","RS","GS"] },
+            { name: "Outer Spiral", sequence: [6,1,2,7,8,3,4,9], categories: ["RB","GS","RS","GB","RB","GS","RS","GB"] },
+            { name: "Double Spiral", sequence: [7,9,2,1,6,8,7,9], categories: ["GB","GB","RS","GS","RB","RB","GB","GB"] },
+            { name: "Reverse Spiral", sequence: [2,7,6,1,4,9,8], categories: ["RS","GB","RB","GS","RS","GB","RB"] },
+            { name: "Infinity Spiral", sequence: [7,2,4,9,7,2,4,9], categories: ["GB","RS","RS","GB","GB","RS","RS","GB"] },
+            { name: "Galaxy Spiral", sequence: [7,2,9,7,4,9,7,2], categories: ["GB","RS","GB","GB","RS","GB","GB","RS"] },
+            { name: "Nebula Cloud", sequence: [2,7,4,2,9,4,2,7], categories: ["RS","GB","RS","RS","GB","RS","RS","GB"] },
+            { name: "Infinity Loop", sequence: [7,2,9,4,2,7,4,9], categories: ["GB","RS","GB","RS","RS","GB","RS","GB"] },
+            { name: "Double Infinity", sequence: [2,7,4,9,7,2,9,4], categories: ["RS","GB","RS","GB","GB","RS","GB","RS"] },
+            { name: "Wormhole", sequence: [7,9,2,4,7,9,2,4,7], categories: ["GB","GB","RS","RS","GB","GB","RS","RS","GB"] },
+            { name: "Time Warp", sequence: [2,4,7,9,2,4,7,9,2], categories: ["RS","RS","GB","GB","RS","RS","GB","GB","RS"] },
+            { name: "Dimension Shift", sequence: [7,2,4,9,2,4,7,2], categories: ["GB","RS","RS","GB","RS","RS","GB","RS"] },
+            { name: "Parallel Universe", sequence: [2,7,9,4,7,9,2,7], categories: ["RS","GB","GB","RS","GB","GB","RS","GB"] },
+            { name: "Quantum Leap", sequence: [7,9,7,2,7,9,7,4], categories: ["GB","GB","GB","RS","GB","GB","GB","RS"] },
+            { name: "String Theory", sequence: [2,4,2,7,2,4,2,9], categories: ["RS","RS","RS","GB","RS","RS","RS","GB"] },
+            { name: "Multiverse", sequence: [7,2,9,7,9,4,7,9], categories: ["GB","RS","GB","GB","GB","RS","GB","GB"] },
+            { name: "Singularity", sequence: [2,7,4,2,4,9,2,4], categories: ["RS","GB","RS","RS","RS","GB","RS","RS"] },
+            { name: "Event Horizon", sequence: [7,9,2,4,2,4,7], categories: ["GB","GB","RS","RS","RS","RS","GB"] },
+            { name: "Gravity Well", sequence: [2,4,7,9,7,9,2], categories: ["RS","RS","GB","GB","GB","GB","RS"] },
+            { name: "Space Time", sequence: [7,2,9,4,2,7,4], categories: ["GB","RS","GB","RS","RS","GB","RS"] },
+            { name: "Light Speed", sequence: [2,7,4,9,7,2,9], categories: ["RS","GB","RS","GB","GB","RS","GB"] },
+            { name: "Hyper Drive", sequence: [7,9,7,9,2,7,9], categories: ["GB","GB","GB","GB","RS","GB","GB"] },
+            { name: "Warp Speed", sequence: [2,4,2,4,7,2,4], categories: ["RS","RS","RS","RS","GB","RS","RS"] },
+            { name: "Cosmic Ray", sequence: [2,4,2,7,9,7,2,4,2], categories: ["RS","RS","RS","GB","GB","GB","RS","RS","RS"] },
+            { name: "Dark Matter", sequence: [7,2,9,4,7,2,9,4,7], categories: ["GB","RS","GB","RS","GB","RS","GB","RS","GB"] },
+            
+            // Diamond Patterns (126-150)
+            { name: "Full Diamond", sequence: [2,7,9,7,2,4,2,7], categories: ["RS","GB","GB","GB","RS","RS","RS","GB"] },
+            { name: "Half Diamond", sequence: [7,9,7,2,4], categories: ["GB","GB","GB","RS","RS"] },
+            { name: "Broken Diamond", sequence: [2,7,4,7,9,2,7,4], categories: ["RS","GB","RS","GB","GB","RS","GB","RS"] },
+            { name: "Double Diamond", sequence: [7,9,2,7,9,4,2,7,9], categories: ["GB","GB","RS","GB","GB","RS","RS","GB","GB"] },
+            { name: "Crystal Diamond", sequence: [2,4,7,9,7,9,2,4], categories: ["RS","RS","GB","GB","GB","GB","RS","RS"] },
+            { name: "Mirror Pattern", sequence: [7,9,2,4,2,4,7,9], categories: ["GB","GB","RS","RS","RS","RS","GB","GB"] },
+            { name: "Reverse Mirror", sequence: [2,4,7,9,7,9,2,4], categories: ["RS","RS","GB","GB","GB","GB","RS","RS"] },
+            { name: "Black Star", sequence: [7,9,2,4,2,4,7,9], categories: ["GB","GB","RS","RS","RS","RS","GB","GB"] },
+            { name: "White Dwarf", sequence: [2,4,7,9,7,9,2,4], categories: ["RS","RS","GB","GB","GB","GB","RS","RS"] },
+            { name: "Red Giant", sequence: [7,9,7,9,7,9,2,4], categories: ["GB","GB","GB","GB","GB","GB","RS","RS"] },
+            { name: "Blue Giant", sequence: [2,4,2,4,2,4,7,9], categories: ["RS","RS","RS","RS","RS","RS","GB","GB"] },
+            { name: "Neutron Star", sequence: [7,2,4,2,4,2,4,9], categories: ["GB","RS","RS","RS","RS","RS","RS","GB"] },
+            { name: "Pulsar Beam", sequence: [2,7,9,7,9,7,9,4], categories: ["RS","GB","GB","GB","GB","GB","GB","RS"] },
+            { name: "Quasar Burst", sequence: [7,9,2,7,9,4,7,9], categories: ["GB","GB","RS","GB","GB","RS","GB","GB"] },
+            { name: "Magnetar Pulse", sequence: [2,4,7,2,4,9,2,4], categories: ["RS","RS","GB","RS","RS","GB","RS","RS"] },
+            { name: "Solar Flare", sequence: [7,2,9,4,2,7,4,9], categories: ["GB","RS","GB","RS","RS","GB","RS","GB"] },
+            { name: "Lunar Eclipse", sequence: [2,7,4,9,7,2,9,4], categories: ["RS","GB","RS","GB","GB","RS","GB","RS"] },
+            { name: "Solar Eclipse", sequence: [7,9,7,2,4,2,7,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB","GB"] },
+            { name: "Aurora", sequence: [2,7,4,9,2,7,4,9], categories: ["RS","GB","RS","GB","RS","GB","RS","GB"] },
+            { name: "Northern Light", sequence: [7,9,7,2,9,7,4,9], categories: ["GB","GB","GB","RS","GB","GB","RS","GB"] },
+            { name: "Southern Cross", sequence: [2,4,2,7,4,2,9,4], categories: ["RS","RS","RS","GB","RS","RS","GB","RS"] },
+            { name: "Rainbow Arc", sequence: [7,2,9,4,7,2,9,4], categories: ["GB","RS","GB","RS","GB","RS","GB","RS"] },
+            { name: "Meteor Strike", sequence: [2,4,2,4,2,7,9,7,9], categories: ["RS","RS","RS","RS","RS","GB","GB","GB","GB"] },
+            { name: "Comet Tail", sequence: [7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","RS","RS","RS","RS","RS"] },
+            { name: "Asteroid Belt", sequence: [2,4,2,7,9,7,9,7], categories: ["RS","RS","RS","GB","GB","GB","GB","GB"] },
+            
+            // Fusion Patterns (151-175)
+            { name: "Chaos Fusion", sequence: [7,6,1,2,9,8,3,4], categories: ["GB","RB","GS","RS","GB","RB","GS","RS"] },
+            { name: "Order Fusion", sequence: [2,4,1,3,6,8,7,9], categories: ["RS","RS","GS","GS","RB","RB","GB","GB"] },
+            { name: "Mixed Fusion", sequence: [7,2,6,1,9,4], categories: ["GB","RS","RB","GS","GB","RS"] },
+            { name: "Quantum Fusion", sequence: [6,7,2,1,8,9,4,3], categories: ["RB","GB","RS","GS","RB","GB","RS","GS"] },
+            { name: "Parallel Fusion", sequence: [7,1,6,2,9,3,8,4], categories: ["GB","GS","RB","RS","GB","GS","RB","RS"] },
+            { name: "Neural Network", sequence: [7,2,1,6,9,4,3,8,7], categories: ["GB","RS","GS","RB","GB","RS","GS","RB","GB"] },
+            { name: "AI Prediction", sequence: [2,4,7,9,7,2,9,7], categories: ["RS","RS","GB","GB","GB","RS","GB","GB"] },
+            { name: "Machine Learning", sequence: [7,9,2,7,4,2,9,7,4], categories: ["GB","GB","RS","GB","RS","RS","GB","GB","RS"] },
+            { name: "Deep Learning", sequence: [6,1,2,7,8,3,4,9,6], categories: ["RB","GS","RS","GB","RB","GS","RS","GB","RB"] },
+            { name: "Quantum Algorithm", sequence: [7,2,9,7,4,2,9,4,7,9], categories: ["GB","RS","GB","GB","RS","RS","GB","RS","GB","GB"] },
+            { name: "Butterfly Effect", sequence: [2,7,9,4,2,7,9,4], categories: ["RS","GB","GB","RS","RS","GB","GB","RS"] },
+            { name: "Black Hole", sequence: [7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","RS","RS","RS","RS","RS"] },
+            { name: "Supernova", sequence: [2,7,9,7,9,7,2,4], categories: ["RS","GB","GB","GB","GB","GB","RS","RS"] },
+            { name: "Triple Stack", sequence: [7,9,7,2,4,2,7,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB","GB"] },
+            { name: "Quad Stack", sequence: [2,4,2,4,7,9,7,9], categories: ["RS","RS","RS","RS","GB","GB","GB","GB"] },
+            { name: "Penta Stack", sequence: [7,9,7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","GB","GB","RS","RS","RS","RS","RS"] },
+            { name: "Hexa Stack", sequence: [2,4,2,7,9,7,2,4,2], categories: ["RS","RS","RS","GB","GB","GB","RS","RS","RS"] },
+            { name: "Octa Stack", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
+            { name: "Deca Stack", sequence: [2,7,4,9,2,7,4,9,2,7], categories: ["RS","GB","RS","GB","RS","GB","RS","GB","RS","GB"] },
+            { name: "Cross Pattern", sequence: [7,2,9,4,7], categories: ["GB","RS","GB","RS","GB"] },
+            { name: "Plus Pattern", sequence: [2,7,9,7,2], categories: ["RS","GB","GB","GB","RS"] },
+            { name: "Minus Pattern", sequence: [7,2,4,2,9], categories: ["GB","RS","RS","RS","GB"] },
+            { name: "Equal Pattern", sequence: [7,9,2,4,7,9], categories: ["GB","GB","RS","RS","GB","GB"] },
+            { name: "Not Equal", sequence: [2,4,7,9,2,4], categories: ["RS","RS","GB","GB","RS","RS"] },
+            { name: "Mega Surge", sequence: [7,9,7,9,7,2,9,7,9,7], categories: ["GB","GB","GB","GB","GB","RS","GB","GB","GB","GB"] },
+            
+            // Violet Patterns (176-200)
+            { name: "Red Violet Entry", sequence: [0,7,9,2,7], categories: ["RV","GB","GB","RS","GB"] },
+            { name: "Green Violet Entry", sequence: [5,2,4,7,2], categories: ["GV","RS","RS","GB","RS"] },
+            { name: "Double Violet", sequence: [0,7,9,5,2,4], categories: ["RV","GB","GB","GV","RS","RS"] },
+            { name: "Violet Sandwich", sequence: [7,0,9,5,2], categories: ["GB","RV","GB","GV","RS"] },
+            { name: "Triple Violet", sequence: [0,7,5,2,0,9], categories: ["RV","GB","GV","RS","RV","GB"] },
+            { name: "Fibonacci", sequence: [7,9,2,7,4,9,7,2], categories: ["GB","GB","RS","GB","RS","GB","GB","RS"] },
             { name: "Prime Trend", sequence: [2,7,9,4,7,2,9], categories: ["RS","GB","GB","RS","GB","RS","GB"] },
-            { name: "Golden Ratio Trend", sequence: [7,9,7,2,4,7,9,2], categories: ["GB","GB","GB","RS","RS","GB","GB","RS"] },
+            { name: "Golden Ratio", sequence: [7,9,7,2,4,7,9,2], categories: ["GB","GB","GB","RS","RS","GB","GB","RS"] },
             { name: "Binary Trend", sequence: [7,2,4,9,2,7,9,4], categories: ["GB","RS","RS","GB","RS","GB","GB","RS"] },
-            { name: "Hexagonal Trend", sequence: [2,7,9,4,7,9,2], categories: ["RS","GB","GB","RS","GB","GB","RS"] },
-            { name: "Neural Network Trend", sequence: [7,2,1,6,9,4,3,8,7], categories: ["GB","RS","GS","RB","GB","RS","GS","RB","GB"] },
-            { name: "AI Prediction Trend", sequence: [2,4,7,9,7,2,9,7], categories: ["RS","RS","GB","GB","GB","RS","GB","GB"] },
-            { name: "Machine Learning Trend", sequence: [7,9,2,7,4,2,9,7,4], categories: ["GB","GB","RS","GB","RS","RS","GB","GB","RS"] },
-            { name: "Deep Learning Trend", sequence: [6,1,2,7,8,3,4,9,6], categories: ["RB","GS","RS","GB","RB","GS","RS","GB","RB"] },
-            { name: "Quantum Algorithm Trend", sequence: [7,2,9,7,4,2,9,4,7,9], categories: ["GB","RS","GB","GB","RS","RS","GB","RS","GB","GB"] },
-            { name: "Phoenix Rising Trend", sequence: [2,4,2,4,7,9,7,9,7,9], categories: ["RS","RS","RS","RS","GB","GB","GB","GB","GB","GB"] },
-            { name: "Dragon Tail Trend", sequence: [7,9,7,9,2,7,4,9,2], categories: ["GB","GB","GB","GB","RS","GB","RS","GB","RS"] },
-            { name: "Butterfly Effect Trend", sequence: [2,7,9,4,2,7,9,4], categories: ["RS","GB","GB","RS","RS","GB","GB","RS"] },
-            { name: "Black Hole Trend", sequence: [7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","RS","RS","RS","RS","RS"] },
-            { name: "Supernova Trend", sequence: [2,7,9,7,9,7,2,4], categories: ["RS","GB","GB","GB","GB","GB","RS","RS"] },
-            { name: "Parallel Line 1 Trend", sequence: [7,2], categories: ["GB","RS"] },
-            { name: "Parallel Line 2 Trend", sequence: [6,1,7], categories: ["RB","GS","GB"] },
-            { name: "Parallel Line 3 Trend", sequence: [7,1,6], categories: ["GB","GS","RB"] },
-            { name: "Parallel Line 4 Trend", sequence: [2,1,6,2], categories: ["RS","GS","RB","RS"] },
-            { name: "Parallel Line 5 Trend", sequence: [7,9,2], categories: ["GB","GB","RS"] },
-            { name: "Parallel Line 6 Trend", sequence: [6,8,1,7,1], categories: ["RB","RB","GS","GB","GS"] },
-            { name: "Parallel Line 7 Trend", sequence: [7,2,9,1], categories: ["GB","RS","GB","GS"] },
-            { name: "Parallel Line 8 Trend", sequence: [6,1,2,7], categories: ["RB","GS","RS","GB"] },
-            { name: "Parallel Line 9 Trend", sequence: [7,1,6,2,4], categories: ["GB","GS","RB","RS","RS"] },
-            { name: "Parallel Line 10 Trend", sequence: [6,2,7,1], categories: ["RB","RS","GB","GS"] },
-            { name: "Parallel Line 11 Trend", sequence: [7,9,2,6,1], categories: ["GB","GB","RS","RB","GS"] },
-            { name: "Parallel Line 12 Trend", sequence: [6,7,1,8,2], categories: ["RB","GB","GS","RB","RS"] },
-            { name: "Parallel Line 13 Trend", sequence: [7,2,1,4,3,9], categories: ["GB","RS","GS","RS","GS","GB"] },
-            { name: "Parallel Line 14 Trend", sequence: [6,2,1,7,3,8], categories: ["RB","RS","GS","GB","GS","RB"] },
-            { name: "Parallel Line 15 Trend", sequence: [7,1,6,2,8,9,4], categories: ["GB","GS","RB","RS","RB","GB","RS"] },
-            { name: "Diagonal Line 1 Trend", sequence: [7,2], categories: ["GB","RS"] },
-            { name: "Diagonal Line 2 Trend", sequence: [6,1,8], categories: ["RB","GS","RB"] },
-            { name: "Diagonal Line 3 Trend", sequence: [1,6,7,2], categories: ["GS","RB","GB","RS"] },
-            { name: "Diagonal Line 4 Trend", sequence: [2,7,6,1,8], categories: ["RS","GB","RB","GS","RB"] },
-            { name: "Diagonal Line 5 Trend", sequence: [7,1,2,9], categories: ["GB","GS","RS","GB"] },
-            { name: "Diagonal Line 6 Trend", sequence: [6,1,8,2,7], categories: ["RB","GS","RB","RS","GB"] },
-            { name: "Cyclic Phase 1 Trend", sequence: [7,2], categories: ["GB","RS"] },
-            { name: "Cyclic Phase 2 Trend", sequence: [6,1,8], categories: ["RB","GS","RB"] },
-            { name: "Cyclic Phase 3 Trend", sequence: [7,1,2], categories: ["GB","GS","RS"] },
-            { name: "Cyclic Phase 4 Trend", sequence: [2,7,6], categories: ["RS","GB","RB"] },
-            { name: "Cyclic Expansion 1 Trend", sequence: [7,2,9,4], categories: ["GB","RS","GB","RS"] },
-            { name: "Cyclic Expansion 2 Trend", sequence: [6,8,1], categories: ["RB","RB","GS"] },
-            { name: "Cyclic Expansion 3 Trend", sequence: [1,3,6,7], categories: ["GS","GS","RB","GB"] },
-            { name: "Cyclic Expansion 4 Trend", sequence: [6,1,2,7], categories: ["RB","GS","RS","GB"] },
-            { name: "Cyclic Contraction 1 Trend", sequence: [7,2,1,6], categories: ["GB","RS","GS","RB"] },
-            { name: "Cyclic Contraction 2 Trend", sequence: [6,7,2], categories: ["RB","GB","RS"] },
-            { name: "Cyclic Contraction 3 Trend", sequence: [1,6,7,2,3], categories: ["GS","RB","GB","RS","GS"] },
-            { name: "Cyclic Contraction 4 Trend", sequence: [2,7,6,1], categories: ["RS","GB","RB","GS"] },
-            { name: "Cyclic Reset 1 Trend", sequence: [7,6,1], categories: ["GB","RB","GS"] },
-            { name: "Cyclic Reset 2 Trend", sequence: [2,7,4,1], categories: ["RS","GB","RS","GS"] },
-            { name: "Cyclic Reset 3 Trend", sequence: [7,2,1,6,9], categories: ["GB","RS","GS","RB","GB"] },
-            { name: "Opposite Line 1 Trend", sequence: [7,2], categories: ["GB","RS"] },
-            { name: "Opposite Line 2 Trend", sequence: [2,7,6], categories: ["RS","GB","RB"] },
-            { name: "Opposite Line 3 Trend", sequence: [1,7,2,6], categories: ["GS","GB","RS","RB"] },
-            { name: "Opposite Line 4 Trend", sequence: [6,2,1,7], categories: ["RB","RS","GS","GB"] },
-            { name: "Opposite Line 5 Trend", sequence: [7,1,2], categories: ["GB","GS","RS"] },
-            { name: "Cleaned Sequence 1 Trend", sequence: [7,9,2], categories: ["GB","GB","RS"] },
-            { name: "Cleaned Sequence 2 Trend", sequence: [2,7,1,6], categories: ["RS","GB","GS","RB"] },
-            { name: "Cleaned Sequence 3 Trend", sequence: [7,2,6,1,8], categories: ["GB","RS","RB","GS","RB"] },
-            { name: "Cleaned Sequence 4 Trend", sequence: [2,4,7,9,2], categories: ["RS","RS","GB","GB","RS"] },
-            { name: "Cleaned Sequence 5 Trend", sequence: [1,7,6,1,3], categories: ["GS","GB","RB","GS","GS"] },
-            { name: "Cleaned Sequence 6 Trend", sequence: [6,7,8,2,1,9], categories: ["RB","GB","RB","RS","GS","GB"] },
-            { name: "Cleaned Sequence 7 Trend", sequence: [7,9,1,6,8,2], categories: ["GB","GB","GS","RB","RB","RS"] },
-            { name: "Cleaned Sequence 8 Trend", sequence: [2,1,7,6,4,9], categories: ["RS","GS","GB","RB","RS","GB"] },
-            { name: "Cleaned Sequence 9 Trend", sequence: [1,6,7,9,2,4], categories: ["GS","RB","GB","GB","RS","RS"] },
-            { name: "Cleaned Sequence 10 Trend", sequence: [6,2,7,1,9,4], categories: ["RB","RS","GB","GS","GB","RS"] },
-            { name: "Cleaned Sequence 11 Trend", sequence: [7,6,8,1,3,2], categories: ["GB","RB","RB","GS","GS","RS"] },
-            { name: "Cleaned Sequence 12 Trend", sequence: [2,7,9,7,6,4], categories: ["RS","GB","GB","GB","RB","RS"] },
-            { name: "Cleaned Sequence 13 Trend", sequence: [7,6,1,9,2,4], categories: ["GB","RB","GS","GB","RS","RS"] },
-            { name: "Cleaned Sequence 14 Trend", sequence: [6,1,7,9,8,3], categories: ["RB","GS","GB","GB","RB","GS"] },
-            { name: "Cleaned Sequence 15 Trend", sequence: [7,2,1,6,9,4], categories: ["GB","RS","GS","RB","GB","RS"] },
-            { name: "Opposite Cleaned 1 Trend", sequence: [2,4,7], categories: ["RS","RS","GB"] },
-            { name: "Opposite Cleaned 2 Trend", sequence: [7,2,6,1], categories: ["GB","RS","RB","GS"] },
-            { name: "Opposite Cleaned 3 Trend", sequence: [2,7,1,6,1], categories: ["RS","GB","GS","RB","GS"] },
-            { name: "Opposite Cleaned 4 Trend", sequence: [7,9,2,4,7], categories: ["GB","GB","RS","RS","GB"] },
-            { name: "Opposite Cleaned 5 Trend", sequence: [6,2,1,6,8], categories: ["RB","RS","GS","RB","RB"] },
-            { name: "Opposite Cleaned 6 Trend", sequence: [1,2,1,7,6,4], categories: ["GS","RS","GS","GB","RB","RS"] },
-            { name: "Opposite Cleaned 7 Trend", sequence: [2,4,6,1,3,7], categories: ["RS","RS","RB","GS","GS","GB"] },
-            { name: "Opposite Cleaned 8 Trend", sequence: [7,6,2,1,9,4], categories: ["GB","RB","RS","GS","GB","RS"] },
-            { name: "Opposite Cleaned 9 Trend", sequence: [6,1,2,4,7,9], categories: ["RB","GS","RS","RS","GB","GB"] },
-            { name: "Opposite Cleaned 10 Trend", sequence: [1,7,2,6,4,9], categories: ["GS","GB","RS","RB","RS","GB"] },
-            { name: "Opposite Cleaned 11 Trend", sequence: [2,1,3,6,8,7], categories: ["RS","GS","GS","RB","RB","GB"] },
-            { name: "Opposite Cleaned 12 Trend", sequence: [7,2,4,2,1,9], categories: ["GB","RS","RS","RS","GS","GB"] },
-            { name: "Opposite Cleaned 13 Trend", sequence: [2,1,6,4,7,9], categories: ["RS","GS","RB","RS","GB","GB"] },
-            { name: "Opposite Cleaned 14 Trend", sequence: [1,6,2,4,3,8], categories: ["GS","RB","RS","RS","GS","RB"] },
-            { name: "Opposite Cleaned 15 Trend", sequence: [2,7,6,1,4,9], categories: ["RS","GB","RB","GS","RS","GB"] },
-            { name: "Wave Pattern A Trend", sequence: [7,9,2,7,9,4], categories: ["GB","GB","RS","GB","GB","RS"] },
-            { name: "Wave Pattern B Trend", sequence: [2,4,7,2,4,9], categories: ["RS","RS","GB","RS","RS","GB"] },
-            { name: "Wave Pattern C Trend", sequence: [7,2,9,4,7,2], categories: ["GB","RS","GB","RS","GB","RS"] },
-            { name: "Wave Pattern D Trend", sequence: [2,7,4,9,2,7], categories: ["RS","GB","RS","GB","RS","GB"] },
-            { name: "Staircase Up Trend", sequence: [2,7,9,7,9,7,9], categories: ["RS","GB","GB","GB","GB","GB","GB"] },
-            { name: "Staircase Down Trend", sequence: [7,2,4,2,4,2,4], categories: ["GB","RS","RS","RS","RS","RS","RS"] },
-            { name: "Bounce Pattern Trend", sequence: [2,4,7,9,2,4,7,9], categories: ["RS","RS","GB","GB","RS","RS","GB","GB"] },
-            { name: "Reverse Bounce Trend", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
-            { name: "Snake Pattern Trend", sequence: [7,2,4,9,7,2,4,9], categories: ["GB","RS","RS","GB","GB","RS","RS","GB"] },
-            { name: "Ladder Up Trend", sequence: [2,7,4,9,2,7,4,9], categories: ["RS","GB","RS","GB","RS","GB","RS","GB"] },
-            { name: "Ladder Down Trend", sequence: [7,2,9,4,7,2,9,4], categories: ["GB","RS","GB","RS","GB","RS","GB","RS"] },
-            { name: "Mirror Pattern Trend", sequence: [7,9,2,4,2,4,7,9], categories: ["GB","GB","RS","RS","RS","RS","GB","GB"] },
-            { name: "Reverse Mirror Trend", sequence: [2,4,7,9,7,9,2,4], categories: ["RS","RS","GB","GB","GB","GB","RS","RS"] },
-            { name: "Heart Pattern Trend", sequence: [7,9,7,2,7,9,7], categories: ["GB","GB","GB","RS","GB","GB","GB"] },
-            { name: "Broken Heart Trend", sequence: [2,4,2,7,2,4,2], categories: ["RS","RS","RS","GB","RS","RS","RS"] },
-            { name: "Crown Pattern Trend", sequence: [7,2,9,7,9,4,7], categories: ["GB","RS","GB","GB","GB","RS","GB"] },
-            { name: "Shield Pattern Trend", sequence: [2,7,4,2,4,9,2], categories: ["RS","GB","RS","RS","RS","GB","RS"] },
-            { name: "Arrow Up Trend", sequence: [2,4,7,9,7,9,7], categories: ["RS","RS","GB","GB","GB","GB","GB"] },
-            { name: "Arrow Down Trend", sequence: [7,9,2,4,2,4,2], categories: ["GB","GB","RS","RS","RS","RS","RS"] },
-            { name: "Cross Pattern Trend", sequence: [7,2,9,4,7], categories: ["GB","RS","GB","RS","GB"] },
-            { name: "Plus Pattern Trend", sequence: [2,7,9,7,2], categories: ["RS","GB","GB","GB","RS"] },
-            { name: "Minus Pattern Trend", sequence: [7,2,4,2,9], categories: ["GB","RS","RS","RS","GB"] },
-            { name: "Equal Pattern Trend", sequence: [7,9,2,4,7,9], categories: ["GB","GB","RS","RS","GB","GB"] },
-            { name: "Not Equal Trend", sequence: [2,4,7,9,2,4], categories: ["RS","RS","GB","GB","RS","RS"] },
-            { name: "Greater Than Trend", sequence: [7,9,7,2,4,2], categories: ["GB","GB","GB","RS","RS","RS"] },
-            { name: "Less Than Trend", sequence: [2,4,2,7,9,7], categories: ["RS","RS","RS","GB","GB","GB"] },
-            { name: "Infinity Loop Trend", sequence: [7,2,9,4,2,7,4,9], categories: ["GB","RS","GB","RS","RS","GB","RS","GB"] },
-            { name: "Double Infinity Trend", sequence: [2,7,4,9,7,2,9,4], categories: ["RS","GB","RS","GB","GB","RS","GB","RS"] },
-            { name: "Triple Stack Trend", sequence: [7,9,7,2,4,2,7,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB","GB"] },
-            { name: "Quad Stack Trend", sequence: [2,4,2,4,7,9,7,9], categories: ["RS","RS","RS","RS","GB","GB","GB","GB"] },
-            { name: "Penta Stack Trend", sequence: [7,9,7,9,7,2,4,2,4,2], categories: ["GB","GB","GB","GB","GB","RS","RS","RS","RS","RS"] },
-            { name: "Hexa Stack Trend", sequence: [2,4,2,7,9,7,2,4,2], categories: ["RS","RS","RS","GB","GB","GB","RS","RS","RS"] },
-            { name: "Octa Stack Trend", sequence: [7,9,2,4,7,9,2,4], categories: ["GB","GB","RS","RS","GB","GB","RS","RS"] },
-            { name: "Deca Stack Trend", sequence: [2,7,4,9,2,7,4,9,2,7], categories: ["RS","GB","RS","GB","RS","GB","RS","GB","RS","GB"] },
-            { name: "Zig Pattern Trend", sequence: [7,2,4,9,2,4,7], categories: ["GB","RS","RS","GB","RS","RS","GB"] },
-            { name: "Zag Pattern Trend", sequence: [2,7,9,4,7,9,2], categories: ["RS","GB","GB","RS","GB","GB","RS"] },
-            { name: "Peak Valley Trend", sequence: [7,9,7,2,4,2,7,9], categories: ["GB","GB","GB","RS","RS","RS","GB","GB"] },
-            { name: "Valley Peak Trend", sequence: [2,4,2,7,9,7,2,4], categories: ["RS","RS","RS","GB","GB","GB","RS","RS"] },
-            { name: "Mountain Trend", sequence: [2,7,9,7,9,7,2], categories: ["RS","GB","GB","GB","GB","GB","RS"] },
-            { name: "Valley Trend", sequence: [7,2,4,2,4,2,9], categories: ["GB","RS","RS","RS","RS","RS","GB"] },
-            { name: "Plateau Trend", sequence: [7,9,7,9,7,9,2], categories: ["GB","GB","GB","GB","GB","GB","RS"] },
-            { name: "Cliff Trend", sequence: [2,4,2,4,2,4,7], categories: ["RS","RS","RS","RS","RS","RS","GB"] },
-            { name: "Bridge Trend", sequence: [7,2,4,2,4,9], categories: ["GB","RS","RS","RS","RS","GB"] },
-            { name: "Tunnel Trend", sequence: [2,7,9,7,9,4], categories: ["RS","GB","GB","GB","GB","RS"] },
-            { name: "Dome Trend", sequence: [2,7,9,7,4], categories: ["RS","GB","GB","GB","RS"] },
-            { name: "Cave Trend", sequence: [7,2,4,2,9], categories: ["GB","RS","RS","RS","GB"] },
-            { name: "Spike Up Trend", sequence: [2,4,7,2,4], categories: ["RS","RS","GB","RS","RS"] },
-            { name: "Spike Down Trend", sequence: [7,9,2,7,9], categories: ["GB","GB","RS","GB","GB"] },
-            { name: "Double Spike Up Trend", sequence: [2,7,4,9,2], categories: ["RS","GB","RS","GB","RS"] },
-            { name: "Double Spike Down Trend", sequence: [7,2,9,4,7], categories: ["GB","RS","GB","RS","GB"] }
+            { name: "Hexagonal", sequence: [2,7,9,4,7,9,2], categories: ["RS","GB","GB","RS","GB","GB","RS"] },
+            { name: "Bridge", sequence: [7,2,4,2,4,9], categories: ["GB","RS","RS","RS","RS","GB"] },
+            { name: "Tunnel", sequence: [2,7,9,7,9,4], categories: ["RS","GB","GB","GB","GB","RS"] },
+            { name: "Dome", sequence: [2,7,9,7,4], categories: ["RS","GB","GB","GB","RS"] },
+            { name: "Cave", sequence: [7,2,4,2,9], categories: ["GB","RS","RS","RS","GB"] },
+            { name: "Spike Up", sequence: [2,4,7,2,4], categories: ["RS","RS","GB","RS","RS"] },
+            { name: "Spike Down", sequence: [7,9,2,7,9], categories: ["GB","GB","RS","GB","GB"] },
+            { name: "Double Spike Up", sequence: [2,7,4,9,2], categories: ["RS","GB","RS","GB","RS"] },
+            { name: "Double Spike Down", sequence: [7,2,9,4,7], categories: ["GB","RS","GB","RS","GB"] },
+            { name: "Mega Crash", sequence: [2,4,2,4,2,7,4,2,4,2], categories: ["RS","RS","RS","RS","RS","GB","RS","RS","RS","RS"] },
+            { name: "Tsunami Crash", sequence: [7,9,7,9,7,2,4,2,4], categories: ["GB","GB","GB","GB","GB","RS","RS","RS","RS"] },
+            { name: "Anti Matter", sequence: [2,7,4,9,2,7,4,9,2], categories: ["RS","GB","RS","GB","RS","GB","RS","GB","RS"] },
+            { name: "Thunder Storm", sequence: [7,2,4,2,9,7,9,4], categories: ["GB","RS","RS","RS","GB","GB","GB","RS"] },
+            { name: "Lightning Strike", sequence: [2,7,9,7,4,2,4,9], categories: ["RS","GB","GB","GB","RS","RS","RS","GB"] },
+            { name: "Shock Wave", sequence: [2,7,4,2,4,7,9,2], categories: ["RS","GB","RS","RS","RS","GB","GB","RS"] },
+            { name: "Pressure Wave", sequence: [7,9,2,7,4,2,9,4], categories: ["GB","GB","RS","GB","RS","RS","GB","RS"] },
+            
+            // Line Patterns (201-250)
+            { name: "Parallel Line 1", sequence: [7,2], categories: ["GB","RS"] },
+            { name: "Parallel Line 2", sequence: [6,1,7], categories: ["RB","GS","GB"] },
+            { name: "Parallel Line 3", sequence: [7,1,6], categories: ["GB","GS","RB"] },
+            { name: "Parallel Line 4", sequence: [2,1,6,2], categories: ["RS","GS","RB","RS"] },
+            { name: "Parallel Line 5", sequence: [7,9,2], categories: ["GB","GB","RS"] },
+            { name: "Parallel Line 6", sequence: [6,8,1,7,1], categories: ["RB","RB","GS","GB","GS"] },
+            { name: "Parallel Line 7", sequence: [7,2,9,1], categories: ["GB","RS","GB","GS"] },
+            { name: "Parallel Line 8", sequence: [6,1,2,7], categories: ["RB","GS","RS","GB"] },
+            { name: "Parallel Line 9", sequence: [7,1,6,2,4], categories: ["GB","GS","RB","RS","RS"] },
+            { name: "Parallel Line 10", sequence: [6,2,7,1], categories: ["RB","RS","GB","GS"] },
+            { name: "Parallel Line 11", sequence: [7,9,2,6,1], categories: ["GB","GB","RS","RB","GS"] },
+            { name: "Parallel Line 12", sequence: [6,7,1,8,2], categories: ["RB","GB","GS","RB","RS"] },
+            { name: "Parallel Line 13", sequence: [7,2,1,4,3,9], categories: ["GB","RS","GS","RS","GS","GB"] },
+            { name: "Parallel Line 14", sequence: [6,2,1,7,3,8], categories: ["RB","RS","GS","GB","GS","RB"] },
+            { name: "Parallel Line 15", sequence: [7,1,6,2,8,9,4], categories: ["GB","GS","RB","RS","RB","GB","RS"] },
+            { name: "Diagonal Line 1", sequence: [7,2], categories: ["GB","RS"] },
+            { name: "Diagonal Line 2", sequence: [6,1,8], categories: ["RB","GS","RB"] },
+            { name: "Diagonal Line 3", sequence: [1,6,7,2], categories: ["GS","RB","GB","RS"] },
+            { name: "Diagonal Line 4", sequence: [2,7,6,1,8], categories: ["RS","GB","RB","GS","RB"] },
+            { name: "Diagonal Line 5", sequence: [7,1,2,9], categories: ["GB","GS","RS","GB"] },
+            { name: "Diagonal Line 6", sequence: [6,1,8,2,7], categories: ["RB","GS","RB","RS","GB"] },
+            { name: "Cyclic Phase 1", sequence: [7,2], categories: ["GB","RS"] },
+            { name: "Cyclic Phase 2", sequence: [6,1,8], categories: ["RB","GS","RB"] },
+            { name: "Cyclic Phase 3", sequence: [7,1,2], categories: ["GB","GS","RS"] },
+            { name: "Cyclic Phase 4", sequence: [2,7,6], categories: ["RS","GB","RB"] },
+            { name: "Cyclic Expansion 1", sequence: [7,2,9,4], categories: ["GB","RS","GB","RS"] },
+            { name: "Cyclic Expansion 2", sequence: [6,8,1], categories: ["RB","RB","GS"] },
+            { name: "Cyclic Expansion 3", sequence: [1,3,6,7], categories: ["GS","GS","RB","GB"] },
+            { name: "Cyclic Expansion 4", sequence: [6,1,2,7], categories: ["RB","GS","RS","GB"] },
+            { name: "Cyclic Contraction 1", sequence: [7,2,1,6], categories: ["GB","RS","GS","RB"] },
+            { name: "Cyclic Contraction 2", sequence: [6,7,2], categories: ["RB","GB","RS"] },
+            { name: "Cyclic Contraction 3", sequence: [1,6,7,2,3], categories: ["GS","RB","GB","RS","GS"] },
+            { name: "Cyclic Contraction 4", sequence: [2,7,6,1], categories: ["RS","GB","RB","GS"] },
+            { name: "Cyclic Reset 1", sequence: [7,6,1], categories: ["GB","RB","GS"] },
+            { name: "Cyclic Reset 2", sequence: [2,7,4,1], categories: ["RS","GB","RS","GS"] },
+            { name: "Cyclic Reset 3", sequence: [7,2,1,6,9], categories: ["GB","RS","GS","RB","GB"] },
+            { name: "Opposite Line 1", sequence: [7,2], categories: ["GB","RS"] },
+            { name: "Opposite Line 2", sequence: [2,7,6], categories: ["RS","GB","RB"] },
+            { name: "Opposite Line 3", sequence: [1,7,2,6], categories: ["GS","GB","RS","RB"] },
+            { name: "Opposite Line 4", sequence: [6,2,1,7], categories: ["RB","RS","GS","GB"] },
+            { name: "Opposite Line 5", sequence: [7,1,2], categories: ["GB","GS","RS"] },
+            { name: "Cleaned Sequence 1", sequence: [7,9,2], categories: ["GB","GB","RS"] },
+            { name: "Cleaned Sequence 2", sequence: [2,7,1,6], categories: ["RS","GB","GS","RB"] },
+            { name: "Cleaned Sequence 3", sequence: [7,2,6,1,8], categories: ["GB","RS","RB","GS","RB"] },
+            { name: "Cleaned Sequence 4", sequence: [2,4,7,9,2], categories: ["RS","RS","GB","GB","RS"] },
+            { name: "Cleaned Sequence 5", sequence: [1,7,6,1,3], categories: ["GS","GB","RB","GS","GS"] },
+            { name: "Cleaned Sequence 6", sequence: [6,7,8,2,1,9], categories: ["RB","GB","RB","RS","GS","GB"] },
+            { name: "Cleaned Sequence 7", sequence: [7,9,1,6,8,2], categories: ["GB","GB","GS","RB","RB","RS"] },
+            { name: "Cleaned Sequence 8", sequence: [2,1,7,6,4,9], categories: ["RS","GS","GB","RB","RS","GB"] },
+            { name: "Cleaned Sequence 9", sequence: [1,6,7,9,2,4], categories: ["GS","RB","GB","GB","RS","RS"] },
+            { name: "Cleaned Sequence 10", sequence: [6,2,7,1,9,4], categories: ["RB","RS","GB","GS","GB","RS"] },
+            
+            // Nature Patterns (251-300)
+            { name: "Waterfall", sequence: [7,9,7,9,2,4,2,4], categories: ["GB","GB","GB","GB","RS","RS","RS","RS"] },
+            { name: "Geyser", sequence: [2,4,2,4,7,9,7,9], categories: ["RS","RS","RS","RS","GB","GB","GB","GB"] },
+            { name: "Hot Spring", sequence: [7,2,9,7,4,9,2,7], categories: ["GB","RS","GB","GB","RS","GB","RS","GB"] },
+            { name: "Ice Berg", sequence: [2,7,4,2,9,4,7,2], categories: ["RS","GB","RS","RS","GB","RS","GB","RS"] },
+            { name: "Glacier", sequence: [7,9,2,4,2,7,9,7], categories: ["GB","GB","RS","RS","RS","GB","GB","GB"] },
+            { name: "Tundra", sequence: [2,4,7,9,7,2,4,2], categories: ["RS","RS","GB","GB","GB","RS","RS","RS"] },
+            { name: "Desert", sequence: [7,2,4,2,4,7,9,7], categories: ["GB","RS","RS","RS","RS","GB","GB","GB"] },
+            { name: "Oasis", sequence: [2,7,9,7,9,2,4,2], categories: ["RS","GB","GB","GB","GB","RS","RS","RS"] },
+            { name: "Jungle", sequence: [7,9,2,7,9,4,7,2], categories: ["GB","GB","RS","GB","GB","RS","GB","RS"] },
+            { name: "Forest", sequence: [2,4,7,2,4,9,2,7], categories: ["RS","RS","GB","RS","RS","GB","RS","GB"] },
+            { name: "Meadow", sequence: [7,2,9,4,7,2,9,7], categories: ["GB","RS","GB","RS","GB","RS","GB","GB"] },
+            { name: "Prairie", sequence: [2,7,4,9,2,7,4,2], categories: ["RS","GB","RS","GB","RS","GB","RS","RS"] },
+            { name: "Savanna", sequence: [7,9,7,2,4,2,9,4], categories: ["GB","GB","GB","RS","RS","RS","GB","RS"] },
+            { name: "Steppe", sequence: [2,4,2,7,9,7,4,9], categories: ["RS","RS","RS","GB","GB","GB","RS","GB"] },
+            { name: "Canyon", sequence: [7,2,4,9,2,7,9,4], categories: ["GB","RS","RS","GB","RS","GB","GB","RS"] },
+            { name: "Cliff Edge", sequence: [2,7,9,4,7,2,4,9], categories: ["RS","GB","GB","RS","GB","RS","RS","GB"] },
+            { name: "River Bend", sequence: [7,2,9,7,4,2,9], categories: ["GB","RS","GB","GB","RS","RS","GB"] },
+            { name: "Lake Shore", sequence: [2,7,4,2,7,9,4], categories: ["RS","GB","RS","RS","GB","GB","RS"] },
+            { name: "Coral Reef", sequence: [7,2,9,4,2,7,9], categories: ["GB","RS","GB","RS","RS","GB","GB"] },
+            { name: "Deep Sea", sequence: [2,7,4,9,7,2,4], categories: ["RS","GB","RS","GB","GB","RS","RS"] },
+            { name: "Trench", sequence: [7,9,7,2,4,2,4], categories: ["GB","GB","GB","RS","RS","RS","RS"] },
+            { name: "Abyss", sequence: [2,4,2,7,9,7,9], categories: ["RS","RS","RS","GB","GB","GB","GB"] },
+            { name: "Sky High", sequence: [7,9,7,9,2,7,4], categories: ["GB","GB","GB","GB","RS","GB","RS"] },
+            { name: "Cloud Nine", sequence: [2,4,2,4,7,2,9], categories: ["RS","RS","RS","RS","GB","RS","GB"] },
+            { name: "Cold Front", sequence: [7,2,4,9,7,2,9,4], categories: ["GB","RS","RS","GB","GB","RS","GB","RS"] },
+            { name: "Warm Front", sequence: [2,7,9,4,2,7,4,9], categories: ["RS","GB","GB","RS","RS","GB","RS","GB"] },
+            { name: "Heat Wave", sequence: [2,4,7,2,9,7,4,9], categories: ["RS","RS","GB","RS","GB","GB","RS","GB"] },
+            { name: "Sound Wave", sequence: [7,2,9,7,9,2,4,7], categories: ["GB","RS","GB","GB","GB","RS","RS","GB"] },
+            { name: "Ion Engine", sequence: [7,2,4,9,7,9,2,4], categories: ["GB","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Plasma Core", sequence: [2,7,9,4,2,4,7,9], categories: ["RS","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Fusion Reactor", sequence: [7,9,2,7,4,7,2,9], categories: ["GB","GB","RS","GB","RS","GB","RS","GB"] },
+            { name: "Fission Split", sequence: [2,4,7,2,9,4,7,2], categories: ["RS","RS","GB","RS","GB","RS","GB","RS"] },
+            { name: "Nuclear Core", sequence: [7,2,9,7,4,2,9,7], categories: ["GB","RS","GB","GB","RS","RS","GB","GB"] },
+            { name: "Atomic Bond", sequence: [2,7,4,2,9,7,4,2], categories: ["RS","GB","RS","RS","GB","GB","RS","RS"] },
+            { name: "Electron Flow", sequence: [7,9,7,2,4,7,2,9], categories: ["GB","GB","GB","RS","RS","GB","RS","GB"] },
+            { name: "Proton Beam", sequence: [2,4,2,7,9,2,7,4], categories: ["RS","RS","RS","GB","GB","RS","GB","RS"] },
+            { name: "Neutron Flux", sequence: [7,2,4,2,9,7,9,7], categories: ["GB","RS","RS","RS","GB","GB","GB","GB"] },
+            { name: "Photon Wave", sequence: [2,7,9,7,4,2,4,2], categories: ["RS","GB","GB","GB","RS","RS","RS","RS"] },
+            { name: "Gamma Ray", sequence: [7,9,2,4,7,2,4,9], categories: ["GB","GB","RS","RS","GB","RS","RS","GB"] },
+            { name: "X Ray", sequence: [2,4,7,9,2,7,9,4], categories: ["RS","RS","GB","GB","RS","GB","GB","RS"] },
+            { name: "Ultra Violet", sequence: [7,2,9,4,7,9,2,4], categories: ["GB","RS","GB","RS","GB","GB","RS","RS"] },
+            { name: "Infra Red", sequence: [2,7,4,9,2,4,7,9], categories: ["RS","GB","RS","GB","RS","RS","GB","GB"] },
+            { name: "Radio Wave", sequence: [7,9,7,9,2,4,2,7], categories: ["GB","GB","GB","GB","RS","RS","RS","GB"] },
+            { name: "Micro Wave", sequence: [2,4,2,4,7,9,7,2], categories: ["RS","RS","RS","RS","GB","GB","GB","RS"] },
+            { name: "Constellation", sequence: [7,2,9,7,9,2,4,9], categories: ["GB","RS","GB","GB","GB","RS","RS","GB"] },
+            { name: "Star Cluster", sequence: [2,7,4,2,4,7,9,4], categories: ["RS","GB","RS","RS","RS","GB","GB","RS"] },
+            { name: "Milky Way", sequence: [7,9,2,4,7,2,9,7], categories: ["GB","GB","RS","RS","GB","RS","GB","GB"] },
+            { name: "Andromeda", sequence: [2,4,7,9,2,7,4,2], categories: ["RS","RS","GB","GB","RS","GB","RS","RS"] },
+            { name: "Orion Belt", sequence: [7,2,4,9,7,9,2], categories: ["GB","RS","RS","GB","GB","GB","RS"] },
+            { name: "Big Dipper", sequence: [2,7,9,4,2,4,7], categories: ["RS","GB","GB","RS","RS","RS","GB"] },
+            
+            // Star & Element Patterns (301-350)
+            { name: "Little Dipper", sequence: [7,9,2,7,4,7,2], categories: ["GB","GB","RS","GB","RS","GB","RS"] },
+            { name: "Polaris", sequence: [2,4,7,2,9,2,7], categories: ["RS","RS","GB","RS","GB","RS","GB"] },
+            { name: "Sirius", sequence: [7,2,9,7,4,2,9,4], categories: ["GB","RS","GB","GB","RS","RS","GB","RS"] },
+            { name: "Vega", sequence: [2,7,4,2,9,7,4,9], categories: ["RS","GB","RS","RS","GB","GB","RS","GB"] },
+            { name: "Rigel", sequence: [7,9,7,2,4,7,9,2], categories: ["GB","GB","GB","RS","RS","GB","GB","RS"] },
+            { name: "Betelgeuse", sequence: [2,4,2,7,9,2,4,7], categories: ["RS","RS","RS","GB","GB","RS","RS","GB"] },
+            { name: "Capella", sequence: [7,2,9,4,7,9,7,2], categories: ["GB","RS","GB","RS","GB","GB","GB","RS"] },
+            { name: "Aldebaran", sequence: [2,7,4,9,2,4,2,7], categories: ["RS","GB","RS","GB","RS","RS","RS","GB"] },
+            { name: "Venus Love", sequence: [7,9,2,7,9,4,2,4], categories: ["GB","GB","RS","GB","GB","RS","RS","RS"] },
+            { name: "Mars War", sequence: [2,4,7,2,4,9,7,9], categories: ["RS","RS","GB","RS","RS","GB","GB","GB"] },
+            { name: "Jupiter King", sequence: [7,2,4,2,9,7,9,4], categories: ["GB","RS","RS","RS","GB","GB","GB","RS"] },
+            { name: "Saturn Ring", sequence: [2,7,9,7,4,2,4,9], categories: ["RS","GB","GB","GB","RS","RS","RS","GB"] },
+            { name: "Uranus Ice", sequence: [7,9,7,2,9,4,2,7], categories: ["GB","GB","GB","RS","GB","RS","RS","GB"] },
+            { name: "Neptune Blue", sequence: [2,4,2,7,4,9,7,2], categories: ["RS","RS","RS","GB","RS","GB","GB","RS"] },
+            { name: "Pluto Dark", sequence: [7,2,9,7,4,2,4,2], categories: ["GB","RS","GB","GB","RS","RS","RS","RS"] },
+            { name: "Moon Bright", sequence: [2,7,4,2,9,7,9,7], categories: ["RS","GB","RS","RS","GB","GB","GB","GB"] },
+            { name: "Sun Fire", sequence: [7,9,2,4,2,7,9,4], categories: ["GB","GB","RS","RS","RS","GB","GB","RS"] },
+            { name: "Earth Green", sequence: [2,4,7,9,7,2,4,9], categories: ["RS","RS","GB","GB","GB","RS","RS","GB"] },
+            { name: "Fire Element", sequence: [7,2,4,9,7,9,2,4], categories: ["GB","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Water Element", sequence: [2,7,9,4,2,4,7,9], categories: ["RS","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Air Element", sequence: [7,9,7,9,2,4,7,9], categories: ["GB","GB","GB","GB","RS","RS","GB","GB"] },
+            { name: "Earth Element", sequence: [2,4,2,4,7,9,2,4], categories: ["RS","RS","RS","RS","GB","GB","RS","RS"] },
+            { name: "Ether Spirit", sequence: [7,2,9,4,7,2,9,7], categories: ["GB","RS","GB","RS","GB","RS","GB","GB"] },
+            { name: "Metal Force", sequence: [2,7,4,9,2,7,4,2], categories: ["RS","GB","RS","GB","RS","GB","RS","RS"] },
+            { name: "Wood Growth", sequence: [7,9,2,7,4,7,9,2], categories: ["GB","GB","RS","GB","RS","GB","GB","RS"] },
+            { name: "Lightning Flash", sequence: [2,4,7,2,9,4,2,7], categories: ["RS","RS","GB","RS","GB","RS","RS","GB"] },
+            { name: "Thunder Bolt", sequence: [7,2,4,2,4,9,2,7], categories: ["GB","RS","RS","RS","RS","GB","RS","GB"] },
+            { name: "Crystal Clear", sequence: [7,2,4,2,9,4,7,2], categories: ["GB","RS","RS","RS","GB","RS","GB","RS"] },
+            { name: "Diamond Cut", sequence: [2,7,9,7,4,9,2,7], categories: ["RS","GB","GB","GB","RS","GB","RS","GB"] },
+            { name: "Emerald Shine", sequence: [7,9,2,7,4,2,9,7], categories: ["GB","GB","RS","GB","RS","RS","GB","GB"] },
+            { name: "Ruby Glow", sequence: [2,4,7,2,9,7,4,2], categories: ["RS","RS","GB","RS","GB","GB","RS","RS"] },
+            { name: "Sapphire Blue", sequence: [7,2,9,7,9,4,2,9], categories: ["GB","RS","GB","GB","GB","RS","RS","GB"] },
+            { name: "Pearl White", sequence: [2,7,4,2,4,9,7,4], categories: ["RS","GB","RS","RS","RS","GB","GB","RS"] },
+            { name: "Gold Rush", sequence: [7,9,7,2,4,2,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Silver Lining", sequence: [2,4,2,7,9,7,4,2], categories: ["RS","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Bronze Medal", sequence: [7,2,9,4,7,2,4,9], categories: ["GB","RS","GB","RS","GB","RS","RS","GB"] },
+            { name: "Platinum Edge", sequence: [2,7,4,9,2,7,9,4], categories: ["RS","GB","RS","GB","RS","GB","GB","RS"] },
+            { name: "Iron Will", sequence: [7,9,2,4,7,9,2,7], categories: ["GB","GB","RS","RS","GB","GB","RS","GB"] },
+            { name: "Steel Resolve", sequence: [2,4,7,9,2,4,7,2], categories: ["RS","RS","GB","GB","RS","RS","GB","RS"] },
+            { name: "Titanium", sequence: [7,2,4,9,7,2,4,2], categories: ["GB","RS","RS","GB","GB","RS","RS","RS"] },
+            { name: "Copper Flow", sequence: [2,7,9,4,2,7,9,7], categories: ["RS","GB","GB","RS","RS","GB","GB","GB"] },
+            { name: "Aluminum", sequence: [7,9,7,2,4,2,4,9], categories: ["GB","GB","GB","RS","RS","RS","RS","GB"] },
+            { name: "Zinc", sequence: [2,4,2,7,9,7,9,4], categories: ["RS","RS","RS","GB","GB","GB","GB","RS"] },
+            { name: "Lead Heavy", sequence: [7,2,9,4,2,4,2,9], categories: ["GB","RS","GB","RS","RS","RS","RS","GB"] },
+            { name: "Mercury Quick", sequence: [2,7,4,9,7,9,7,4], categories: ["RS","GB","RS","GB","GB","GB","GB","RS"] },
+            { name: "Dragon Rise", sequence: [7,9,7,2,4,2,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Phoenix Fall", sequence: [2,4,2,7,9,7,4,2], categories: ["RS","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Tiger Leap", sequence: [7,2,9,4,7,2,4,9], categories: ["GB","RS","GB","RS","GB","RS","RS","GB"] },
+            { name: "Lion Roar", sequence: [2,7,4,9,2,7,9,4], categories: ["RS","GB","RS","GB","RS","GB","GB","RS"] },
+            
+            // Animal & Nature Patterns (351-400)
+            { name: "Eagle Soar", sequence: [7,9,2,4,7,9,2,7], categories: ["GB","GB","RS","RS","GB","GB","RS","GB"] },
+            { name: "Shark Attack", sequence: [2,4,7,9,2,4,7,2], categories: ["RS","RS","GB","GB","RS","RS","GB","RS"] },
+            { name: "Wolf Hunt", sequence: [7,2,4,9,7,2,4,2], categories: ["GB","RS","RS","GB","GB","RS","RS","RS"] },
+            { name: "Bear Trap", sequence: [2,7,9,4,2,7,9,7], categories: ["RS","GB","GB","RS","RS","GB","GB","GB"] },
+            { name: "Snake Strike", sequence: [7,9,7,2,4,2,4,9], categories: ["GB","GB","GB","RS","RS","RS","RS","GB"] },
+            { name: "Cobra Dance", sequence: [2,4,2,7,9,7,9,4], categories: ["RS","RS","RS","GB","GB","GB","GB","RS"] },
+            { name: "Scorpion Tail", sequence: [7,2,9,4,2,4,2,9], categories: ["GB","RS","GB","RS","RS","RS","RS","GB"] },
+            { name: "Spider Web", sequence: [2,7,4,9,7,9,7,4], categories: ["RS","GB","RS","GB","GB","GB","GB","RS"] },
+            { name: "Butterfly Wing", sequence: [7,9,2,7,9,4,2,4], categories: ["GB","GB","RS","GB","GB","RS","RS","RS"] },
+            { name: "Bee Swarm", sequence: [2,4,7,2,4,9,7,9], categories: ["RS","RS","GB","RS","RS","GB","GB","GB"] },
+            { name: "Ant March", sequence: [7,2,4,2,9,7,9,4], categories: ["GB","RS","RS","RS","GB","GB","GB","RS"] },
+            { name: "Firefly Glow", sequence: [2,7,9,7,4,2,4,9], categories: ["RS","GB","GB","GB","RS","RS","RS","GB"] },
+            { name: "Dragonfly", sequence: [7,9,7,2,9,4,2,7], categories: ["GB","GB","GB","RS","GB","RS","RS","GB"] },
+            { name: "Grasshopper Jump", sequence: [2,4,2,7,4,9,7,2], categories: ["RS","RS","RS","GB","RS","GB","GB","RS"] },
+            { name: "Mantis Pray", sequence: [7,2,9,7,4,2,4,2], categories: ["GB","RS","GB","GB","RS","RS","RS","RS"] },
+            { name: "Cricket Chirp", sequence: [2,7,4,2,9,7,9,7], categories: ["RS","GB","RS","RS","GB","GB","GB","GB"] },
+            { name: "Lotus Bloom", sequence: [7,9,2,4,2,7,9,4], categories: ["GB","GB","RS","RS","RS","GB","GB","RS"] },
+            { name: "Rose Thorn", sequence: [2,4,7,9,7,2,4,9], categories: ["RS","RS","GB","GB","GB","RS","RS","GB"] },
+            { name: "Bamboo Grow", sequence: [7,2,4,9,7,9,2,4], categories: ["GB","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Willow Wave", sequence: [2,7,9,4,2,4,7,9], categories: ["RS","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Oak Strong", sequence: [7,9,7,9,2,4,7,9], categories: ["GB","GB","GB","GB","RS","RS","GB","GB"] },
+            { name: "Pine Stand", sequence: [2,4,2,4,7,9,2,4], categories: ["RS","RS","RS","RS","GB","GB","RS","RS"] },
+            { name: "Cherry Blossom", sequence: [7,2,9,4,7,2,9,7], categories: ["GB","RS","GB","RS","GB","RS","GB","GB"] },
+            { name: "Maple Leaf", sequence: [2,7,4,9,2,7,4,2], categories: ["RS","GB","RS","GB","RS","GB","RS","RS"] },
+            { name: "Birch Bark", sequence: [7,9,2,7,4,7,9,2], categories: ["GB","GB","RS","GB","RS","GB","GB","RS"] },
+            { name: "Cedar Root", sequence: [2,4,7,2,9,4,2,7], categories: ["RS","RS","GB","RS","GB","RS","RS","GB"] },
+            { name: "Thunder Clap", sequence: [7,2,4,2,4,9,2,7], categories: ["GB","RS","RS","RS","RS","GB","RS","GB"] },
+            { name: "Lightning Bolt", sequence: [2,7,9,7,9,4,7,2], categories: ["RS","GB","GB","GB","GB","RS","GB","RS"] },
+            { name: "Storm Fury", sequence: [7,9,7,2,4,2,9,7], categories: ["GB","GB","GB","RS","RS","RS","GB","GB"] },
+            { name: "Typhoon Eye", sequence: [2,4,2,7,9,7,4,2], categories: ["RS","RS","RS","GB","GB","GB","RS","RS"] },
+            { name: "Cyclone Spin", sequence: [7,2,9,4,7,2,4,9], categories: ["GB","RS","GB","RS","GB","RS","RS","GB"] },
+            { name: "Tornado Twist", sequence: [2,7,4,9,2,7,9,4], categories: ["RS","GB","RS","GB","RS","GB","GB","RS"] },
+            { name: "Hurricane Wind", sequence: [7,9,2,4,7,9,2,7], categories: ["GB","GB","RS","RS","GB","GB","RS","GB"] },
+            { name: "Blizzard Storm", sequence: [2,4,7,9,2,4,7,2], categories: ["RS","RS","GB","GB","RS","RS","GB","RS"] },
+            { name: "Avalanche Rush", sequence: [7,2,4,9,7,2,4,2], categories: ["GB","RS","RS","GB","GB","RS","RS","RS"] },
+            { name: "Earthquake Shake", sequence: [2,7,9,4,2,7,9,7], categories: ["RS","GB","GB","RS","RS","GB","GB","GB"] },
+            { name: "Volcano Eruption", sequence: [7,9,7,2,4,2,4,9], categories: ["GB","GB","GB","RS","RS","RS","RS","GB"] },
+            { name: "Tsunami Wave Giant", sequence: [2,4,2,7,9,7,9,4], categories: ["RS","RS","RS","GB","GB","GB","GB","RS"] },
+            { name: "Flood Rise", sequence: [7,2,9,4,2,4,2,9], categories: ["GB","RS","GB","RS","RS","RS","RS","GB"] },
+            { name: "Drought Fall", sequence: [2,7,4,9,7,9,7,4], categories: ["RS","GB","RS","GB","GB","GB","GB","RS"] },
+            { name: "Wildfire Spread", sequence: [7,9,2,7,9,4,2,4], categories: ["GB","GB","RS","GB","GB","RS","RS","RS"] },
+            { name: "Ice Storm", sequence: [2,4,7,2,4,9,7,9], categories: ["RS","RS","GB","RS","RS","GB","GB","GB"] },
+            { name: "Sandstorm Blow", sequence: [7,2,4,2,9,7,9,4], categories: ["GB","RS","RS","RS","GB","GB","GB","RS"] },
+            { name: "Dust Devil", sequence: [2,7,9,7,4,2,4,9], categories: ["RS","GB","GB","GB","RS","RS","RS","GB"] },
+            { name: "Whirlwind", sequence: [7,9,7,2,9,4,2,7], categories: ["GB","GB","GB","RS","GB","RS","RS","GB"] },
+            { name: "Maelstrom", sequence: [2,4,2,7,4,9,7,2], categories: ["RS","RS","RS","GB","RS","GB","GB","RS"] },
+            { name: "Vortex", sequence: [7,2,9,7,4,2,4,2], categories: ["GB","RS","GB","GB","RS","RS","RS","RS"] },
+            { name: "Tempest", sequence: [2,7,4,2,9,7,9,7], categories: ["RS","GB","RS","RS","GB","GB","GB","GB"] },
+            { name: "Final Ultimate", sequence: [2,7,4,9,2,7,4,9], categories: ["RS","GB","RS","GB","RS","GB","RS","GB"] }
         ];
 
         let results = [];
+        let currentFilter = 'all';
+        let allMatchedPatterns = [];
         
         // Category mapping
         function getCategory(num) {
-            if (num === 0) return "RV"; // Red Violet
-            if (num === 5) return "GV"; // Green Violet
-            if (num === 1 || num === 3) return "GS"; // Green Small
-            if (num === 2 || num === 4) return "RS"; // Red Small
-            if (num === 6 || num === 8) return "RB"; // Red Big
-            if (num === 7 || num === 9) return "GB"; // Green Big
+            if (num === 0) return "RV";
+            if (num === 5) return "GV";
+            if (num === 1 || num === 3) return "GS";
+            if (num === 2 || num === 4) return "RS";
+            if (num === 6 || num === 8) return "RB";
+            if (num === 7 || num === 9) return "GB";
             return "";
         }
         
@@ -798,13 +1317,17 @@
             results.push(value);
             input.value = '';
             updateDisplay();
-            analyzePatterns();
+            if (results.length >= 2) {
+                analyzePatterns();
+            }
         }
         
         function quickAdd(num) {
             results.push(num);
             updateDisplay();
-            analyzePatterns();
+            if (results.length >= 2) {
+                analyzePatterns();
+            }
         }
         
         function undoLast() {
@@ -826,9 +1349,10 @@
         }
         
         function hideAnalysis() {
-            document.getElementById('bestPrediction').style.display = 'none';
+            document.getElementById('aiPrediction').style.display = 'none';
+            document.getElementById('trendIndicator').style.display = 'none';
+            document.getElementById('hotColdSection').style.display = 'none';
             document.getElementById('predictionSection').style.display = 'none';
-            document.getElementById('categoryPredictions').style.display = 'none';
             document.getElementById('matchedPatterns').style.display = 'none';
         }
         
@@ -840,7 +1364,7 @@
                 const ball = document.createElement('div');
                 ball.className = `result-ball ball-${num}`;
                 ball.textContent = num;
-                ball.title = `Position ${idx + 1}`;
+                ball.title = `Position ${idx + 1}: ${getCategory(num)}`;
                 grid.appendChild(ball);
             });
             
@@ -867,201 +1391,416 @@
         
         function analyzePatterns() {
             if (results.length < 2) {
-                alert('Add at least 2 results to analyze');
                 return;
             }
             
             const resultCategories = results.map(r => getCategory(r));
-            const matchedPatterns = [];
+            allMatchedPatterns = [];
             
-            // Analyze each pattern
+            // Advanced Pattern Matching Algorithm
             ALL_PATTERNS.forEach((pattern, idx) => {
                 const patternCats = pattern.categories;
                 const patternLen = patternCats.length;
+                const patternSeq = pattern.sequence;
                 
-                // Check different window sizes
-                for (let windowSize = Math.min(2, patternLen); windowSize <= Math.min(resultCategories.length, patternLen); windowSize++) {
+                let bestMatch = { percent: 0, position: 0, windowSize: 0, method: '' };
+                
+                // Method 1: Category Matching (Primary)
+                for (let windowSize = 2; windowSize <= Math.min(resultCategories.length, patternLen); windowSize++) {
                     const recentCats = resultCategories.slice(-windowSize);
                     
-                    // Check if recent results match the beginning of pattern
-                    let matchCount = 0;
-                    for (let i = 0; i < windowSize; i++) {
-                        if (i < patternCats.length && recentCats[i] === patternCats[i]) {
-                            matchCount++;
-                        }
-                    }
-                    
-                    // Also check if recent results match any position in the pattern
-                    let bestPositionMatch = 0;
-                    let bestPosition = 0;
-                    
                     for (let startPos = 0; startPos <= patternLen - windowSize; startPos++) {
-                        let posMatch = 0;
+                        let catMatch = 0;
                         for (let i = 0; i < windowSize; i++) {
                             if (recentCats[i] === patternCats[startPos + i]) {
-                                posMatch++;
+                                catMatch++;
                             }
                         }
-                        if (posMatch > bestPositionMatch) {
-                            bestPositionMatch = posMatch;
-                            bestPosition = startPos;
+                        
+                        const catPercent = (catMatch / windowSize) * 100;
+                        if (catPercent > bestMatch.percent) {
+                            bestMatch = {
+                                percent: catPercent,
+                                position: startPos,
+                                windowSize: windowSize,
+                                matchCount: catMatch,
+                                method: 'category'
+                            };
                         }
                     }
+                }
+                
+                // Method 2: Exact Number Matching (Secondary)
+                for (let windowSize = 2; windowSize <= Math.min(results.length, patternLen); windowSize++) {
+                    const recentNums = results.slice(-windowSize);
                     
-                    const matchPercent = (bestPositionMatch / windowSize) * 100;
-                    
-                    if (matchPercent >= 50 && bestPositionMatch >= 2) {
-                        // Get next predicted category
-                        const nextPosition = bestPosition + windowSize;
-                        let nextCategory = null;
-                        
-                        if (nextPosition < patternLen) {
-                            nextCategory = patternCats[nextPosition];
-                        } else if (patternLen > 0) {
-                            // Pattern repeats
-                            nextCategory = patternCats[nextPosition % patternLen];
+                    for (let startPos = 0; startPos <= patternLen - windowSize; startPos++) {
+                        let numMatch = 0;
+                        for (let i = 0; i < windowSize; i++) {
+                            if (recentNums[i] === patternSeq[startPos + i]) {
+                                numMatch++;
+                            }
                         }
                         
-                        matchedPatterns.push({
-                            name: pattern.name,
-                            index: idx + 1,
-                            matchPercent: matchPercent,
-                            matchCount: bestPositionMatch,
-                            windowSize: windowSize,
-                            nextCategory: nextCategory,
-                            nextNumbers: getCategoryNumbers(nextCategory),
-                            sequence: pattern.sequence
-                        });
+                        const numPercent = (numMatch / windowSize) * 100;
+                        if (numPercent > bestMatch.percent) {
+                            bestMatch = {
+                                percent: numPercent,
+                                position: startPos,
+                                windowSize: windowSize,
+                                matchCount: numMatch,
+                                method: 'exact'
+                            };
+                        }
                     }
+                }
+                
+                // Method 3: Hybrid Matching (Category + Partial Number)
+                for (let windowSize = 2; windowSize <= Math.min(results.length, patternLen); windowSize++) {
+                    const recentCats = resultCategories.slice(-windowSize);
+                    const recentNums = results.slice(-windowSize);
+                    
+                    for (let startPos = 0; startPos <= patternLen - windowSize; startPos++) {
+                        let hybridScore = 0;
+                        for (let i = 0; i < windowSize; i++) {
+                            if (recentCats[i] === patternCats[startPos + i]) {
+                                hybridScore += 0.6;
+                            }
+                            if (recentNums[i] === patternSeq[startPos + i]) {
+                                hybridScore += 0.4;
+                            }
+                        }
+                        
+                        const hybridPercent = (hybridScore / windowSize) * 100;
+                        if (hybridPercent > bestMatch.percent) {
+                            bestMatch = {
+                                percent: hybridPercent,
+                                position: startPos,
+                                windowSize: windowSize,
+                                matchCount: Math.round(hybridScore),
+                                method: 'hybrid'
+                            };
+                        }
+                    }
+                }
+                
+                if (bestMatch.percent >= 50 && bestMatch.windowSize >= 2) {
+                    const nextPosition = bestMatch.position + bestMatch.windowSize;
+                    let nextCategory = null;
+                    let nextNumber = null;
+                    
+                    if (nextPosition < patternLen) {
+                        nextCategory = patternCats[nextPosition];
+                        nextNumber = patternSeq[nextPosition];
+                    } else {
+                        nextCategory = patternCats[nextPosition % patternLen];
+                        nextNumber = patternSeq[nextPosition % patternLen];
+                    }
+                    
+                    allMatchedPatterns.push({
+                        name: pattern.name,
+                        index: idx + 1,
+                        matchPercent: bestMatch.percent,
+                        matchCount: bestMatch.matchCount,
+                        windowSize: bestMatch.windowSize,
+                        method: bestMatch.method,
+                        nextCategory: nextCategory,
+                        nextNumber: nextNumber,
+                        nextNumbers: getCategoryNumbers(nextCategory),
+                        sequence: pattern.sequence,
+                        confidence: calculateConfidence(bestMatch)
+                    });
                 }
             });
             
-            // Remove duplicates keeping highest match
+            // Remove duplicates
             const uniquePatterns = {};
-            matchedPatterns.forEach(p => {
+            allMatchedPatterns.forEach(p => {
                 if (!uniquePatterns[p.name] || uniquePatterns[p.name].matchPercent < p.matchPercent) {
                     uniquePatterns[p.name] = p;
                 }
             });
             
-            const sortedPatterns = Object.values(uniquePatterns)
-                .sort((a, b) => b.matchPercent - a.matchPercent);
+            allMatchedPatterns = Object.values(uniquePatterns)
+                .sort((a, b) => b.confidence - a.confidence || b.matchPercent - a.matchPercent);
             
-            // Calculate number predictions
-            const numberScores = {};
-            for (let i = 0; i <= 9; i++) {
-                numberScores[i] = 0;
-            }
+            // Calculate predictions
+            const numberScores = calculateNumberScores(allMatchedPatterns);
+            const totalScore = Object.values(numberScores).reduce((a, b) => a + b, 0) || 1;
             
-            sortedPatterns.forEach(pattern => {
+            displayAIPrediction(numberScores, totalScore, allMatchedPatterns);
+            displayTrendIndicator();
+            displayHotColdNumbers();
+            displayPredictions(numberScores, totalScore);
+            displayMatchedPatterns();
+        }
+        
+        function calculateConfidence(match) {
+            let confidence = match.percent;
+            
+            // Bonus for exact matches
+            if (match.method === 'exact') confidence += 10;
+            if (match.method === 'hybrid') confidence += 5;
+            
+            // Bonus for longer sequences
+            if (match.windowSize >= 4) confidence += 10;
+            if (match.windowSize >= 6) confidence += 10;
+            
+            // Cap at 100
+            return Math.min(confidence, 100);
+        }
+        
+        function calculateNumberScores(patterns) {
+            const scores = {};
+            for (let i = 0; i <= 9; i++) scores[i] = 0;
+            
+            patterns.forEach((pattern, idx) => {
+                const weight = (pattern.confidence / 100) * (1 - idx * 0.02);
+                
+                if (pattern.nextNumber !== null) {
+                    scores[pattern.nextNumber] += weight * 2;
+                }
+                
                 if (pattern.nextNumbers && pattern.nextNumbers.length > 0) {
-                    const weight = pattern.matchPercent / 100;
                     pattern.nextNumbers.forEach(num => {
-                        numberScores[num] += weight;
+                        scores[num] += weight;
                     });
                 }
             });
             
-            // Calculate total score for percentage
-            let totalScore = Object.values(numberScores).reduce((a, b) => a + b, 0);
-            if (totalScore === 0) totalScore = 1;
+            // Add frequency analysis
+            const frequency = {};
+            for (let i = 0; i <= 9; i++) frequency[i] = 0;
+            results.forEach(num => frequency[num]++);
             
-            // Display results
-            displayPredictions(numberScores, totalScore, sortedPatterns);
+            // Hot number bonus
+            const sortedFreq = Object.entries(frequency).sort((a, b) => b[1] - a[1]);
+            sortedFreq.slice(0, 3).forEach(([num], idx) => {
+                scores[parseInt(num)] += (3 - idx) * 0.5;
+            });
+            
+            return scores;
         }
         
-        function displayPredictions(numberScores, totalScore, matchedPatterns) {
-            // Show sections
-            document.getElementById('bestPrediction').style.display = 'block';
-            document.getElementById('predictionSection').style.display = 'block';
-            document.getElementById('categoryPredictions').style.display = 'grid';
-            document.getElementById('matchedPatterns').style.display = 'block';
+        function displayAIPrediction(numberScores, totalScore, patterns) {
+            document.getElementById('aiPrediction').style.display = 'block';
             
-            // Number predictions
-            const predictionGrid = document.getElementById('predictionGrid');
-            predictionGrid.innerHTML = '';
+            // Calculate overall confidence
+            const avgConfidence = patterns.length > 0 
+                ? patterns.slice(0, 5).reduce((a, b) => a + b.confidence, 0) / Math.min(5, patterns.length)
+                : 0;
             
+            document.getElementById('aiConfidence').textContent = `Confidence: ${avgConfidence.toFixed(1)}% | ${patterns.length} Patterns Matched`;
+            
+            // Top 3 predictions
             const sortedNumbers = Object.entries(numberScores)
                 .sort((a, b) => b[1] - a[1]);
             
-            sortedNumbers.forEach(([num, score]) => {
-                const percent = ((score / totalScore) * 100).toFixed(1);
-                const item = document.createElement('div');
-                item.className = 'prediction-item';
-                
-                let percentClass = 'percent-low';
-                if (percent >= 15) percentClass = 'percent-high';
-                else if (percent >= 8) percentClass = 'percent-medium';
-                
-                item.innerHTML = `
-                    <div class="prediction-number ball-${num}">${num}</div>
-                    <div class="prediction-percent ${percentClass}">${percent}%</div>
-                `;
-                predictionGrid.appendChild(item);
-            });
-            
-            // Best predictions
-            const bestNumbers = document.getElementById('bestNumbers');
-            bestNumbers.innerHTML = '';
+            const mainPrediction = document.getElementById('aiMainPrediction');
+            mainPrediction.innerHTML = '';
             
             const top3 = sortedNumbers.slice(0, 3);
             top3.forEach(([num, score], idx) => {
                 const percent = ((score / totalScore) * 100).toFixed(1);
-                const item = document.createElement('div');
-                item.className = 'best-item';
-                item.innerHTML = `
-                    <div class="best-ball ball-${num}">${num}</div>
-                    <div style="color: #22c55e; font-weight: bold;">${percent}%</div>
-                    <div style="color: #888; font-size: 12px;">#${idx + 1}</div>
+                const card = document.createElement('div');
+                card.className = `ai-number-card rank-${idx + 1}`;
+                card.innerHTML = `
+                    <div class="ai-rank">${idx === 0 ? '🥇 1ST' : idx === 1 ? '🥈 2ND' : '🥉 3RD'}</div>
+                    <div class="ai-big-number ball-${num}">${num}</div>
+                    <div class="ai-percent">${percent}%</div>
                 `;
-                bestNumbers.appendChild(item);
+                mainPrediction.appendChild(card);
             });
             
             // Category predictions
-            let bigScore = numberScores[5] + numberScores[6] + numberScores[7] + numberScores[8] + numberScores[9];
-            let smallScore = numberScores[0] + numberScores[1] + numberScores[2] + numberScores[3] + numberScores[4];
-            let redScore = numberScores[0] + numberScores[2] + numberScores[4] + numberScores[6] + numberScores[8];
-            let greenScore = numberScores[1] + numberScores[3] + numberScores[5] + numberScores[7] + numberScores[9];
+            let bigScore = [5,6,7,8,9].reduce((a, n) => a + numberScores[n], 0);
+            let smallScore = [0,1,2,3,4].reduce((a, n) => a + numberScores[n], 0);
+            let redScore = [0,2,4,6,8].reduce((a, n) => a + numberScores[n], 0);
+            let greenScore = [1,3,5,7,9].reduce((a, n) => a + numberScores[n], 0);
             
-            const sizeTotal = bigScore + smallScore || 1;
-            const colorTotal = redScore + greenScore || 1;
+            const categoryGrid = document.getElementById('aiCategoryGrid');
+            categoryGrid.innerHTML = `
+                <div class="ai-category-card">
+                    <div class="ai-category-label">SIZE</div>
+                    <div class="ai-category-value" style="color: ${bigScore >= smallScore ? '#3b82f6' : '#f59e0b'}">
+                        ${bigScore >= smallScore ? 'BIG' : 'SMALL'}
+                    </div>
+                    <div class="ai-category-percent">${((Math.max(bigScore, smallScore) / (bigScore + smallScore || 1)) * 100).toFixed(1)}%</div>
+                </div>
+                <div class="ai-category-card">
+                    <div class="ai-category-label">COLOR</div>
+                    <div class="ai-category-value" style="color: ${greenScore >= redScore ? '#22c55e' : '#ef4444'}">
+                        ${greenScore >= redScore ? 'GREEN' : 'RED'}
+                    </div>
+                    <div class="ai-category-percent">${((Math.max(greenScore, redScore) / (greenScore + redScore || 1)) * 100).toFixed(1)}%</div>
+                </div>
+                <div class="ai-category-card">
+                    <div class="ai-category-label">ODD/EVEN</div>
+                    <div class="ai-category-value" style="color: ${greenScore >= redScore ? '#a855f7' : '#f59e0b'}">
+                        ${greenScore >= redScore ? 'ODD' : 'EVEN'}
+                    </div>
+                    <div class="ai-category-percent">${((Math.max(greenScore, redScore) / (greenScore + redScore || 1)) * 100).toFixed(1)}%</div>
+                </div>
+                <div class="ai-category-card">
+                    <div class="ai-category-label">PATTERNS</div>
+                    <div class="ai-category-value" style="color: #4ecdc4">${patterns.length}</div>
+                    <div class="ai-category-percent">Matched</div>
+                </div>
+            `;
+        }
+        
+        function displayTrendIndicator() {
+            document.getElementById('trendIndicator').style.display = 'block';
             
-            document.getElementById('sizePrediction').textContent = bigScore >= smallScore ? 'BIG' : 'SMALL';
-            document.getElementById('sizePrediction').style.color = bigScore >= smallScore ? '#22c55e' : '#ef4444';
-            document.getElementById('sizePercent').textContent = `${((Math.max(bigScore, smallScore) / sizeTotal) * 100).toFixed(1)}%`;
+            let big = 0, small = 0, red = 0, green = 0;
+            results.slice(-10).forEach(num => {
+                if (num >= 5) big++; else small++;
+                if (num % 2 === 0) red++; else green++;
+            });
             
-            document.getElementById('colorPrediction').textContent = greenScore >= redScore ? 'GREEN' : 'RED';
-            document.getElementById('colorPrediction').style.color = greenScore >= redScore ? '#22c55e' : '#ef4444';
-            document.getElementById('colorPercent').textContent = `${((Math.max(greenScore, redScore) / colorTotal) * 100).toFixed(1)}%`;
+            const total = results.slice(-10).length || 1;
             
-            // Matched patterns list
-            const patternsList = document.getElementById('patternsList');
-            patternsList.innerHTML = '';
+            document.getElementById('trendBars').innerHTML = `
+                <div class="trend-bar">
+                    <div class="trend-label">GREEN</div>
+                    <div class="trend-progress">
+                        <div class="trend-fill green" style="width: ${(green/total)*100}%">${green}/${total}</div>
+                    </div>
+                </div>
+                <div class="trend-bar">
+                    <div class="trend-label">RED</div>
+                    <div class="trend-progress">
+                        <div class="trend-fill red" style="width: ${(red/total)*100}%">${red}/${total}</div>
+                    </div>
+                </div>
+                <div class="trend-bar">
+                    <div class="trend-label">BIG</div>
+                    <div class="trend-progress">
+                        <div class="trend-fill big" style="width: ${(big/total)*100}%">${big}/${total}</div>
+                    </div>
+                </div>
+                <div class="trend-bar">
+                    <div class="trend-label">SMALL</div>
+                    <div class="trend-progress">
+                        <div class="trend-fill small" style="width: ${(small/total)*100}%">${small}/${total}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function displayHotColdNumbers() {
+            document.getElementById('hotColdSection').style.display = 'flex';
             
-            const topPatterns = matchedPatterns.slice(0, 30);
-            topPatterns.forEach(pattern => {
+            const frequency = {};
+            for (let i = 0; i <= 9; i++) frequency[i] = 0;
+            results.forEach(num => frequency[num]++);
+            
+            const sorted = Object.entries(frequency).sort((a, b) => b[1] - a[1]);
+            
+            const hotNumbers = document.getElementById('hotNumbers');
+            hotNumbers.innerHTML = '';
+            sorted.slice(0, 3).forEach(([num, count]) => {
+                const ball = document.createElement('div');
+                ball.className = `result-ball ball-${num}`;
+                ball.textContent = num;
+                ball.title = `Count: ${count}`;
+                hotNumbers.appendChild(ball);
+            });
+            
+            const coldNumbers = document.getElementById('coldNumbers');
+            coldNumbers.innerHTML = '';
+            sorted.slice(-3).reverse().forEach(([num, count]) => {
+                const ball = document.createElement('div');
+                ball.className = `result-ball ball-${num}`;
+                ball.textContent = num;
+                ball.title = `Count: ${count}`;
+                coldNumbers.appendChild(ball);
+            });
+        }
+        
+        function displayPredictions(numberScores, totalScore) {
+            document.getElementById('predictionSection').style.display = 'block';
+            
+            const grid = document.getElementById('predictionGrid');
+            grid.innerHTML = '';
+            
+            const sorted = Object.entries(numberScores).sort((a, b) => b[1] - a[1]);
+            
+            sorted.forEach(([num, score]) => {
+                const percent = ((score / totalScore) * 100).toFixed(1);
+                let percentClass = 'percent-low';
+                if (percent >= 15) percentClass = 'percent-high';
+                else if (percent >= 8) percentClass = 'percent-medium';
+                
                 const item = document.createElement('div');
+                item.className = 'prediction-item';
+                item.innerHTML = `
+                    <div class="prediction-number ball-${num}">${num}</div>
+                    <div class="prediction-percent ${percentClass}">${percent}%</div>
+                `;
+                grid.appendChild(item);
+            });
+        }
+        
+        function displayMatchedPatterns() {
+            document.getElementById('matchedPatterns').style.display = 'block';
+            document.getElementById('patternsCount').textContent = allMatchedPatterns.length;
+            
+            filterPatterns(currentFilter);
+        }
+        
+        function filterPatterns(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target?.classList?.add('active');
+            
+            let filtered = allMatchedPatterns;
+            
+            if (filter === 'high') {
+                filtered = allMatchedPatterns.filter(p => p.matchPercent >= 80);
+            } else if (filter === 'medium') {
+                filtered = allMatchedPatterns.filter(p => p.matchPercent >= 60 && p.matchPercent < 80);
+            } else if (filter === 'low') {
+                filtered = allMatchedPatterns.filter(p => p.matchPercent >= 50 && p.matchPercent < 60);
+            }
+            
+            const list = document.getElementById('patternsList');
+            list.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">No patterns found for this filter.</div>';
+                return;
+            }
+            
+            filtered.slice(0, 50).forEach(pattern => {
                 let patternClass = 'pattern-low';
                 if (pattern.matchPercent >= 80) patternClass = 'pattern-high';
                 else if (pattern.matchPercent >= 60) patternClass = 'pattern-medium';
                 
+                const item = document.createElement('div');
                 item.className = `pattern-item ${patternClass}`;
                 
-                const nextNumsStr = pattern.nextNumbers && pattern.nextNumbers.length > 0 
-                    ? pattern.nextNumbers.join(', ')
-                    : 'N/A';
+                let nextBallsHtml = '';
+                if (pattern.nextNumbers && pattern.nextNumbers.length > 0) {
+                    nextBallsHtml = pattern.nextNumbers.map(n => 
+                        `<div class="next-ball ball-${n}">${n}</div>`
+                    ).join('');
+                }
                 
                 item.innerHTML = `
-                    <div class="pattern-name">#${pattern.index}. ${pattern.name}</div>
-                    <div class="pattern-match">Match: ${pattern.matchPercent.toFixed(1)}% (${pattern.matchCount}/${pattern.windowSize} positions)</div>
-                    <div class="pattern-next">Next Prediction: ${pattern.nextCategory || 'N/A'} → Numbers: ${nextNumsStr}</div>
+                    <div class="pattern-name">
+                        <span>#${pattern.index}. ${pattern.name}</span>
+                        <span class="pattern-badge">${pattern.confidence.toFixed(0)}% Conf</span>
+                    </div>
+                    <div class="pattern-match">Match: ${pattern.matchPercent.toFixed(1)}% (${pattern.method}) | ${pattern.matchCount}/${pattern.windowSize} positions</div>
+                    <div class="pattern-next">
+                        <span>Next → ${pattern.nextCategory}</span>
+                        <div class="next-balls">${nextBallsHtml}</div>
+                    </div>
                 `;
-                patternsList.appendChild(item);
+                list.appendChild(item);
             });
-            
-            if (topPatterns.length === 0) {
-                patternsList.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">No strong pattern matches found. Add more results.</div>';
-            }
         }
         
         function togglePatterns() {
