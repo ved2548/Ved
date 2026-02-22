@@ -3,1413 +3,1258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 ved Analyzer - 1200 Trends 🔥</title>
+    <title>Big Daddy Color Trading Predictor</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
-            color: #fff;
-            padding: 10px;
+            padding: 15px;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
         h1 {
             text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 5px #4ecdc4); }
-            to { filter: drop-shadow(0 0 20px #a855f7); }
-        }
-        .ai-badge {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .ai-badge span {
-            background: linear-gradient(135deg, #ff6b6b, #a855f7);
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .input-section {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #3a3a5a;
-        }
-        .input-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-        .input-box {
-            width: 80px;
-            height: 50px;
-            font-size: 24px;
-            text-align: center;
-            border: 2px solid #4ecdc4;
-            border-radius: 10px;
-            background: #0a0a1a;
             color: #fff;
-            outline: none;
-        }
-        .input-box:focus {
-            border-color: #ff6b6b;
-            box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
-        }
-        .btn {
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-add { background: linear-gradient(135deg, #4ecdc4, #44a08d); color: #fff; }
-        .btn-add:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(78, 205, 196, 0.5); }
-        .btn-clear { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: #fff; }
-        .btn-clear:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 107, 107, 0.5); }
-        .btn-analyze { background: linear-gradient(135deg, #a855f7, #7c3aed); color: #fff; padding: 15px 40px; font-size: 18px; }
-        .btn-analyze:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(168, 85, 247, 0.5); }
-        .btn-undo { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-        .btn-undo:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
-        .results-display {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            padding: 15px;
             margin-bottom: 20px;
-            border: 1px solid #3a3a5a;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .results-title { font-size: 16px; margin-bottom: 10px; color: #4ecdc4; }
-        .results-grid {
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-section {
+            background: linear-gradient(135deg, #232526, #414345);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .input-section h2 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .numbers-display {
+            background: #1a1a2e;
+            min-height: 60px;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        .result-ball {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            transition: transform 0.3s;
-        }
-        .result-ball:hover { transform: scale(1.2); }
-        .ball-0 { background: linear-gradient(135deg, #9333ea, #7c3aed); }
-        .ball-1 { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .ball-2 { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .ball-3 { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .ball-4 { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .ball-5 { background: linear-gradient(135deg, #9333ea, #7c3aed); }
-        .ball-6 { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .ball-7 { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .ball-8 { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .ball-9 { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .ai-prediction-main {
-            background: linear-gradient(145deg, #0f172a, #1e293b);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 3px solid #a855f7;
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+            border: 2px dashed #667eea;
             position: relative;
-            overflow: hidden;
         }
-        .ai-prediction-main::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        .ai-header { text-align: center; margin-bottom: 20px; }
-        .ai-title {
-            font-size: 22px;
-            background: linear-gradient(90deg, #f59e0b, #ef4444, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        .ai-confidence {
-            display: inline-block;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 14px;
+
+        .number-chip {
+            padding: 8px 15px;
+            border-radius: 20px;
             font-weight: bold;
+            font-size: 1.1em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            animation: popIn 0.3s ease-out;
         }
-        .ai-main-prediction {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .ai-number-card {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            border: 2px solid;
-            min-width: 120px;
-            transition: transform 0.3s;
+
+        .number-chip:hover {
+            transform: scale(1.1);
         }
-        .ai-number-card:hover { transform: translateY(-5px); }
-        .ai-number-card.rank-1 { border-color: #fbbf24; box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
-        .ai-number-card.rank-2 { border-color: #94a3b8; box-shadow: 0 0 15px rgba(148, 163, 184, 0.5); }
-        .ai-number-card.rank-3 { border-color: #f97316; box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
-        .ai-rank { font-size: 12px; color: #888; margin-bottom: 5px; }
-        .ai-big-number {
-            width: 80px;
-            height: 80px;
+
+        .number-chip::after {
+            content: '\00d7';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
-            margin: 0 auto 10px;
-            color: #fff;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
-        .ai-percent { font-size: 24px; font-weight: bold; color: #22c55e; }
-        .ai-category-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+
+        .number-chip:hover::after {
+            opacity: 1;
         }
-        .ai-category-card {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 12px;
-            padding: 15px;
+
+        .placeholder-text {
+            color: #666;
+            font-style: italic;
+        }
+
+        .auto-remove-notice {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
             text-align: center;
-            border: 1px solid #3a3a5a;
+            margin-bottom: 10px;
+            display: none;
         }
-        .ai-category-label { font-size: 12px; color: #888; margin-bottom: 8px; }
-        .ai-category-value { font-size: 20px; font-weight: bold; }
-        .ai-category-percent { font-size: 14px; margin-top: 5px; }
-        .prediction-section {
-            background: linear-gradient(145deg, #1a1a2e, #252540);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid #a855f7;
+
+        .auto-remove-notice.show {
+            display: block;
+            animation: shake 0.5s ease-in-out;
         }
-        .prediction-title { font-size: 20px; color: #a855f7; margin-bottom: 15px; text-align: center; }
-        .prediction-grid {
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .number-buttons {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 10px;
-            margin-bottom: 20px;
-        }
-        .prediction-item {
-            background: linear-gradient(145deg, #2a2a3e, #3a3a4e);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #4a4a6a;
-            transition: all 0.3s;
-        }
-        .prediction-item:hover { transform: scale(1.05); border-color: #a855f7; }
-        .prediction-number {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .prediction-percent { font-size: 18px; font-weight: bold; }
-        .percent-high { color: #22c55e; }
-        .percent-medium { color: #f59e0b; }
-        .percent-low { color: #ef4444; }
-        .stats-section {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .stat-box {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-        }
-        .stat-value { font-size: 24px; font-weight: bold; color: #4ecdc4; }
-        .stat-label { font-size: 12px; color: #888; margin-top: 5px; }
-        .quick-add {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 5px;
-            margin-top: 15px;
-        }
-        .quick-btn {
-            width: 100%;
-            height: 45px;
-            border-radius: 10px;
-            border: none;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #fff;
-            transition: all 0.3s;
-        }
-        .quick-btn:hover { transform: scale(1.1); }
-        .matched-patterns {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid #3a3a5a;
-            margin-bottom: 20px;
-        }
-        .patterns-title {
-            font-size: 18px;
-            color: #f59e0b;
             margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
-        .patterns-count {
-            background: #f59e0b;
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+
+        .num-btn {
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .patterns-list { max-height: 400px; overflow-y: auto; }
-        .pattern-item {
-            background: linear-gradient(145deg, #252535, #353545);
-            border-radius: 10px;
+
+        .num-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .num-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        .num-btn.red { background: linear-gradient(135deg, #ff4444, #cc0000); }
+        .num-btn.green { background: linear-gradient(135deg, #00c853, #009624); }
+        .num-btn.red-violet { background: linear-gradient(135deg, #ff4444, #8844ff); }
+        .num-btn.green-violet { background: linear-gradient(135deg, #00c853, #8844ff); }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
             padding: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid;
-            transition: all 0.3s;
-        }
-        .pattern-item:hover { transform: translateX(5px); }
-        .pattern-high { border-color: #22c55e; }
-        .pattern-medium { border-color: #f59e0b; }
-        .pattern-low { border-color: #ef4444; }
-        .pattern-name {
+            font-size: 1em;
             font-weight: bold;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .pattern-badge {
-            font-size: 10px;
-            padding: 3px 8px;
+            border: none;
             border-radius: 10px;
-            background: #22c55e;
-            color: #000;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
         }
-        .pattern-match { font-size: 14px; color: #888; }
-        .pattern-next {
-            font-size: 14px;
-            color: #4ecdc4;
-            margin-top: 5px;
+
+        .action-btn.clear { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .action-btn.undo { background: linear-gradient(135deg, #ffa726, #fb8c00); }
+        .action-btn.random { background: linear-gradient(135deg, #26c6da, #00acc1); }
+
+        .count-display {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .count-display span {
+            color: #f093fb;
+            font-weight: bold;
+        }
+
+        .prediction-result {
+            background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            color: white;
+            display: none;
+            border: 2px solid #f093fb;
+        }
+
+        .prediction-result.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .prediction-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .prediction-header h2 {
+            color: #f093fb;
+            font-size: 1.5em;
+        }
+
+        .main-prediction {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-prediction h3 {
+            font-size: 1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .prediction-number {
+            font-size: 4em;
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .prediction-color {
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .prediction-color.red { background: #ff4444; }
+        .prediction-color.green { background: #00c853; }
+        .prediction-color.violet { background: #8844ff; }
+        .prediction-color.red-violet { background: linear-gradient(135deg, #ff4444, #8844ff); }
+        .prediction-color.green-violet { background: linear-gradient(135deg, #00c853, #8844ff); }
+
+        .big-small-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            margin-left: 10px;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        .stat-box .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #f093fb;
+        }
+
+        .stat-box .value.red-text { color: #ff4444; }
+        .stat-box .value.green-text { color: #00c853; }
+        .stat-box .value.violet-text { color: #8844ff; }
+
+        /* Meters */
+        .meters-section {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .meters-section h4 {
+            color: #f093fb;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        .meter-row {
             display: flex;
             align-items: center;
+            margin-bottom: 10px;
             gap: 10px;
         }
-        .next-balls { display: flex; gap: 5px; }
-        .next-ball {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+
+        .meter-label {
+            min-width: 75px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .meter-label.red-label { color: #ff4444; }
+        .meter-label.green-label { color: #00c853; }
+        .meter-label.violet-label { color: #8844ff; }
+        .meter-label.big-label { color: #ffa726; }
+        .meter-label.small-label { color: #26c6da; }
+
+        .meter-bar-bg {
+            flex: 1;
+            height: 24px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .meter-bar-fill {
+            height: 100%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
             font-weight: bold;
+            font-size: 0.8em;
+            color: white;
+            transition: width 1s ease-out;
+            min-width: 30px;
+        }
+
+        .meter-bar-fill.red-bar { background: linear-gradient(90deg, #ff4444, #cc0000); }
+        .meter-bar-fill.green-bar { background: linear-gradient(90deg, #00c853, #009624); }
+        .meter-bar-fill.violet-bar { background: linear-gradient(90deg, #8844ff, #6600cc); }
+        .meter-bar-fill.big-bar { background: linear-gradient(90deg, #ffa726, #fb8c00); }
+        .meter-bar-fill.small-bar { background: linear-gradient(90deg, #26c6da, #00acc1); }
+
+        .meter-pct {
+            min-width: 45px;
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.95em;
             color: #fff;
         }
-        .hot-cold-section {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .hot-cold-box {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
+
+        /* Streaks */
+        .streak-section {
+            background: rgba(255,255,255,0.1);
             padding: 15px;
-            border: 1px solid #3a3a5a;
-        }
-        .hot-cold-title {
-            font-size: 16px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .hot-title { color: #ef4444; }
-        .cold-title { color: #3b82f6; }
-        .hot-cold-numbers { display: flex; gap: 10px; flex-wrap: wrap; }
-        .trend-indicator {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #3a3a5a;
-        }
-        .trend-title { font-size: 18px; color: #4ecdc4; margin-bottom: 15px; text-align: center; }
-        .trend-bars { display: flex; flex-direction: column; gap: 15px; }
-        .trend-bar { display: flex; align-items: center; gap: 15px; }
-        .trend-label { width: 80px; font-size: 14px; color: #888; }
-        .trend-progress {
-            flex: 1;
-            height: 25px;
-            background: #1a1a2e;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-        .trend-fill {
-            height: 100%;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            transition: width 0.5s ease;
-        }
-        .trend-fill.green { background: linear-gradient(90deg, #22c55e, #16a34a); }
-        .trend-fill.red { background: linear-gradient(90deg, #ef4444, #dc2626); }
-        .trend-fill.big { background: linear-gradient(90deg, #3b82f6, #2563eb); }
-        .trend-fill.small { background: linear-gradient(90deg, #f59e0b, #d97706); }
-        .all-patterns-section {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid #3a3a5a;
-            margin-top: 20px;
-        }
-        .all-patterns-title {
-            font-size: 18px;
-            color: #a855f7;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .toggle-btn {
-            background: linear-gradient(135deg, #3a3a5a, #4a4a6a);
-            border: none;
-            color: #fff;
-            padding: 8px 20px;
             border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-bottom: 15px;
         }
-        .toggle-btn:hover { background: linear-gradient(135deg, #a855f7, #7c3aed); }
-        .patterns-grid {
-            display: none;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 10px;
-            max-height: 500px;
-            overflow-y: auto;
+
+        .streak-section h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
         }
-        .patterns-grid.show { display: grid; }
-        .mini-pattern {
-            background: #252535;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 12px;
-            transition: all 0.3s;
+
+        .streak-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .mini-pattern:hover { background: #353545; transform: translateY(-2px); }
-        .mini-pattern-name { color: #4ecdc4; font-weight: bold; margin-bottom: 5px; }
-        .mini-pattern-seq { color: #888; font-size: 11px; }
-        .filter-section {
+
+        .streak-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .streak-badge.hot { background: linear-gradient(135deg, #ff4444, #ff6b6b); }
+        .streak-badge.warm { background: linear-gradient(135deg, #ffa726, #fb8c00); }
+        .streak-badge.cool { background: linear-gradient(135deg, #26c6da, #00acc1); }
+        .streak-badge.neutral { background: rgba(255,255,255,0.15); }
+
+        .alternatives {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .alternatives h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
+        }
+
+        .alt-numbers {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        .filter-btn {
-            padding: 8px 15px;
-            border: none;
+
+        .alt-num {
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .confidence-bar {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .confidence-bar h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
+        }
+
+        .bar-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: width 1s ease-out;
+        }
+
+        .analysis-section {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .analysis-section h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
+        }
+
+        .analysis-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
             border-radius: 8px;
+            border-left: 3px solid #667eea;
+            font-size: 0.9em;
+            color: #ddd;
+        }
+
+        .analysis-item.highlight {
+            border-left-color: #f5576c;
+            background: rgba(245, 87, 108, 0.1);
+        }
+
+        /* Share / Copy */
+        .share-section {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .share-section h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
+        }
+
+        .share-text-box {
+            background: #0d0d1a;
+            color: #ddd;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 12px;
-            background: #3a3a5a;
-            color: #fff;
+            background: linear-gradient(135deg, #26c6da, #00acc1);
+            color: white;
             transition: all 0.3s;
         }
-        .filter-btn:hover, .filter-btn.active { background: linear-gradient(135deg, #a855f7, #7c3aed); }
-        .search-box {
-            padding: 10px 15px;
-            border: 2px solid #3a3a5a;
-            border-radius: 8px;
-            background: #1a1a2e;
-            color: #fff;
-            width: 200px;
-            outline: none;
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(38, 198, 218, 0.4);
         }
-        .search-box:focus { border-color: #a855f7; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1a2e; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #4a4a6a, #a855f7); border-radius: 4px; }
-        @media (max-width: 768px) {
-            .prediction-grid { grid-template-columns: repeat(5, 1fr); }
-            .ai-category-grid { grid-template-columns: repeat(2, 1fr); }
-            .stats-section { grid-template-columns: repeat(2, 1fr); }
-            .ai-main-prediction { flex-direction: column; align-items: center; }
-            .quick-add { grid-template-columns: repeat(5, 1fr); }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #4CAF50, #388E3C);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #4CAF50, #388E3C);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1em;
+            z-index: 9999;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+            transition: transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Min numbers hint */
+        .min-hint {
+            text-align: center;
+            color: #f5576c;
+            font-size: 0.85em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .min-hint.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔥 VED ANALYZER - 1200 TRENDS 🔥</h1>
-        
-        <div class="ai-badge">
-            <span>🤖 VED ULTRA  - 1200 Patterns + Advanced Detection</span>
-        </div>
-        
+        <h1>🎰 Big Daddy Color Predictor</h1>
+
         <div class="input-section">
-            <div class="input-row">
-                <input type="number" class="input-box" id="resultInput" min="0" max="9" placeholder="0-9">
-                <button class="btn btn-add" onclick="addResult()">➕ ADD</button>
-                <button class="btn btn-undo" onclick="undoLast()">↩️ UNDO</button>
-                <button class="btn btn-clear" onclick="clearResults()">🗑️ CLEAR</button>
-                <button class="btn btn-analyze" onclick="analyzePatterns()">🔍 ANALYZE</button>
+            <h2>📝 Recent Results डालें</h2>
+
+            <div class="count-display">
+                Numbers: <span id="countDisplay">0</span>/15
+                <span style="color: #26c6da; font-size: 0.85em;">(पुराने → नए)</span>
             </div>
-            
-            <div class="quick-add">
-                <button class="quick-btn ball-0" onclick="quickAdd(0)">0</button>
-                <button class="quick-btn ball-1" onclick="quickAdd(1)">1</button>
-                <button class="quick-btn ball-2" onclick="quickAdd(2)">2</button>
-                <button class="quick-btn ball-3" onclick="quickAdd(3)">3</button>
-                <button class="quick-btn ball-4" onclick="quickAdd(4)">4</button>
-                <button class="quick-btn ball-5" onclick="quickAdd(5)">5</button>
-                <button class="quick-btn ball-6" onclick="quickAdd(6)">6</button>
-                <button class="quick-btn ball-7" onclick="quickAdd(7)">7</button>
-                <button class="quick-btn ball-8" onclick="quickAdd(8)">8</button>
-                <button class="quick-btn ball-9" onclick="quickAdd(9)">9</button>
+
+            <div class="auto-remove-notice" id="autoRemoveNotice">
+                ⚠️ सबसे पुराना number auto-remove हुआ!
             </div>
+
+            <div class="numbers-display" id="numbersDisplay">
+                <span class="placeholder-text">👆 नीचे buttons से numbers add करें...</span>
+            </div>
+
+            <div class="number-buttons">
+                <button class="num-btn red-violet" onclick="addNumber(0)">0</button>
+                <button class="num-btn green" onclick="addNumber(1)">1</button>
+                <button class="num-btn red" onclick="addNumber(2)">2</button>
+                <button class="num-btn green" onclick="addNumber(3)">3</button>
+                <button class="num-btn red" onclick="addNumber(4)">4</button>
+                <button class="num-btn green-violet" onclick="addNumber(5)">5</button>
+                <button class="num-btn red" onclick="addNumber(6)">6</button>
+                <button class="num-btn green" onclick="addNumber(7)">7</button>
+                <button class="num-btn red" onclick="addNumber(8)">8</button>
+                <button class="num-btn green" onclick="addNumber(9)">9</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn clear" onclick="clearAll()">🗑️ Clear</button>
+                <button class="action-btn undo" onclick="undoLast()">↩️ Undo</button>
+                <button class="action-btn random" onclick="addRandom()">🎲 Random</button>
+            </div>
+
+            <div class="min-hint" id="minHint">⚡ कम से कम 3 numbers डालें — auto predict होगा!</div>
         </div>
-        
-        <div class="results-display">
-            <div class="results-title">📊 Recent Results (Total: <span id="totalCount">0</span>)</div>
-            <div class="results-grid" id="resultsGrid"></div>
-        </div>
-        
-        <div class="stats-section">
-            <div class="stat-box">
-                <div class="stat-value" id="statBig">0</div>
-                <div class="stat-label">Big (5-9)</div>
+
+        <div class="prediction-result" id="predictionResult">
+            <div class="prediction-header">
+                <h2>🎯 Prediction Result</h2>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" id="statSmall">0</div>
-                <div class="stat-label">Small (0-4)</div>
+
+            <div class="main-prediction">
+                <h3>Next Number:</h3>
+                <div class="prediction-number" id="predictedNumber">-</div>
+                <div>
+                    <span class="prediction-color" id="predictionColor">-</span>
+                    <span class="big-small-badge" id="bigSmallBadge">-</span>
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" id="statRed">0</div>
-                <div class="stat-label">Red (0,2,4,6,8)</div>
+
+            <div class="quick-stats">
+                <div class="stat-box">
+                    <div class="label">Red</div>
+                    <div class="value red-text" id="redCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Green</div>
+                    <div class="value green-text" id="greenCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Violet</div>
+                    <div class="value violet-text" id="violetCount">0</div>
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" id="statGreen">0</div>
-                <div class="stat-label">Green (1,3,5,7,9)</div>
+
+            <div class="meters-section">
+                <h4>🎨 Color Distribution:</h4>
+                <div class="meter-row">
+                    <span class="meter-label red-label">🔴 Red</span>
+                    <div class="meter-bar-bg">
+                        <div class="meter-bar-fill red-bar" id="redMeterBar" style="width:0%">0%</div>
+                    </div>
+                    <span class="meter-pct" id="redMeterPct">0%</span>
+                </div>
+                <div class="meter-row">
+                    <span class="meter-label green-label">🟢 Green</span>
+                    <div class="meter-bar-bg">
+                        <div class="meter-bar-fill green-bar" id="greenMeterBar" style="width:0%">0%</div>
+                    </div>
+                    <span class="meter-pct" id="greenMeterPct">0%</span>
+                </div>
+                <div class="meter-row">
+                    <span class="meter-label violet-label">🟣 Violet</span>
+                    <div class="meter-bar-bg">
+                        <div class="meter-bar-fill violet-bar" id="violetMeterBar" style="width:0%">0%</div>
+                    </div>
+                    <span class="meter-pct" id="violetMeterPct">0%</span>
+                </div>
             </div>
-        </div>
-        
-        <div class="ai-prediction-main" id="aiPrediction" style="display: none;">
-            <div class="ai-header">
-                <div class="ai-title">🤖 ULTRA AI PREDICTION 🤖</div>
-                <div class="ai-confidence" id="aiConfidence">Confidence: 0%</div>
+
+            <div class="meters-section">
+                <h4>📏 Size Distribution:</h4>
+                <div class="meter-row">
+                    <span class="meter-label big-label">🔺 Big</span>
+                    <div class="meter-bar-bg">
+                        <div class="meter-bar-fill big-bar" id="bigMeterBar" style="width:0%">0%</div>
+                    </div>
+                    <span class="meter-pct" id="bigMeterPct">0%</span>
+                </div>
+                <div class="meter-row">
+                    <span class="meter-label small-label">🔻 Small</span>
+                    <div class="meter-bar-bg">
+                        <div class="meter-bar-fill small-bar" id="smallMeterBar" style="width:0%">0%</div>
+                    </div>
+                    <span class="meter-pct" id="smallMeterPct">0%</span>
+                </div>
             </div>
-            <div class="ai-main-prediction" id="aiMainPrediction"></div>
-            <div class="ai-category-grid" id="aiCategoryGrid"></div>
-        </div>
-        
-        <div class="trend-indicator" id="trendIndicator" style="display: none;">
-            <div class="trend-title">📊 TREND ANALYSIS</div>
-            <div class="trend-bars" id="trendBars"></div>
-        </div>
-        
-        <div class="hot-cold-section" id="hotColdSection" style="display: none;">
-            <div class="hot-cold-box">
-                <div class="hot-cold-title hot-title">🔥 HOT NUMBERS</div>
-                <div class="hot-cold-numbers" id="hotNumbers"></div>
+
+            <div class="streak-section" id="streakSection">
+                <h4>🔥 Current Streaks & Trends:</h4>
+                <div class="streak-badges" id="streakBadges"></div>
             </div>
-            <div class="hot-cold-box">
-                <div class="hot-cold-title cold-title">❄️ COLD NUMBERS</div>
-                <div class="hot-cold-numbers" id="coldNumbers"></div>
+
+            <div class="alternatives">
+                <h4>🎯 Alternative Predictions:</h4>
+                <div class="alt-numbers" id="altNumbers"></div>
             </div>
-        </div>
-        
-        <div class="prediction-section" id="predictionSection" style="display: none;">
-            <div class="prediction-title">📈 ALL NUMBER PROBABILITIES</div>
-            <div class="prediction-grid" id="predictionGrid"></div>
-        </div>
-        
-        <div class="matched-patterns" id="matchedPatterns" style="display: none;">
-            <div class="patterns-title">
-                <span>🎯 MATCHED PATTERNS</span>
-                <span class="patterns-count" id="patternsCount">0</span>
+
+            <div class="confidence-bar">
+                <h4>📊 Confidence Level:</h4>
+                <div class="bar-container">
+                    <div class="bar-fill" id="confidenceBar" style="width: 0%">0%</div>
+                </div>
             </div>
-            <div class="filter-section">
-                <button class="filter-btn active" onclick="filterPatterns('all', this)">All</button>
-                <button class="filter-btn" onclick="filterPatterns('high', this)">High (80%+)</button>
-                <button class="filter-btn" onclick="filterPatterns('medium', this)">Medium (60-80%)</button>
-                <button class="filter-btn" onclick="filterPatterns('low', this)">Low (50-60%)</button>
-                <input type="text" class="search-box" id="patternSearch" placeholder="🔍 Search pattern..." oninput="searchPatterns()">
+
+            <div class="analysis-section">
+                <h4>🔍 Pattern Analysis:</h4>
+                <div id="analysisDetails"></div>
             </div>
-            <div class="patterns-list" id="patternsList"></div>
-        </div>
-        
-        <div class="all-patterns-section">
-            <div class="all-patterns-title">
-                📋 ALL 1200 PATTERNS DATABASE
-                <button class="toggle-btn" onclick="togglePatterns()">Show/Hide</button>
+
+            <div class="share-section">
+                <h4>📋 Result Copy करें:</h4>
+                <div class="share-text-box" id="shareText"></div>
+                <button class="copy-btn" id="copyBtn" onclick="copyResult()">📋 Tap to Copy Result</button>
             </div>
-            <div class="patterns-grid" id="allPatternsGrid"></div>
         </div>
     </div>
 
+    <div class="toast" id="toast">✅ Copied!</div>
+
     <script>
-        // ==================== PATTERN GENERATOR ====================
-        // Compressed pattern data + Dynamic generation for 1200 patterns
-        
-        // Base pattern templates (encoded)
-        const BASE_PATTERNS = [
-            // Format: "name|sequence|category"
-            "Single Trend|6,1,8,3,6,1|RB,GS,RB,GS,RB,GS",
-            "Double Trend|6,8,1,3,6,8,1,3|RB,RB,GS,GS,RB,RB,GS,GS",
-            "Triple Trend|6,8,6,1,3,1,6,8,6|RB,RB,RB,GS,GS,GS,RB,RB,RB",
-            "Quadra Trend|6,8,6,8,1,3,1,3|RB,RB,RB,RB,GS,GS,GS,GS",
-            "Five One|6,8,6,8,6,1,8,6,8,6|RB,RB,RB,RB,RB,GS,RB,RB,RB,RB",
-            "Four One|2,4,2,4,7,2,4,2,4|RS,RS,RS,RS,GB,RS,RS,RS,RS",
-            "Four Two|6,8,6,8,1,3,6,8,6,8|RB,RB,RB,RB,GS,GS,RB,RB,RB,RB",
-            "Four Three|2,4,2,4,7,9,7,2,4,2|RS,RS,RS,RS,GB,GB,GB,RS,RS,RS",
-            "Two One|6,8,1,6,8,1,6,8,1|RB,RB,GS,RB,RB,GS,RB,RB,GS",
-            "Three One|2,4,2,7,2,4,2,7|RS,RS,RS,GB,RS,RS,RS,GB",
-            "Three Two|6,8,6,1,3,6,8,6,1,3|RB,RB,RB,GS,GS,RB,RB,RB,GS,GS",
-            "Long Red Big|6,8,6,8,6,8,6,8,6,8|RB,RB,RB,RB,RB,RB,RB,RB,RB,RB",
-            "Long Green Small|1,3,1,3,1,3,1,3,1,3|GS,GS,GS,GS,GS,GS,GS,GS,GS,GS",
-            "Single Reverse|7,2,9,4,7,2|GB,RS,GB,RS,GB,RS",
-            "Double Reverse|7,9,2,4,7,9,2,4|GB,GB,RS,RS,GB,GB,RS,RS",
-            "Triple Reverse|7,9,7,2,4,2,7,9,7|GB,GB,GB,RS,RS,RS,GB,GB,GB",
-            "Quadra Reverse|7,9,7,9,2,4,2,4|GB,GB,GB,GB,RS,RS,RS,RS",
-            "Three In One|7,9,7,2,7,9,7|GB,GB,GB,RS,GB,GB,GB",
-            "Two In One|2,4,7,2,4,7,2,4|RS,RS,GB,RS,RS,GB,RS,RS",
-            "Three In Two|7,9,7,2,4,7,9,7|GB,GB,GB,RS,RS,GB,GB,GB",
-            "Long Green Big|7,9,7,9,7,9,7,9,7,9|GB,GB,GB,GB,GB,GB,GB,GB,GB,GB",
-            "Long Red Small|2,4,2,4,2,4,2,4,2,4|RS,RS,RS,RS,RS,RS,RS,RS,RS,RS",
-            "Micro Wave|2,7,4,2,9,4|RS,GB,RS,RS,GB,RS",
-            "Tsunami Wave|7,9,7,2,4,9,7,9,7,2|GB,GB,GB,RS,RS,GB,GB,GB,GB,RS",
-            "Reverse Tsunami|2,4,2,7,9,2,4,2,4,7|RS,RS,RS,GB,GB,RS,RS,RS,RS,GB",
-            "Pulse Wave|1,6,3,7,2,1,8|GS,RB,GS,GB,RS,GS,RB",
-            "Echo Wave|6,1,3,8,1,3,6|RB,GS,GS,RB,GS,GS,RB",
-            "Sharp Zigzag|7,2,6,1,9,4,8,3|GB,RS,RB,GS,GB,RS,RB,GS",
-            "Soft Zigzag|2,1,4,3,2,1|RS,GS,RS,GS,RS,GS",
-            "Double Zigzag|7,9,2,4,7,9,2,4|GB,GB,RS,RS,GB,GB,RS,RS",
-            "Cross Zigzag|6,7,2,1,8,9|RB,GB,RS,GS,RB,GB",
-            "Ascending Pyramid|2,7,9,7,9,7|RS,GB,GB,GB,GB,GB",
-            "Descending Pyramid|9,7,9,7,2,4|GB,GB,GB,GB,RS,RS",
-            "Double Pyramid|2,7,9,7,4,2,9,7,9,2|RS,GB,GB,GB,RS,RS,GB,GB,GB,RS",
-            "Inner Spiral|7,2,1,6,9,4,3|GB,RS,GS,RB,GB,RS,GS",
-            "Outer Spiral|6,1,2,7,8,3,4,9|RB,GS,RS,GB,RB,GS,RS,GB",
-            "Full Diamond|2,7,9,7,2,4,2,7|RS,GB,GB,GB,RS,RS,RS,GB",
-            "Half Diamond|7,9,7,2,4|GB,GB,GB,RS,RS",
-            "Chaos Fusion|7,6,1,2,9,8,3,4|GB,RB,GS,RS,GB,RB,GS,RS",
-            "Order Fusion|2,4,1,3,6,8,7,9|RS,RS,GS,GS,RB,RB,GB,GB",
-            "Mega Surge|7,9,7,9,7,2,9,7,9,7|GB,GB,GB,GB,GB,RS,GB,GB,GB,GB",
-            "Mega Crash|2,4,2,4,2,7,4,2,4,2|RS,RS,RS,RS,RS,GB,RS,RS,RS,RS",
-            "Flash Trend|7,2,9,4,7,2,9|GB,RS,GB,RS,GB,RS,GB",
-            "Thunder Trend|6,8,6,1,3,6,8,6|RB,RB,RB,GS,GS,RB,RB,RB",
-            "Storm Trend|7,2,4,9,2,4,7,2|GB,RS,RS,GB,RS,RS,GB,RS",
-            "Red Violet Entry|0,7,9,2,7|RV,GB,GB,RS,GB",
-            "Green Violet Entry|5,2,4,7,2|GV,RS,RS,GB,RS",
-            "Double Violet|0,7,9,5,2,4|RV,GB,GB,GV,RS,RS",
-            "Fibonacci|7,9,2,7,4,9,7,2|GB,GB,RS,GB,RS,GB,GB,RS",
-            "Golden Ratio|7,9,7,2,4,7,9,2|GB,GB,GB,RS,RS,GB,GB,RS",
-            "Neural Network|7,2,1,6,9,4,3,8,7|GB,RS,GS,RB,GB,RS,GS,RB,GB",
-            "Phoenix Rising|2,4,2,4,7,9,7,9,7,9|RS,RS,RS,RS,GB,GB,GB,GB,GB,GB",
-            "Dragon Tail|7,9,7,9,2,7,4,9,2|GB,GB,GB,GB,RS,GB,RS,GB,RS",
-            "Black Hole|7,9,7,2,4,2,4,2|GB,GB,GB,RS,RS,RS,RS,RS",
-            "Supernova|2,7,9,7,9,7,2,4|RS,GB,GB,GB,GB,GB,RS,RS"
-        ];
+        let enteredNumbers = [];
+        const MAX_NUMBERS = 15;
+        let autoRemoveTimeout = null;
 
-        // Pattern name prefixes for dynamic generation
-        const PREFIXES = [
-            "Alpha", "Beta", "Gamma", "Delta", "Omega", "Sigma", "Theta", "Lambda", "Epsilon", "Zeta",
-            "Rising", "Falling", "Spinning", "Rotating", "Flowing", "Shifting", "Moving", "Dancing", "Flying", "Running",
-            "Fire", "Water", "Earth", "Air", "Thunder", "Lightning", "Storm", "Rain", "Snow", "Wind",
-            "Solar", "Lunar", "Star", "Comet", "Meteor", "Galaxy", "Nebula", "Quasar", "Pulsar", "Nova",
-            "Dragon", "Phoenix", "Tiger", "Lion", "Eagle", "Wolf", "Bear", "Snake", "Shark", "Hawk",
-            "Gold", "Silver", "Bronze", "Platinum", "Diamond", "Ruby", "Emerald", "Sapphire", "Pearl", "Crystal",
-            "Morning", "Evening", "Night", "Dawn", "Dusk", "Twilight", "Midnight", "Noon", "Sunrise", "Sunset",
-            "Spring", "Summer", "Autumn", "Winter", "Monsoon", "Cyclone", "Typhoon", "Hurricane", "Tornado", "Blizzard",
-            "Mountain", "Valley", "River", "Ocean", "Desert", "Forest", "Jungle", "Prairie", "Tundra", "Glacier",
-            "North", "South", "East", "West", "Center", "Edge", "Corner", "Peak", "Base", "Core"
-        ];
-
-        const SUFFIXES = [
-            "Wave", "Trend", "Pattern", "Flow", "Shift", "Move", "Spin", "Rise", "Fall", "Jump",
-            "Pulse", "Beat", "Rhythm", "Cycle", "Loop", "Spiral", "Helix", "Curve", "Arc", "Line",
-            "Burst", "Blast", "Flash", "Spark", "Flame", "Blaze", "Glow", "Shine", "Light", "Ray",
-            "Strike", "Hit", "Push", "Pull", "Lift", "Drop", "Throw", "Catch", "Hold", "Release",
-            "Run", "Walk", "Fly", "Swim", "Climb", "Slide", "Roll", "Bounce", "Swing", "Sway"
-        ];
-
-        // Category definitions
-        const CATEGORIES = {
-            "RV": [0], "GV": [5],
-            "GS": [1, 3], "RS": [2, 4],
-            "RB": [6, 8], "GB": [7, 9]
+        // CORRECT COLOR MAP (internal — hidden from user)
+        // 0: Red+Violet, 5: Green+Violet
+        // 1,3,7,9: Green (Odd), 2,4,6,8: Red (Even)
+        const colorMap = {
+            0: 'red-violet',
+            1: 'green',
+            2: 'red',
+            3: 'green',
+            4: 'red',
+            5: 'green-violet',
+            6: 'red',
+            7: 'green',
+            8: 'red',
+            9: 'green'
         };
 
-        const CAT_NAMES = ["GB", "RS", "GS", "RB", "GV", "RV"];
-
-        // Generate all 1200 patterns
-        let ALL_PATTERNS = [];
-
-        function initializePatterns() {
-            ALL_PATTERNS = [];
-            let patternId = 1;
-
-            // 1. Parse base patterns (55 patterns)
-            BASE_PATTERNS.forEach(p => {
-                const parts = p.split('|');
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: parts[0],
-                    sequence: parts[1].split(',').map(Number),
-                    categories: parts[2].split(',')
-                });
-            });
-
-            // 2. Generate Wave patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 5 + (i % 6);
-                const seq = generateWaveSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[i % PREFIXES.length]} Wave ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 3. Generate Zigzag patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 4 + (i % 7);
-                const seq = generateZigzagSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 10) % PREFIXES.length]} Zigzag ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 4. Generate Spiral patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 5 + (i % 6);
-                const seq = generateSpiralSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 20) % PREFIXES.length]} Spiral ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 5. Generate Pyramid patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 5 + (i % 6);
-                const seq = generatePyramidSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 30) % PREFIXES.length]} Pyramid ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 6. Generate Diamond patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 6 + (i % 5);
-                const seq = generateDiamondSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 40) % PREFIXES.length]} Diamond ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 7. Generate Fusion patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 6 + (i % 5);
-                const seq = generateFusionSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 50) % PREFIXES.length]} Fusion ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 8. Generate Cyclic patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 4 + (i % 7);
-                const seq = generateCyclicSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 60) % PREFIXES.length]} Cycle ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 9. Generate Alternating patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 6 + (i % 5);
-                const seq = generateAlternatingSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 70) % PREFIXES.length]} Alternate ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 10. Generate Mathematical patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 6 + (i % 5);
-                const seq = generateMathSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 80) % PREFIXES.length]} Math ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 11. Generate Nature patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 5 + (i % 6);
-                const seq = generateNatureSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 90) % PREFIXES.length]} Nature ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 12. Generate Cosmic patterns (100 patterns)
-            for (let i = 0; i < 100; i++) {
-                const len = 6 + (i % 5);
-                const seq = generateCosmicSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[i % PREFIXES.length]} Cosmic ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            // 13. Generate Extreme patterns (45 patterns to reach 1200)
-            for (let i = 0; i < 45; i++) {
-                const len = 7 + (i % 4);
-                const seq = generateExtremeSequence(len, i);
-                ALL_PATTERNS.push({
-                    id: patternId++,
-                    name: `${PREFIXES[(i + 5) % PREFIXES.length]} ${SUFFIXES[i % SUFFIXES.length]} ${i + 1}`,
-                    sequence: seq,
-                    categories: seq.map(n => getCategory(n))
-                });
-            }
-
-            console.log(`Total patterns generated: ${ALL_PATTERNS.length}`);
+        function getPrimaryColor(num) {
+            if (num === 0) return 'red';
+            if (num === 5) return 'green';
+            if ([1,3,7,9].includes(num)) return 'green';
+            return 'red';
         }
 
-        // Sequence generators
-        function generateWaveSequence(len, seed) {
-            const seq = [];
-            const bigNums = [7, 9];
-            const smallNums = [2, 4];
-            for (let i = 0; i < len; i++) {
-                if ((i + seed) % 3 < 2) {
-                    seq.push(bigNums[(i + seed) % 2]);
-                } else {
-                    seq.push(smallNums[(i + seed) % 2]);
-                }
+        function isViolet(num) {
+            return num === 0 || num === 5;
+        }
+
+        function getColorLabel(num) {
+            if (num === 0) return 'RED+VIOLET';
+            if (num === 5) return 'GREEN+VIOLET';
+            if ([1,3,7,9].includes(num)) return 'GREEN';
+            return 'RED';
+        }
+
+        function getColorEmoji(num) {
+            if (num === 0) return '🔴🟣';
+            if (num === 5) return '🟢🟣';
+            if ([1,3,7,9].includes(num)) return '🟢';
+            return '🔴';
+        }
+
+        // Chain pattern (internal rule — hidden)
+        const digitPredictionMap = {
+            0: [5, 2], 1: [9, 3], 2: [0, 8], 3: [1, 7], 4: [6, 2],
+            5: [0, 5], 6: [4, 8], 7: [3, 9], 8: [6, 2], 9: [1, 7]
+        };
+
+        function showAutoRemoveNotice() {
+            const notice = document.getElementById('autoRemoveNotice');
+            notice.classList.add('show');
+            if (autoRemoveTimeout) clearTimeout(autoRemoveTimeout);
+            autoRemoveTimeout = setTimeout(() => notice.classList.remove('show'), 2000);
+        }
+
+        function getChipBg(num) {
+            const map = {
+                'red': 'linear-gradient(135deg, #ff4444, #cc0000)',
+                'green': 'linear-gradient(135deg, #00c853, #009624)',
+                'red-violet': 'linear-gradient(135deg, #ff4444, #8844ff)',
+                'green-violet': 'linear-gradient(135deg, #00c853, #8844ff)'
+            };
+            return map[colorMap[num]] || map['red'];
+        }
+
+        function addNumber(num) {
+            let wasRemoved = false;
+            if (enteredNumbers.length >= MAX_NUMBERS) {
+                enteredNumbers.shift();
+                wasRemoved = true;
             }
-            return seq;
-        }
+            enteredNumbers.push(num);
+            updateDisplay(wasRemoved);
+            if (wasRemoved) showAutoRemoveNotice();
 
-        function generateZigzagSequence(len, seed) {
-            const seq = [];
-            const nums = [7, 2, 9, 4, 6, 1, 8, 3];
-            for (let i = 0; i < len; i++) {
-                seq.push(nums[(i + seed) % nums.length]);
+            // AUTO PREDICT — no button needed
+            if (enteredNumbers.length >= 3) {
+                autoPredict();
             }
-            return seq;
         }
 
-        function generateSpiralSequence(len, seed) {
-            const seq = [];
-            const pattern = [7, 2, 1, 6, 9, 4, 3, 8];
-            for (let i = 0; i < len; i++) {
-                seq.push(pattern[(i + seed) % pattern.length]);
+        function removeNumber(index) {
+            enteredNumbers.splice(index, 1);
+            updateDisplay(false);
+            // Re-predict after removal if still 3+
+            if (enteredNumbers.length >= 3) {
+                autoPredict();
+            } else {
+                document.getElementById('predictionResult').classList.remove('show');
             }
-            return seq;
         }
 
-        function generatePyramidSequence(len, seed) {
-            const seq = [];
-            const mid = Math.floor(len / 2);
-            for (let i = 0; i < len; i++) {
-                if (i <= mid) {
-                    seq.push(seed % 2 === 0 ? [7, 9][i % 2] : [2, 4][i % 2]);
-                } else {
-                    seq.push(seed % 2 === 0 ? [2, 4][(len - i) % 2] : [7, 9][(len - i) % 2]);
-                }
-            }
-            return seq;
-        }
-
-        function generateDiamondSequence(len, seed) {
-            const seq = [];
-            const half = Math.floor(len / 2);
-            for (let i = 0; i < len; i++) {
-                const dist = Math.abs(half - i);
-                if (dist < half / 2) {
-                    seq.push([7, 9][(i + seed) % 2]);
-                } else {
-                    seq.push([2, 4][(i + seed) % 2]);
-                }
-            }
-            return seq;
-        }
-
-        function generateFusionSequence(len, seed) {
-            const seq = [];
-            const all = [7, 6, 1, 2, 9, 8, 3, 4];
-            for (let i = 0; i < len; i++) {
-                seq.push(all[(i * 2 + seed) % all.length]);
-            }
-            return seq;
-        }
-
-        function generateCyclicSequence(len, seed) {
-            const seq = [];
-            const cycles = [[7, 2], [9, 4], [7, 4], [9, 2]];
-            const cycle = cycles[seed % cycles.length];
-            for (let i = 0; i < len; i++) {
-                seq.push(cycle[i % cycle.length]);
-            }
-            return seq;
-        }
-
-        function generateAlternatingSequence(len, seed) {
-            const seq = [];
-            const pairs = [[7, 2], [9, 4], [6, 1], [8, 3]];
-            const pair = pairs[seed % pairs.length];
-            for (let i = 0; i < len; i++) {
-                seq.push(pair[i % 2]);
-            }
-            return seq;
-        }
-
-        function generateMathSequence(len, seed) {
-            const seq = [];
-            for (let i = 0; i < len; i++) {
-                const val = (i * (seed + 1) + seed) % 10;
-                seq.push(val);
-            }
-            return seq;
-        }
-
-        function generateNatureSequence(len, seed) {
-            const seq = [];
-            const nature = [[7, 9, 2], [2, 4, 7], [7, 2, 9, 4], [9, 7, 4, 2]];
-            const pattern = nature[seed % nature.length];
-            for (let i = 0; i < len; i++) {
-                seq.push(pattern[i % pattern.length]);
-            }
-            return seq;
-        }
-
-        function generateCosmicSequence(len, seed) {
-            const seq = [];
-            const cosmic = [7, 9, 7, 2, 4, 2, 9, 4, 7];
-            for (let i = 0; i < len; i++) {
-                seq.push(cosmic[(i + seed) % cosmic.length]);
-            }
-            return seq;
-        }
-
-        function generateExtremeSequence(len, seed) {
-            const seq = [];
-            const extreme = [[7, 9, 7, 9, 7], [2, 4, 2, 4, 2], [7, 7, 2, 2, 7], [9, 9, 4, 4, 9]];
-            const pattern = extreme[seed % extreme.length];
-            for (let i = 0; i < len; i++) {
-                seq.push(pattern[i % pattern.length]);
-            }
-            return seq;
-        }
-
-        function getCategory(num) {
-            if (num === 0) return "RV";
-            if (num === 5) return "GV";
-            if (num === 1 || num === 3) return "GS";
-            if (num === 2 || num === 4) return "RS";
-            if (num === 6 || num === 8) return "RB";
-            if (num === 7 || num === 9) return "GB";
-            return "";
-        }
-
-        function getCategoryNumbers(cat) {
-            return CATEGORIES[cat] || [];
-        }
-
-        // Initialize patterns on load
-        initializePatterns();
-
-        // ==================== MAIN APP LOGIC ====================
-        let results = [];
-        let currentFilter = 'all';
-        let allMatchedPatterns = [];
-
-        function addResult() {
-            const input = document.getElementById('resultInput');
-            const value = parseInt(input.value);
-            
-            if (isNaN(value) || value < 0 || value > 9) {
-                alert('Please enter a number between 0-9');
-                return;
-            }
-            
-            results.push(value);
-            input.value = '';
-            updateDisplay();
-            if (results.length >= 2) analyzePatterns();
-        }
-
-        function quickAdd(num) {
-            results.push(num);
-            updateDisplay();
-            if (results.length >= 2) analyzePatterns();
+        function clearAll() {
+            enteredNumbers = [];
+            updateDisplay(false);
+            document.getElementById('predictionResult').classList.remove('show');
+            document.getElementById('autoRemoveNotice').classList.remove('show');
         }
 
         function undoLast() {
-            if (results.length > 0) {
-                results.pop();
-                updateDisplay();
-                if (results.length >= 2) analyzePatterns();
-                else hideAnalysis();
+            if (enteredNumbers.length > 0) {
+                enteredNumbers.pop();
+                updateDisplay(false);
+                if (enteredNumbers.length >= 3) {
+                    autoPredict();
+                } else {
+                    document.getElementById('predictionResult').classList.remove('show');
+                }
             }
         }
 
-        function clearResults() {
-            results = [];
-            updateDisplay();
-            hideAnalysis();
+        function addRandom() {
+            addNumber(Math.floor(Math.random() * 10));
         }
 
-        function hideAnalysis() {
-            document.getElementById('aiPrediction').style.display = 'none';
-            document.getElementById('trendIndicator').style.display = 'none';
-            document.getElementById('hotColdSection').style.display = 'none';
-            document.getElementById('predictionSection').style.display = 'none';
-            document.getElementById('matchedPatterns').style.display = 'none';
+        function updateDisplay(wasAutoRemoved) {
+            const display = document.getElementById('numbersDisplay');
+            const countDisplay = document.getElementById('countDisplay');
+            const minHint = document.getElementById('minHint');
+
+            countDisplay.textContent = enteredNumbers.length;
+
+            if (enteredNumbers.length === 0) {
+                display.innerHTML = '<span class="placeholder-text">👆 नीचे buttons से numbers add करें...</span>';
+                minHint.classList.add('show');
+            } else if (enteredNumbers.length < 3) {
+                display.innerHTML = enteredNumbers.map((num, index) => {
+                    const bg = getChipBg(num);
+                    return `<span class="number-chip" style="background: ${bg};" onclick="removeNumber(${index})" title="Click to remove">${num}</span>`;
+                }).join('');
+                minHint.classList.add('show');
+            } else {
+                display.innerHTML = enteredNumbers.map((num, index) => {
+                    const bg = getChipBg(num);
+                    const isOldest = enteredNumbers.length >= MAX_NUMBERS && index === 0;
+                    const oldestStyle = isOldest ? 'opacity: 0.6; border: 2px dashed #ff6b6b;' : '';
+                    return `<span class="number-chip" style="background: ${bg}; ${oldestStyle}" onclick="removeNumber(${index})" title="${isOldest ? 'Next में हटेगा' : 'Click to remove'}">${num}</span>`;
+                }).join('');
+                minHint.classList.remove('show');
+            }
         }
 
-        function updateDisplay() {
-            const grid = document.getElementById('resultsGrid');
-            grid.innerHTML = '';
-            
-            results.forEach((num, idx) => {
-                const ball = document.createElement('div');
-                ball.className = `result-ball ball-${num}`;
-                ball.textContent = num;
-                ball.title = `#${idx + 1}: ${getCategory(num)}`;
-                grid.appendChild(ball);
-            });
-            
-            document.getElementById('totalCount').textContent = results.length;
-            updateStats();
+        function autoPredict() {
+            if (enteredNumbers.length < 3) return;
+            const prediction = aiPredict(enteredNumbers);
+            displayPrediction(prediction);
+            const result = document.getElementById('predictionResult');
+            if (!result.classList.contains('show')) {
+                result.classList.add('show');
+                result.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
-        function updateStats() {
-            let big = 0, small = 0, red = 0, green = 0;
-            results.forEach(num => {
-                if (num >= 5) big++; else small++;
-                if (num % 2 === 0) red++; else green++;
-            });
-            document.getElementById('statBig').textContent = big;
-            document.getElementById('statSmall').textContent = small;
-            document.getElementById('statRed').textContent = red;
-            document.getElementById('statGreen').textContent = green;
-        }
+        function aiPredict(numbers) {
+            const lastNumber = numbers[numbers.length - 1];
+            const last3 = numbers.slice(-3);
+            const last2 = numbers.slice(-2);
+            const last5 = numbers.slice(-5);
+            const last10 = numbers.slice(-10);
 
-        function analyzePatterns() {
-            if (results.length < 2) return;
-
-            const resultCategories = results.map(r => getCategory(r));
-            allMatchedPatterns = [];
-
-            // Multi-method pattern matching
-            ALL_PATTERNS.forEach((pattern) => {
-                const patternCats = pattern.categories;
-                const patternLen = patternCats.length;
-                const patternSeq = pattern.sequence;
-
-                let bestMatch = { percent: 0, position: 0, windowSize: 0, method: '' };
-
-                // Method 1: Category matching
-                for (let ws = 2; ws <= Math.min(resultCategories.length, patternLen); ws++) {
-                    const recent = resultCategories.slice(-ws);
-                    for (let sp = 0; sp <= patternLen - ws; sp++) {
-                        let match = 0;
-                        for (let i = 0; i < ws; i++) {
-                            if (recent[i] === patternCats[sp + i]) match++;
-                        }
-                        const pct = (match / ws) * 100;
-                        if (pct > bestMatch.percent) {
-                            bestMatch = { percent: pct, position: sp, windowSize: ws, matchCount: match, method: 'category' };
-                        }
-                    }
-                }
-
-                // Method 2: Exact number matching
-                for (let ws = 2; ws <= Math.min(results.length, patternLen); ws++) {
-                    const recent = results.slice(-ws);
-                    for (let sp = 0; sp <= patternLen - ws; sp++) {
-                        let match = 0;
-                        for (let i = 0; i < ws; i++) {
-                            if (recent[i] === patternSeq[sp + i]) match++;
-                        }
-                        const pct = (match / ws) * 100;
-                        if (pct > bestMatch.percent) {
-                            bestMatch = { percent: pct, position: sp, windowSize: ws, matchCount: match, method: 'exact' };
-                        }
-                    }
-                }
-
-                // Method 3: Hybrid matching
-                for (let ws = 2; ws <= Math.min(results.length, patternLen); ws++) {
-                    const recentCats = resultCategories.slice(-ws);
-                    const recentNums = results.slice(-ws);
-                    for (let sp = 0; sp <= patternLen - ws; sp++) {
-                        let score = 0;
-                        for (let i = 0; i < ws; i++) {
-                            if (recentCats[i] === patternCats[sp + i]) score += 0.6;
-                            if (recentNums[i] === patternSeq[sp + i]) score += 0.4;
-                        }
-                        const pct = (score / ws) * 100;
-                        if (pct > bestMatch.percent) {
-                            bestMatch = { percent: pct, position: sp, windowSize: ws, matchCount: Math.round(score), method: 'hybrid' };
-                        }
-                    }
-                }
-
-                if (bestMatch.percent >= 50 && bestMatch.windowSize >= 2) {
-                    const nextPos = bestMatch.position + bestMatch.windowSize;
-                    const nextCat = patternCats[nextPos % patternLen];
-                    const nextNum = patternSeq[nextPos % patternLen];
-
-                    allMatchedPatterns.push({
-                        id: pattern.id,
-                        name: pattern.name,
-                        matchPercent: bestMatch.percent,
-                        matchCount: bestMatch.matchCount,
-                        windowSize: bestMatch.windowSize,
-                        method: bestMatch.method,
-                        nextCategory: nextCat,
-                        nextNumber: nextNum,
-                        nextNumbers: getCategoryNumbers(nextCat),
-                        sequence: pattern.sequence,
-                        confidence: Math.min(bestMatch.percent + (bestMatch.method === 'exact' ? 10 : bestMatch.method === 'hybrid' ? 5 : 0) + (bestMatch.windowSize >= 4 ? 10 : 0), 100)
-                    });
-                }
-            });
-
-            // Remove duplicates
-            const unique = {};
-            allMatchedPatterns.forEach(p => {
-                if (!unique[p.name] || unique[p.name].matchPercent < p.matchPercent) {
-                    unique[p.name] = p;
-                }
-            });
-
-            allMatchedPatterns = Object.values(unique).sort((a, b) => b.confidence - a.confidence || b.matchPercent - a.matchPercent);
-
-            // Calculate scores
-            const scores = calculateScores(allMatchedPatterns);
-            const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
-
-            displayAIPrediction(scores, total, allMatchedPatterns);
-            displayTrendIndicator();
-            displayHotColdNumbers();
-            displayPredictions(scores, total);
-            displayMatchedPatterns();
-        }
-
-        function calculateScores(patterns) {
-            const scores = {};
+            let analysis = [];
+            let confidence = 0;
+            let scores = {};
             for (let i = 0; i <= 9; i++) scores[i] = 0;
 
-            patterns.forEach((p, idx) => {
-                const weight = (p.confidence / 100) * Math.max(0.1, 1 - idx * 0.01);
-                if (p.nextNumber !== null) scores[p.nextNumber] += weight * 2;
-                if (p.nextNumbers) p.nextNumbers.forEach(n => scores[n] += weight);
-            });
+            // 1. Digit chain
+            const dp = digitPredictionMap[lastNumber];
+            dp.forEach(d => scores[d] += 35);
+            analysis.push({ text: `🔢 Last digit ${lastNumber} → Chain: ${dp.join(', ')}`, highlight: true });
+            confidence += 25;
 
-            // Frequency bonus
-            const freq = {};
-            for (let i = 0; i <= 9; i++) freq[i] = 0;
-            results.forEach(n => freq[n]++);
-            Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 3).forEach(([n], i) => {
-                scores[parseInt(n)] += (3 - i) * 0.5;
-            });
-
-            return scores;
-        }
-
-        function displayAIPrediction(scores, total, patterns) {
-            document.getElementById('aiPrediction').style.display = 'block';
-
-            const avgConf = patterns.length > 0 
-                ? patterns.slice(0, 5).reduce((a, b) => a + b.confidence, 0) / Math.min(5, patterns.length)
-                : 0;
-
-            document.getElementById('aiConfidence').textContent = `Confidence: ${avgConf.toFixed(1)}% | ${patterns.length} Patterns Matched`;
-
-            const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-            const main = document.getElementById('aiMainPrediction');
-            main.innerHTML = '';
-
-            sorted.slice(0, 3).forEach(([num, score], idx) => {
-                const pct = ((score / total) * 100).toFixed(1);
-                const card = document.createElement('div');
-                card.className = `ai-number-card rank-${idx + 1}`;
-                card.innerHTML = `
-                    <div class="ai-rank">${['🥇 1ST', '🥈 2ND', '🥉 3RD'][idx]}</div>
-                    <div class="ai-big-number ball-${num}">${num}</div>
-                    <div class="ai-percent">${pct}%</div>
-                `;
-                main.appendChild(card);
-            });
-
-            // Category predictions
-            let big = [5,6,7,8,9].reduce((a, n) => a + scores[n], 0);
-            let small = [0,1,2,3,4].reduce((a, n) => a + scores[n], 0);
-            let red = [0,2,4,6,8].reduce((a, n) => a + scores[n], 0);
-            let green = [1,3,5,7,9].reduce((a, n) => a + scores[n], 0);
-
-            document.getElementById('aiCategoryGrid').innerHTML = `
-                <div class="ai-category-card">
-                    <div class="ai-category-label">SIZE</div>
-                    <div class="ai-category-value" style="color: ${big >= small ? '#3b82f6' : '#f59e0b'}">${big >= small ? 'BIG' : 'SMALL'}</div>
-                    <div class="ai-category-percent">${((Math.max(big, small) / (big + small || 1)) * 100).toFixed(1)}%</div>
-                </div>
-                <div class="ai-category-card">
-                    <div class="ai-category-label">COLOR</div>
-                    <div class="ai-category-value" style="color: ${green >= red ? '#22c55e' : '#ef4444'}">${green >= red ? 'GREEN' : 'RED'}</div>
-                    <div class="ai-category-percent">${((Math.max(green, red) / (green + red || 1)) * 100).toFixed(1)}%</div>
-                </div>
-                <div class="ai-category-card">
-                    <div class="ai-category-label">ODD/EVEN</div>
-                    <div class="ai-category-value" style="color: ${green >= red ? '#a855f7' : '#f59e0b'}">${green >= red ? 'ODD' : 'EVEN'}</div>
-                    <div class="ai-category-percent">${((Math.max(green, red) / (green + red || 1)) * 100).toFixed(1)}%</div>
-                </div>
-                <div class="ai-category-card">
-                    <div class="ai-category-label">PATTERNS</div>
-                    <div class="ai-category-value" style="color: #4ecdc4">${patterns.length}</div>
-                    <div class="ai-category-percent">of 1200</div>
-                </div>
-            `;
-        }
-
-        function displayTrendIndicator() {
-            document.getElementById('trendIndicator').style.display = 'block';
-            let big = 0, small = 0, red = 0, green = 0;
-            results.slice(-10).forEach(num => {
-                if (num >= 5) big++; else small++;
-                if (num % 2 === 0) red++; else green++;
-            });
-            const total = results.slice(-10).length || 1;
-
-            document.getElementById('trendBars').innerHTML = `
-                <div class="trend-bar">
-                    <div class="trend-label">GREEN</div>
-                    <div class="trend-progress">
-                        <div class="trend-fill green" style="width: ${(green/total)*100}%">${green}/${total}</div>
-                    </div>
-                </div>
-                <div class="trend-bar">
-                    <div class="trend-label">RED</div>
-                    <div class="trend-progress">
-                        <div class="trend-fill red" style="width: ${(red/total)*100}%">${red}/${total}</div>
-                    </div>
-                </div>
-                <div class="trend-bar">
-                    <div class="trend-label">BIG</div>
-                    <div class="trend-progress">
-                        <div class="trend-fill big" style="width: ${(big/total)*100}%">${big}/${total}</div>
-                    </div>
-                </div>
-                <div class="trend-bar">
-                    <div class="trend-label">SMALL</div>
-                    <div class="trend-progress">
-                        <div class="trend-fill small" style="width: ${(small/total)*100}%">${small}/${total}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function displayHotColdNumbers() {
-            document.getElementById('hotColdSection').style.display = 'flex';
-            const freq = {};
-            for (let i = 0; i <= 9; i++) freq[i] = 0;
-            results.forEach(n => freq[n]++);
-            const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
-
-            document.getElementById('hotNumbers').innerHTML = sorted.slice(0, 3).map(([n, c]) => 
-                `<div class="result-ball ball-${n}" title="Count: ${c}">${n}</div>`
-            ).join('');
-
-            document.getElementById('coldNumbers').innerHTML = sorted.slice(-3).reverse().map(([n, c]) => 
-                `<div class="result-ball ball-${n}" title="Count: ${c}">${n}</div>`
-            ).join('');
-        }
-
-        function displayPredictions(scores, total) {
-            document.getElementById('predictionSection').style.display = 'block';
-            const grid = document.getElementById('predictionGrid');
-            const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-
-            grid.innerHTML = sorted.map(([num, score]) => {
-                const pct = ((score / total) * 100).toFixed(1);
-                const cls = pct >= 15 ? 'percent-high' : pct >= 8 ? 'percent-medium' : 'percent-low';
-                return `
-                    <div class="prediction-item">
-                        <div class="prediction-number ball-${num}">${num}</div>
-                        <div class="prediction-percent ${cls}">${pct}%</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function displayMatchedPatterns() {
-            document.getElementById('matchedPatterns').style.display = 'block';
-            document.getElementById('patternsCount').textContent = allMatchedPatterns.length;
-            filterPatterns(currentFilter);
-        }
-
-        function filterPatterns(filter, btn) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-
-            let filtered = allMatchedPatterns;
-            if (filter === 'high') filtered = allMatchedPatterns.filter(p => p.matchPercent >= 80);
-            else if (filter === 'medium') filtered = allMatchedPatterns.filter(p => p.matchPercent >= 60 && p.matchPercent < 80);
-            else if (filter === 'low') filtered = allMatchedPatterns.filter(p => p.matchPercent >= 50 && p.matchPercent < 60);
-
-            renderPatternsList(filtered);
-        }
-
-        function searchPatterns() {
-            const query = document.getElementById('patternSearch').value.toLowerCase();
-            const filtered = query 
-                ? allMatchedPatterns.filter(p => p.name.toLowerCase().includes(query))
-                : allMatchedPatterns;
-            renderPatternsList(filtered);
-        }
-
-        function renderPatternsList(patterns) {
-            const list = document.getElementById('patternsList');
-            
-            if (patterns.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">No patterns found.</div>';
-                return;
+            // 2. Violet hunt
+            const violetIn3 = last3.some(n => isViolet(n));
+            if (!violetIn3) {
+                scores[0] += 45;
+                scores[5] += 45;
+                analysis.push({ text: `⚡ Violet missing last 3! → 0 (Red+Violet) or 5 (Green+Violet) expected`, highlight: true });
+                confidence += 30;
+            } else {
+                analysis.push({ text: `✓ Violet appeared recently`, highlight: false });
             }
 
-            list.innerHTML = patterns.slice(0, 50).map(p => {
-                const cls = p.matchPercent >= 80 ? 'pattern-high' : p.matchPercent >= 60 ? 'pattern-medium' : 'pattern-low';
-                const balls = (p.nextNumbers || []).map(n => `<div class="next-ball ball-${n}">${n}</div>`).join('');
-                return `
-                    <div class="pattern-item ${cls}">
-                        <div class="pattern-name">
-                            <span>#${p.id}. ${p.name}</span>
-                            <span class="pattern-badge">${p.confidence.toFixed(0)}%</span>
-                        </div>
-                        <div class="pattern-match">Match: ${p.matchPercent.toFixed(1)}% (${p.method}) | ${p.matchCount}/${p.windowSize}</div>
-                        <div class="pattern-next">
-                            <span>Next → ${p.nextCategory}</span>
-                            <div class="next-balls">${balls}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            // 3. Big/Small last3
+            const l3Small = last3.every(n => n < 5);
+            const l3Big = last3.every(n => n >= 5);
+            if (l3Small) {
+                [5,6,7,8,9].forEach(d => scores[d] += 50);
+                [0,1,2,3,4].forEach(d => scores[d] -= 25);
+                analysis.push({ text: `📈 Last 3 all SMALL → 90% BIG next`, highlight: true });
+                confidence += 30;
+            } else if (l3Big) {
+                [0,1,2,3,4].forEach(d => scores[d] += 40);
+                [5,6,7,8,9].forEach(d => scores[d] -= 15);
+                analysis.push({ text: `📉 Last 3 all BIG → SMALL expected`, highlight: true });
+                confidence += 25;
+            }
+
+            // 4. Last 2 same type
+            if (last2.length === 2) {
+                const bs = last2[0] < 5 && last2[1] < 5;
+                const bb = last2[0] >= 5 && last2[1] >= 5;
+                if (bs) {
+                    [5,6,7,8,9].forEach(d => scores[d] += 25);
+                    analysis.push({ text: `🔄 Last 2 both Small → Big expected`, highlight: false });
+                    confidence += 15;
+                } else if (bb) {
+                    [0,1,2,3,4].forEach(d => scores[d] += 25);
+                    analysis.push({ text: `🔄 Last 2 both Big → Small expected`, highlight: false });
+                    confidence += 15;
+                }
+            }
+
+            // 5. Color frequency
+            const colorFreq = { red: 0, green: 0, violet: 0 };
+            last10.forEach(n => {
+                const pc = getPrimaryColor(n);
+                if (pc === 'red') colorFreq.red++;
+                else colorFreq.green++;
+                if (isViolet(n)) colorFreq.violet++;
+            });
+
+            if (colorFreq.violet < 2 && last10.length >= 5) {
+                scores[0] += 20;
+                scores[5] += 20;
+                analysis.push({ text: `💜 Violet low (${colorFreq.violet} in ${last10.length}) → 0, 5 boosted`, highlight: false });
+            }
+            if (colorFreq.red < colorFreq.green - 1) {
+                [0,2,4,6,8].forEach(d => scores[d] += 15);
+                analysis.push({ text: `❤️ Red deficit (${colorFreq.red} vs ${colorFreq.green} Green) → Red boosted`, highlight: false });
+            }
+            if (colorFreq.green < colorFreq.red - 1) {
+                [1,3,5,7,9].forEach(d => scores[d] += 15);
+                analysis.push({ text: `💚 Green deficit (${colorFreq.green} vs ${colorFreq.red} Red) → Green boosted`, highlight: false });
+            }
+
+            // 6. Color streak
+            let colorStreak = 1;
+            let streakColor = getPrimaryColor(numbers[numbers.length - 1]);
+            for (let i = numbers.length - 2; i >= 0; i--) {
+                if (getPrimaryColor(numbers[i]) === streakColor) colorStreak++;
+                else break;
+            }
+            if (colorStreak >= 3) {
+                const opp = streakColor === 'red' ? [1,3,5,7,9] : [0,2,4,6,8];
+                opp.forEach(d => scores[d] += 40);
+                analysis.push({ text: `🔥 ${streakColor.toUpperCase()} streak x${colorStreak}! → ${streakColor === 'red' ? 'GREEN' : 'RED'} reversal (85%+)`, highlight: true });
+                confidence += 20;
+            }
+
+            // 7. Size streak
+            let sizeStreak = 1;
+            let streakSize = numbers[numbers.length - 1] >= 5 ? 'big' : 'small';
+            for (let i = numbers.length - 2; i >= 0; i--) {
+                const sz = numbers[i] >= 5 ? 'big' : 'small';
+                if (sz === streakSize) sizeStreak++;
+                else break;
+            }
+            if (sizeStreak >= 3) {
+                const opp = streakSize === 'big' ? [0,1,2,3,4] : [5,6,7,8,9];
+                opp.forEach(d => scores[d] += 35);
+                analysis.push({ text: `📊 ${streakSize.toUpperCase()} streak x${sizeStreak}! → ${streakSize === 'big' ? 'SMALL' : 'BIG'} expected (90%+)`, highlight: true });
+                confidence += 20;
+            }
+
+            // 8. Anti-repeat
+            scores[lastNumber] -= 30;
+            analysis.push({ text: `🚫 Anti-repeat: ${lastNumber} just came → reduced`, highlight: false });
+
+            // 9. Gap analysis
+            const numberGaps = {};
+            for (let i = 0; i <= 9; i++) {
+                const li = numbers.lastIndexOf(i);
+                numberGaps[i] = li === -1 ? numbers.length + 5 : numbers.length - 1 - li;
+            }
+            const maxGap = Object.entries(numberGaps).sort((a,b) => b[1] - a[1])[0];
+            if (maxGap[1] >= 6) {
+                scores[parseInt(maxGap[0])] += 30;
+                analysis.push({ text: `📈 Gap Alert: ${maxGap[0]} missing ${maxGap[1]} rounds → due!`, highlight: true });
+                confidence += 10;
+            }
+
+            // 10. Last5 balance
+            if (last5.length >= 5) {
+                const sc = last5.filter(n => n < 5).length;
+                const bc = last5.filter(n => n >= 5).length;
+                if (sc >= 4) {
+                    [5,6,7,8,9].forEach(d => scores[d] += 20);
+                    analysis.push({ text: `📊 Last 5: ${sc}S/${bc}B → Big for balance`, highlight: false });
+                } else if (bc >= 4) {
+                    [0,1,2,3,4].forEach(d => scores[d] += 20);
+                    analysis.push({ text: `📊 Last 5: ${sc}S/${bc}B → Small for balance`, highlight: false });
+                }
+            }
+
+            // 11. Alternating color pattern check
+            if (numbers.length >= 4) {
+                const l4 = numbers.slice(-4);
+                const colors4 = l4.map(n => getPrimaryColor(n));
+                let isAlternating = true;
+                for (let i = 1; i < colors4.length; i++) {
+                    if (colors4[i] === colors4[i-1]) { isAlternating = false; break; }
+                }
+                if (isAlternating) {
+                    const nextExpected = colors4[colors4.length - 1] === 'red' ? 'green' : 'red';
+                    const boost = nextExpected === 'green' ? [1,3,5,7,9] : [0,2,4,6,8];
+                    boost.forEach(d => scores[d] += 30);
+                    analysis.push({ text: `🔀 Alternating pattern detected → ${nextExpected.toUpperCase()} next (80%)`, highlight: true });
+                    confidence += 15;
+                }
+            }
+
+            // 12. Double-digit frequency
+            if (numbers.length >= 8) {
+                const freq = {};
+                numbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
+                const overUsed = Object.entries(freq).filter(e => e[1] >= 3).map(e => parseInt(e[0]));
+                overUsed.forEach(n => { scores[n] -= 15; });
+                const underUsed = Object.entries(freq).filter(e => e[1] <= 1).map(e => parseInt(e[0]));
+                underUsed.forEach(n => { scores[n] += 15; });
+                if (overUsed.length > 0) {
+                    analysis.push({ text: `📉 Overused: [${overUsed.join(',')}] reduced | Underused boosted`, highlight: false });
+                }
+            }
+
+            // 13. Odd/Even streak reversal
+            let oddStreak = 0;
+            let evenStreak = 0;
+            for (let i = numbers.length - 1; i >= 0; i--) {
+                if (numbers[i] % 2 !== 0) { if (evenStreak === 0) oddStreak++; else break; }
+                else { if (oddStreak === 0) evenStreak++; else break; }
+            }
+            if (oddStreak >= 3) {
+                [0,2,4,6,8].forEach(d => scores[d] += 25);
+                analysis.push({ text: `🔢 ODD streak x${oddStreak} → EVEN number expected`, highlight: true });
+                confidence += 10;
+            }
+            if (evenStreak >= 3) {
+                [1,3,5,7,9].forEach(d => scores[d] += 25);
+                analysis.push({ text: `🔢 EVEN streak x${evenStreak} → ODD number expected`, highlight: true });
+                confidence += 10;
+            }
+
+            // 14. Last 3 same number pattern
+            if (last3.length === 3 && last3[0] === last3[1] && last3[1] === last3[2]) {
+                scores[last3[0]] -= 60;
+                analysis.push({ text: `🚨 Same number x3 (${last3[0]})! Extremely unlikely again`, highlight: true });
+                confidence += 15;
+            }
+
+            // Size stats
+            const sizeStats = { big: 0, small: 0 };
+            numbers.forEach(n => { if (n >= 5) sizeStats.big++; else sizeStats.small++; });
+
+            // Sort
+            const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]).map(e => parseInt(e[0]));
+            const finalPrediction = sorted[0];
+            const alternatives = sorted.slice(0, 4);
+
+            // Streaks info
+            const streaks = [];
+            streaks.push({ label: `${streakColor.toUpperCase()} Color x${colorStreak}`, type: colorStreak >= 3 ? 'hot' : colorStreak >= 2 ? 'warm' : 'neutral' });
+            streaks.push({ label: `${streakSize.toUpperCase()} Size x${sizeStreak}`, type: sizeStreak >= 3 ? 'hot' : sizeStreak >= 2 ? 'warm' : 'neutral' });
+
+            let violetGap = 0;
+            for (let i = numbers.length - 1; i >= 0; i--) {
+                if (!isViolet(numbers[i])) violetGap++;
+                else break;
+            }
+            streaks.push({ label: violetGap >= 3 ? `Violet missing x${violetGap} 🔥` : `Violet gap: ${violetGap}`, type: violetGap >= 3 ? 'hot' : 'cool' });
+
+            if (oddStreak >= 3) streaks.push({ label: `ODD streak x${oddStreak}`, type: 'warm' });
+            if (evenStreak >= 3) streaks.push({ label: `EVEN streak x${evenStreak}`, type: 'warm' });
+
+            return {
+                number: finalPrediction,
+                alternatives,
+                confidence: Math.min(confidence + 15, 95),
+                analysis,
+                colorClass: colorMap[finalPrediction],
+                colorLabel: getColorLabel(finalPrediction),
+                colorEmoji: getColorEmoji(finalPrediction),
+                colorFreq,
+                sizeStats,
+                streaks,
+                numberGaps
+            };
         }
 
-        function togglePatterns() {
-            const grid = document.getElementById('allPatternsGrid');
-            grid.classList.toggle('show');
+        function displayPrediction(p) {
+            document.getElementById('predictedNumber').textContent = p.number;
 
-            if (grid.classList.contains('show') && grid.innerHTML === '') {
-                grid.innerHTML = ALL_PATTERNS.map(p => `
-                    <div class="mini-pattern">
-                        <div class="mini-pattern-name">#${p.id}. ${p.name}</div>
-                        <div class="mini-pattern-seq">${p.sequence.join(',')}</div>
-                    </div>
-                `).join('');
+            const cb = document.getElementById('predictionColor');
+            cb.textContent = p.colorLabel;
+            cb.className = 'prediction-color ' + p.colorClass;
+
+            const bs = p.number >= 5 ? 'BIG' : 'SMALL';
+            document.getElementById('bigSmallBadge').textContent = bs;
+
+            document.getElementById('redCount').textContent = p.colorFreq.red;
+            document.getElementById('greenCount').textContent = p.colorFreq.green;
+            document.getElementById('violetCount').textContent = p.colorFreq.violet;
+
+            // Color meters
+            const tc = p.colorFreq.red + p.colorFreq.green;
+            const rp = tc > 0 ? Math.round((p.colorFreq.red / tc) * 100) : 0;
+            const gp = tc > 0 ? Math.round((p.colorFreq.green / tc) * 100) : 0;
+            const tw = enteredNumbers.length;
+            const vp = tw > 0 ? Math.round((p.colorFreq.violet / tw) * 100) : 0;
+
+            setTimeout(() => {
+                setMeter('redMeterBar', 'redMeterPct', rp);
+                setMeter('greenMeterBar', 'greenMeterPct', gp);
+                setMeter('violetMeterBar', 'violetMeterPct', vp);
+            }, 100);
+
+            // Size meters
+            const ts = p.sizeStats.big + p.sizeStats.small;
+            const bp = ts > 0 ? Math.round((p.sizeStats.big / ts) * 100) : 0;
+            const sp = ts > 0 ? Math.round((p.sizeStats.small / ts) * 100) : 0;
+
+            setTimeout(() => {
+                setMeter('bigMeterBar', 'bigMeterPct', bp);
+                setMeter('smallMeterBar', 'smallMeterPct', sp);
+            }, 200);
+
+            // Streaks
+            document.getElementById('streakBadges').innerHTML = p.streaks.map(s =>
+                `<span class="streak-badge ${s.type}">${s.type === 'hot' ? '🔥' : s.type === 'warm' ? '🌡️' : '❄️'} ${s.label}</span>`
+            ).join('');
+
+            // Alternatives
+            document.getElementById('altNumbers').innerHTML = p.alternatives.map(num => {
+                const bg = getChipBg(num);
+                return `<span class="alt-num" style="background: ${bg}; color: white;">${num} <small style="font-size:0.6em;">${getColorLabel(num)}</small></span>`;
+            }).join('');
+
+            // Confidence
+            setTimeout(() => {
+                const bar = document.getElementById('confidenceBar');
+                bar.style.width = p.confidence + '%';
+                bar.textContent = p.confidence + '%';
+            }, 300);
+
+            // Analysis
+            document.getElementById('analysisDetails').innerHTML = p.analysis.map(item =>
+                `<div class="analysis-item ${item.highlight ? 'highlight' : ''}">${item.text}</div>`
+            ).join('');
+
+            // Share text
+            const shareText = buildShareText(p);
+            document.getElementById('shareText').textContent = shareText;
+        }
+
+        function setMeter(barId, pctId, val) {
+            document.getElementById(barId).style.width = val + '%';
+            document.getElementById(barId).textContent = val + '%';
+            document.getElementById(pctId).textContent = val + '%';
+        }
+
+        function buildShareText(p) {
+            const bs = p.number >= 5 ? 'BIG' : 'SMALL';
+            let txt = `🎰 Big Daddy Prediction\n`;
+            txt += `━━━━━━━━━━━━━━━\n`;
+            txt += `🔮 Next Number: ${p.number}\n`;
+            txt += `🎨 Color: ${p.colorLabel} ${p.colorEmoji}\n`;
+            txt += `📏 Size: ${bs}\n`;
+            txt += `📊 Confidence: ${p.confidence}%\n`;
+            txt += `━━━━━━━━━━━━━━━\n`;
+            txt += `🎯 Alternatives: ${p.alternatives.map(n => n + '(' + getColorLabel(n) + ')').join(', ')}\n`;
+            txt += `━━━━━━━━━━━━━━━\n`;
+            txt += `📈 Color: R:${p.colorFreq.red} G:${p.colorFreq.green} V:${p.colorFreq.violet}\n`;
+            txt += `📏 Size: Big:${p.sizeStats.big} Small:${p.sizeStats.small}\n`;
+            txt += `━━━━━━━━━━━━━━━\n`;
+            txt += `🔥 Streaks: ${p.streaks.map(s => s.label).join(' | ')}\n`;
+            txt += `━━━━━━━━━━━━━━━\n`;
+            txt += `Input: [${enteredNumbers.join(', ')}]`;
+            return txt;
+        }
+
+        function copyResult() {
+            const text = document.getElementById('shareText').textContent;
+            const btn = document.getElementById('copyBtn');
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopied(btn);
+                }).catch(() => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
             }
         }
 
-        // Enter key support
-        document.getElementById('resultInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') addResult();
-        });
+        function fallbackCopy(text, btn) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '-9999px';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showCopied(btn);
+            } catch (e) {
+                const range = document.createRange();
+                range.selectNodeContents(document.getElementById('shareText'));
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+                btn.textContent = '📌 Text Selected - Manually Copy';
+            }
+            document.body.removeChild(ta);
+        }
 
-        // Initial display
-        updateDisplay();
+        function showCopied(btn) {
+            btn.textContent = '✅ Copied!';
+            btn.classList.add('copied');
+            showToast();
+            setTimeout(() => {
+                btn.textContent = '📋 Tap to Copy Result';
+                btn.classList.remove('copied');
+            }, 2500);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
     </script>
 </body>
 </html>
