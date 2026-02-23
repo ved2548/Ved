@@ -1,1260 +1,393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Big Daddy Color Trading Predictor</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            padding: 15px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: #fff;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .input-section {
-            background: linear-gradient(135deg, #232526, #414345);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 2px solid #667eea;
-        }
-
-        .input-section h2 {
-            color: #fff;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-            text-align: center;
-        }
-
-        .numbers-display {
-            background: #1a1a2e;
-            min-height: 60px;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-            border: 2px dashed #667eea;
-            position: relative;
-        }
-
-        .number-chip {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1.1em;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            animation: popIn 0.3s ease-out;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            70% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .number-chip:hover {
-            transform: scale(1.1);
-        }
-
-        .number-chip::after {
-            content: '\00d7';
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ff4444;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .number-chip:hover::after {
-            opacity: 1;
-        }
-
-        .placeholder-text {
-            color: #666;
-            font-style: italic;
-        }
-
-        .auto-remove-notice {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            text-align: center;
-            margin-bottom: 10px;
-            display: none;
-        }
-
-        .auto-remove-notice.show {
-            display: block;
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .number-buttons {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .num-btn {
-            padding: 20px;
-            font-size: 1.5em;
-            font-weight: bold;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .num-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .num-btn:active {
-            transform: translateY(0) scale(0.95);
-        }
-
-        .num-btn.red { background: linear-gradient(135deg, #ff4444, #cc0000); }
-        .num-btn.green { background: linear-gradient(135deg, #00c853, #009624); }
-        .num-btn.red-violet { background: linear-gradient(135deg, #ff4444, #8844ff); }
-        .num-btn.green-violet { background: linear-gradient(135deg, #00c853, #8844ff); }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .action-btn {
-            padding: 12px;
-            font-size: 1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-        }
-
-        .action-btn.clear { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
-        .action-btn.undo { background: linear-gradient(135deg, #ffa726, #fb8c00); }
-        .action-btn.random { background: linear-gradient(135deg, #26c6da, #00acc1); }
-
-        .count-display {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-
-        .count-display span {
-            color: #f093fb;
-            font-weight: bold;
-        }
-
-        .prediction-result {
-            background: linear-gradient(135deg, #1a1a2e, #2d2d44);
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 20px;
-            color: white;
-            display: none;
-            border: 2px solid #f093fb;
-        }
-
-        .prediction-result.show {
-            display: block;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .prediction-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .prediction-header h2 {
-            color: #f093fb;
-            font-size: 1.5em;
-        }
-
-        .main-prediction {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .main-prediction h3 {
-            font-size: 1em;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .prediction-number {
-            font-size: 4em;
-            font-weight: bold;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-        }
-
-        .prediction-color {
-            display: inline-block;
-            padding: 8px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            margin-top: 10px;
-            font-size: 1.1em;
-        }
-
-        .prediction-color.red { background: #ff4444; }
-        .prediction-color.green { background: #00c853; }
-        .prediction-color.violet { background: #8844ff; }
-        .prediction-color.red-violet { background: linear-gradient(135deg, #ff4444, #8844ff); }
-        .prediction-color.green-violet { background: linear-gradient(135deg, #00c853, #8844ff); }
-
-        .big-small-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 15px;
-            margin-left: 10px;
-            font-size: 0.9em;
-            background: rgba(255,255,255,0.2);
-        }
-
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.1);
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-box .label {
-            font-size: 0.8em;
-            color: #aaa;
-        }
-
-        .stat-box .value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #f093fb;
-        }
-
-        .stat-box .value.red-text { color: #ff4444; }
-        .stat-box .value.green-text { color: #00c853; }
-        .stat-box .value.violet-text { color: #8844ff; }
-
-        /* Meters */
-        .meters-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .meters-section h4 {
-            color: #f093fb;
-            margin-bottom: 12px;
-            font-size: 1.05em;
-        }
-
-        .meter-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
-
-        .meter-label {
-            min-width: 75px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .meter-label.red-label { color: #ff4444; }
-        .meter-label.green-label { color: #00c853; }
-        .meter-label.violet-label { color: #8844ff; }
-        .meter-label.big-label { color: #ffa726; }
-        .meter-label.small-label { color: #26c6da; }
-
-        .meter-bar-bg {
-            flex: 1;
-            height: 24px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .meter-bar-fill {
-            height: 100%;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.8em;
-            color: white;
-            transition: width 1s ease-out;
-            min-width: 30px;
-        }
-
-        .meter-bar-fill.red-bar { background: linear-gradient(90deg, #ff4444, #cc0000); }
-        .meter-bar-fill.green-bar { background: linear-gradient(90deg, #00c853, #009624); }
-        .meter-bar-fill.violet-bar { background: linear-gradient(90deg, #8844ff, #6600cc); }
-        .meter-bar-fill.big-bar { background: linear-gradient(90deg, #ffa726, #fb8c00); }
-        .meter-bar-fill.small-bar { background: linear-gradient(90deg, #26c6da, #00acc1); }
-
-        .meter-pct {
-            min-width: 45px;
-            text-align: right;
-            font-weight: bold;
-            font-size: 0.95em;
-            color: #fff;
-        }
-
-        /* Streaks */
-        .streak-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .streak-section h4 {
-            color: #f093fb;
-            margin-bottom: 10px;
-        }
-
-        .streak-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .streak-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-            color: white;
-        }
-
-        .streak-badge.hot { background: linear-gradient(135deg, #ff4444, #ff6b6b); }
-        .streak-badge.warm { background: linear-gradient(135deg, #ffa726, #fb8c00); }
-        .streak-badge.cool { background: linear-gradient(135deg, #26c6da, #00acc1); }
-        .streak-badge.neutral { background: rgba(255,255,255,0.15); }
-
-        .alternatives {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .alternatives h4 {
-            color: #f093fb;
-            margin-bottom: 10px;
-        }
-
-        .alt-numbers {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .alt-num {
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .confidence-bar {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .confidence-bar h4 {
-            color: #f093fb;
-            margin-bottom: 10px;
-        }
-
-        .bar-container {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            height: 30px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f093fb, #f5576c);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            transition: width 1s ease-out;
-        }
-
-        .analysis-section {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .analysis-section h4 {
-            color: #f093fb;
-            margin-bottom: 10px;
-        }
-
-        .analysis-item {
-            padding: 10px;
-            margin: 8px 0;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-            font-size: 0.9em;
-            color: #ddd;
-        }
-
-        .analysis-item.highlight {
-            border-left-color: #f5576c;
-            background: rgba(245, 87, 108, 0.1);
-        }
-
-        /* Share / Copy */
-        .share-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .share-section h4 {
-            color: #f093fb;
-            margin-bottom: 10px;
-        }
-
-        .share-text-box {
-            background: #0d0d1a;
-            color: #ddd;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            line-height: 1.7;
-            white-space: pre-wrap;
-            word-break: break-word;
-            margin-bottom: 10px;
-            border: 1px solid #333;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .copy-btn {
-            width: 100%;
-            padding: 14px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background: linear-gradient(135deg, #26c6da, #00acc1);
-            color: white;
-            transition: all 0.3s;
-        }
-
-        .copy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(38, 198, 218, 0.4);
-        }
-
-        .copy-btn.copied {
-            background: linear-gradient(135deg, #4CAF50, #388E3C);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(135deg, #4CAF50, #388E3C);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1em;
-            z-index: 9999;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
-            transition: transform 0.4s ease;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Min numbers hint */
-        .min-hint {
-            text-align: center;
-            color: #f5576c;
-            font-size: 0.85em;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .min-hint.show {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-    </style>
+<title>Hybrid Colour + Size Engine</title>
+<style>
+body{background:#111;color:#fff;font-family:Arial;text-align:center}
+button{width:55px;height:55px;margin:4px;font-size:18px;border-radius:8px;border:none;cursor:pointer}
+.controlBtn{width:120px;background:#444;color:white}
+.meter{width:300px;height:20px;background:#333;border-radius:10px;margin:10px auto;overflow:hidden}
+.fill{height:100%;width:0%;line-height:20px;font-size:12px;font-weight:bold}
+#priority{margin-top:15px;font-size:18px;padding:10px;border-radius:8px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎰 Big Daddy Color Predictor</h1>
-
-        <div class="input-section">
-            <h2>📝 Recent Results डालें</h2>
-
-            <div class="count-display">
-                Numbers: <span id="countDisplay">0</span>/15
-                <span style="color: #26c6da; font-size: 0.85em;">(पुराने → नए)</span>
-            </div>
-
-            <div class="auto-remove-notice" id="autoRemoveNotice">
-                ⚠️ सबसे पुराना number auto-remove हुआ!
-            </div>
-
-            <div class="numbers-display" id="numbersDisplay">
-                <span class="placeholder-text">👆 नीचे buttons से numbers add करें...</span>
-            </div>
-
-            <div class="number-buttons">
-                <button class="num-btn red-violet" onclick="addNumber(0)">0</button>
-                <button class="num-btn green" onclick="addNumber(1)">1</button>
-                <button class="num-btn red" onclick="addNumber(2)">2</button>
-                <button class="num-btn green" onclick="addNumber(3)">3</button>
-                <button class="num-btn red" onclick="addNumber(4)">4</button>
-                <button class="num-btn green-violet" onclick="addNumber(5)">5</button>
-                <button class="num-btn red" onclick="addNumber(6)">6</button>
-                <button class="num-btn green" onclick="addNumber(7)">7</button>
-                <button class="num-btn red" onclick="addNumber(8)">8</button>
-                <button class="num-btn green" onclick="addNumber(9)">9</button>
-            </div>
-
-            <div class="action-buttons">
-                <button class="action-btn clear" onclick="clearAll()">🗑️ Clear</button>
-                <button class="action-btn undo" onclick="undoLast()">↩️ Undo</button>
-                <button class="action-btn random" onclick="addRandom()">🎲 Random</button>
-            </div>
-
-            <div class="min-hint" id="minHint">⚡ कम से कम 3 numbers डालें — auto predict होगा!</div>
-        </div>
-
-        <div class="prediction-result" id="predictionResult">
-            <div class="prediction-header">
-                <h2>🎯 Prediction Result</h2>
-            </div>
-
-            <div class="main-prediction">
-                <h3>Next Number:</h3>
-                <div class="prediction-number" id="predictedNumber">-</div>
-                <div>
-                    <span class="prediction-color" id="predictionColor">-</span>
-                    <span class="big-small-badge" id="bigSmallBadge">-</span>
-                </div>
-            </div>
-
-            <div class="quick-stats">
-                <div class="stat-box">
-                    <div class="label">Red</div>
-                    <div class="value red-text" id="redCount">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Green</div>
-                    <div class="value green-text" id="greenCount">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Violet</div>
-                    <div class="value violet-text" id="violetCount">0</div>
-                </div>
-            </div>
-
-            <div class="meters-section">
-                <h4>🎨 Color Distribution:</h4>
-                <div class="meter-row">
-                    <span class="meter-label red-label">🔴 Red</span>
-                    <div class="meter-bar-bg">
-                        <div class="meter-bar-fill red-bar" id="redMeterBar" style="width:0%">0%</div>
-                    </div>
-                    <span class="meter-pct" id="redMeterPct">0%</span>
-                </div>
-                <div class="meter-row">
-                    <span class="meter-label green-label">🟢 Green</span>
-                    <div class="meter-bar-bg">
-                        <div class="meter-bar-fill green-bar" id="greenMeterBar" style="width:0%">0%</div>
-                    </div>
-                    <span class="meter-pct" id="greenMeterPct">0%</span>
-                </div>
-                <div class="meter-row">
-                    <span class="meter-label violet-label">🟣 Violet</span>
-                    <div class="meter-bar-bg">
-                        <div class="meter-bar-fill violet-bar" id="violetMeterBar" style="width:0%">0%</div>
-                    </div>
-                    <span class="meter-pct" id="violetMeterPct">0%</span>
-                </div>
-            </div>
-
-            <div class="meters-section">
-                <h4>📏 Size Distribution:</h4>
-                <div class="meter-row">
-                    <span class="meter-label big-label">🔺 Big</span>
-                    <div class="meter-bar-bg">
-                        <div class="meter-bar-fill big-bar" id="bigMeterBar" style="width:0%">0%</div>
-                    </div>
-                    <span class="meter-pct" id="bigMeterPct">0%</span>
-                </div>
-                <div class="meter-row">
-                    <span class="meter-label small-label">🔻 Small</span>
-                    <div class="meter-bar-bg">
-                        <div class="meter-bar-fill small-bar" id="smallMeterBar" style="width:0%">0%</div>
-                    </div>
-                    <span class="meter-pct" id="smallMeterPct">0%</span>
-                </div>
-            </div>
-
-            <div class="streak-section" id="streakSection">
-                <h4>🔥 Current Streaks & Trends:</h4>
-                <div class="streak-badges" id="streakBadges"></div>
-            </div>
-
-            <div class="alternatives">
-                <h4>🎯 Alternative Predictions:</h4>
-                <div class="alt-numbers" id="altNumbers"></div>
-            </div>
-
-            <div class="confidence-bar">
-                <h4>📊 Confidence Level:</h4>
-                <div class="bar-container">
-                    <div class="bar-fill" id="confidenceBar" style="width: 0%">0%</div>
-                </div>
-            </div>
-
-            <div class="analysis-section">
-                <h4>🔍 Pattern Analysis:</h4>
-                <div id="analysisDetails"></div>
-            </div>
-
-            <div class="share-section">
-                <h4>📋 Result Copy करें:</h4>
-                <div class="share-text-box" id="shareText"></div>
-                <button class="copy-btn" id="copyBtn" onclick="copyResult()">📋 Tap to Copy Result</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast">✅ Copied!</div>
-
-    <script>
-        let enteredNumbers = [];
-        const MAX_NUMBERS = 15;
-        let autoRemoveTimeout = null;
-
-        // CORRECT COLOR MAP (internal — hidden from user)
-        // 0: Red+Violet, 5: Green+Violet
-        // 1,3,7,9: Green (Odd), 2,4,6,8: Red (Even)
-        const colorMap = {
-            0: 'red-violet',
-            1: 'green',
-            2: 'red',
-            3: 'green',
-            4: 'red',
-            5: 'green-violet',
-            6: 'red',
-            7: 'green',
-            8: 'red',
-            9: 'green'
-        };
-
-        function getPrimaryColor(num) {
-            if (num === 0) return 'red';
-            if (num === 5) return 'green';
-            if ([1,3,7,9].includes(num)) return 'green';
-            return 'red';
-        }
-
-        function isViolet(num) {
-            return num === 0 || num === 5;
-        }
-
-        function getColorLabel(num) {
-            if (num === 0) return 'RED+VIOLET';
-            if (num === 5) return 'GREEN+VIOLET';
-            if ([1,3,7,9].includes(num)) return 'GREEN';
-            return 'RED';
-        }
-
-        function getColorEmoji(num) {
-            if (num === 0) return '🔴🟣';
-            if (num === 5) return '🟢🟣';
-            if ([1,3,7,9].includes(num)) return '🟢';
-            return '🔴';
-        }
-
-        // Chain pattern (internal rule — hidden)
-        const digitPredictionMap = {
-            0: [5, 2], 1: [9, 3], 2: [0, 8], 3: [1, 7], 4: [6, 2],
-            5: [0, 5], 6: [4, 8], 7: [3, 9], 8: [6, 2], 9: [1, 7]
-        };
-
-        function showAutoRemoveNotice() {
-            const notice = document.getElementById('autoRemoveNotice');
-            notice.classList.add('show');
-            if (autoRemoveTimeout) clearTimeout(autoRemoveTimeout);
-            autoRemoveTimeout = setTimeout(() => notice.classList.remove('show'), 2000);
-        }
-
-        function getChipBg(num) {
-            const map = {
-                'red': 'linear-gradient(135deg, #ff4444, #cc0000)',
-                'green': 'linear-gradient(135deg, #00c853, #009624)',
-                'red-violet': 'linear-gradient(135deg, #ff4444, #8844ff)',
-                'green-violet': 'linear-gradient(135deg, #00c853, #8844ff)'
-            };
-            return map[colorMap[num]] || map['red'];
-        }
-
-        function addNumber(num) {
-            let wasRemoved = false;
-            if (enteredNumbers.length >= MAX_NUMBERS) {
-                enteredNumbers.shift();
-                wasRemoved = true;
-            }
-            enteredNumbers.push(num);
-            updateDisplay(wasRemoved);
-            if (wasRemoved) showAutoRemoveNotice();
-
-            // AUTO PREDICT — no button needed
-            if (enteredNumbers.length >= 3) {
-                autoPredict();
-            }
-        }
-
-        function removeNumber(index) {
-            enteredNumbers.splice(index, 1);
-            updateDisplay(false);
-            // Re-predict after removal if still 3+
-            if (enteredNumbers.length >= 3) {
-                autoPredict();
-            } else {
-                document.getElementById('predictionResult').classList.remove('show');
-            }
-        }
-
-        function clearAll() {
-            enteredNumbers = [];
-            updateDisplay(false);
-            document.getElementById('predictionResult').classList.remove('show');
-            document.getElementById('autoRemoveNotice').classList.remove('show');
-        }
-
-        function undoLast() {
-            if (enteredNumbers.length > 0) {
-                enteredNumbers.pop();
-                updateDisplay(false);
-                if (enteredNumbers.length >= 3) {
-                    autoPredict();
-                } else {
-                    document.getElementById('predictionResult').classList.remove('show');
-                }
-            }
-        }
-
-        function addRandom() {
-            addNumber(Math.floor(Math.random() * 10));
-        }
-
-        function updateDisplay(wasAutoRemoved) {
-            const display = document.getElementById('numbersDisplay');
-            const countDisplay = document.getElementById('countDisplay');
-            const minHint = document.getElementById('minHint');
-
-            countDisplay.textContent = enteredNumbers.length;
-
-            if (enteredNumbers.length === 0) {
-                display.innerHTML = '<span class="placeholder-text">👆 नीचे buttons से numbers add करें...</span>';
-                minHint.classList.add('show');
-            } else if (enteredNumbers.length < 3) {
-                display.innerHTML = enteredNumbers.map((num, index) => {
-                    const bg = getChipBg(num);
-                    return `<span class="number-chip" style="background: ${bg};" onclick="removeNumber(${index})" title="Click to remove">${num}</span>`;
-                }).join('');
-                minHint.classList.add('show');
-            } else {
-                display.innerHTML = enteredNumbers.map((num, index) => {
-                    const bg = getChipBg(num);
-                    const isOldest = enteredNumbers.length >= MAX_NUMBERS && index === 0;
-                    const oldestStyle = isOldest ? 'opacity: 0.6; border: 2px dashed #ff6b6b;' : '';
-                    return `<span class="number-chip" style="background: ${bg}; ${oldestStyle}" onclick="removeNumber(${index})" title="${isOldest ? 'Next में हटेगा' : 'Click to remove'}">${num}</span>`;
-                }).join('');
-                minHint.classList.remove('show');
-            }
-        }
-
-        function autoPredict() {
-            if (enteredNumbers.length < 3) return;
-            const prediction = aiPredict(enteredNumbers);
-            displayPrediction(prediction);
-            const result = document.getElementById('predictionResult');
-            if (!result.classList.contains('show')) {
-                result.classList.add('show');
-                result.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        function aiPredict(numbers) {
-            const lastNumber = numbers[numbers.length - 1];
-            const last3 = numbers.slice(-3);
-            const last2 = numbers.slice(-2);
-            const last5 = numbers.slice(-5);
-            const last10 = numbers.slice(-10);
-
-            let analysis = [];
-            let confidence = 0;
-            let scores = {};
-            for (let i = 0; i <= 9; i++) scores[i] = 0;
-
-            // 1. Digit chain
-            const dp = digitPredictionMap[lastNumber];
-            dp.forEach(d => scores[d] += 35);
-            analysis.push({ text: `🔢 Last digit ${lastNumber} → Chain: ${dp.join(', ')}`, highlight: true });
-            confidence += 25;
-
-            // 2. Violet hunt
-            const violetIn3 = last3.some(n => isViolet(n));
-            if (!violetIn3) {
-                scores[0] += 45;
-                scores[5] += 45;
-                analysis.push({ text: `⚡ Violet missing last 3! → 0 (Red+Violet) or 5 (Green+Violet) expected`, highlight: true });
-                confidence += 30;
-            } else {
-                analysis.push({ text: `✓ Violet appeared recently`, highlight: false });
-            }
-
-            // 3. Big/Small last3
-            const l3Small = last3.every(n => n < 5);
-            const l3Big = last3.every(n => n >= 5);
-            if (l3Small) {
-                [5,6,7,8,9].forEach(d => scores[d] += 50);
-                [0,1,2,3,4].forEach(d => scores[d] -= 25);
-                analysis.push({ text: `📈 Last 3 all SMALL → 90% BIG next`, highlight: true });
-                confidence += 30;
-            } else if (l3Big) {
-                [0,1,2,3,4].forEach(d => scores[d] += 40);
-                [5,6,7,8,9].forEach(d => scores[d] -= 15);
-                analysis.push({ text: `📉 Last 3 all BIG → SMALL expected`, highlight: true });
-                confidence += 25;
-            }
-
-            // 4. Last 2 same type
-            if (last2.length === 2) {
-                const bs = last2[0] < 5 && last2[1] < 5;
-                const bb = last2[0] >= 5 && last2[1] >= 5;
-                if (bs) {
-                    [5,6,7,8,9].forEach(d => scores[d] += 25);
-                    analysis.push({ text: `🔄 Last 2 both Small → Big expected`, highlight: false });
-                    confidence += 15;
-                } else if (bb) {
-                    [0,1,2,3,4].forEach(d => scores[d] += 25);
-                    analysis.push({ text: `🔄 Last 2 both Big → Small expected`, highlight: false });
-                    confidence += 15;
-                }
-            }
-
-            // 5. Color frequency
-            const colorFreq = { red: 0, green: 0, violet: 0 };
-            last10.forEach(n => {
-                const pc = getPrimaryColor(n);
-                if (pc === 'red') colorFreq.red++;
-                else colorFreq.green++;
-                if (isViolet(n)) colorFreq.violet++;
-            });
-
-            if (colorFreq.violet < 2 && last10.length >= 5) {
-                scores[0] += 20;
-                scores[5] += 20;
-                analysis.push({ text: `💜 Violet low (${colorFreq.violet} in ${last10.length}) → 0, 5 boosted`, highlight: false });
-            }
-            if (colorFreq.red < colorFreq.green - 1) {
-                [0,2,4,6,8].forEach(d => scores[d] += 15);
-                analysis.push({ text: `❤️ Red deficit (${colorFreq.red} vs ${colorFreq.green} Green) → Red boosted`, highlight: false });
-            }
-            if (colorFreq.green < colorFreq.red - 1) {
-                [1,3,5,7,9].forEach(d => scores[d] += 15);
-                analysis.push({ text: `💚 Green deficit (${colorFreq.green} vs ${colorFreq.red} Red) → Green boosted`, highlight: false });
-            }
-
-            // 6. Color streak
-            let colorStreak = 1;
-            let streakColor = getPrimaryColor(numbers[numbers.length - 1]);
-            for (let i = numbers.length - 2; i >= 0; i--) {
-                if (getPrimaryColor(numbers[i]) === streakColor) colorStreak++;
-                else break;
-            }
-            if (colorStreak >= 3) {
-                const opp = streakColor === 'red' ? [1,3,5,7,9] : [0,2,4,6,8];
-                opp.forEach(d => scores[d] += 40);
-                analysis.push({ text: `🔥 ${streakColor.toUpperCase()} streak x${colorStreak}! → ${streakColor === 'red' ? 'GREEN' : 'RED'} reversal (85%+)`, highlight: true });
-                confidence += 20;
-            }
-
-            // 7. Size streak
-            let sizeStreak = 1;
-            let streakSize = numbers[numbers.length - 1] >= 5 ? 'big' : 'small';
-            for (let i = numbers.length - 2; i >= 0; i--) {
-                const sz = numbers[i] >= 5 ? 'big' : 'small';
-                if (sz === streakSize) sizeStreak++;
-                else break;
-            }
-            if (sizeStreak >= 3) {
-                const opp = streakSize === 'big' ? [0,1,2,3,4] : [5,6,7,8,9];
-                opp.forEach(d => scores[d] += 35);
-                analysis.push({ text: `📊 ${streakSize.toUpperCase()} streak x${sizeStreak}! → ${streakSize === 'big' ? 'SMALL' : 'BIG'} expected (90%+)`, highlight: true });
-                confidence += 20;
-            }
-
-            // 8. Anti-repeat
-            scores[lastNumber] -= 30;
-            analysis.push({ text: `🚫 Anti-repeat: ${lastNumber} just came → reduced`, highlight: false });
-
-            // 9. Gap analysis
-            const numberGaps = {};
-            for (let i = 0; i <= 9; i++) {
-                const li = numbers.lastIndexOf(i);
-                numberGaps[i] = li === -1 ? numbers.length + 5 : numbers.length - 1 - li;
-            }
-            const maxGap = Object.entries(numberGaps).sort((a,b) => b[1] - a[1])[0];
-            if (maxGap[1] >= 6) {
-                scores[parseInt(maxGap[0])] += 30;
-                analysis.push({ text: `📈 Gap Alert: ${maxGap[0]} missing ${maxGap[1]} rounds → due!`, highlight: true });
-                confidence += 10;
-            }
-
-            // 10. Last5 balance
-            if (last5.length >= 5) {
-                const sc = last5.filter(n => n < 5).length;
-                const bc = last5.filter(n => n >= 5).length;
-                if (sc >= 4) {
-                    [5,6,7,8,9].forEach(d => scores[d] += 20);
-                    analysis.push({ text: `📊 Last 5: ${sc}S/${bc}B → Big for balance`, highlight: false });
-                } else if (bc >= 4) {
-                    [0,1,2,3,4].forEach(d => scores[d] += 20);
-                    analysis.push({ text: `📊 Last 5: ${sc}S/${bc}B → Small for balance`, highlight: false });
-                }
-            }
-
-            // 11. Alternating color pattern check
-            if (numbers.length >= 4) {
-                const l4 = numbers.slice(-4);
-                const colors4 = l4.map(n => getPrimaryColor(n));
-                let isAlternating = true;
-                for (let i = 1; i < colors4.length; i++) {
-                    if (colors4[i] === colors4[i-1]) { isAlternating = false; break; }
-                }
-                if (isAlternating) {
-                    const nextExpected = colors4[colors4.length - 1] === 'red' ? 'green' : 'red';
-                    const boost = nextExpected === 'green' ? [1,3,5,7,9] : [0,2,4,6,8];
-                    boost.forEach(d => scores[d] += 30);
-                    analysis.push({ text: `🔀 Alternating pattern detected → ${nextExpected.toUpperCase()} next (80%)`, highlight: true });
-                    confidence += 15;
-                }
-            }
-
-            // 12. Double-digit frequency
-            if (numbers.length >= 8) {
-                const freq = {};
-                numbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
-                const overUsed = Object.entries(freq).filter(e => e[1] >= 3).map(e => parseInt(e[0]));
-                overUsed.forEach(n => { scores[n] -= 15; });
-                const underUsed = Object.entries(freq).filter(e => e[1] <= 1).map(e => parseInt(e[0]));
-                underUsed.forEach(n => { scores[n] += 15; });
-                if (overUsed.length > 0) {
-                    analysis.push({ text: `📉 Overused: [${overUsed.join(',')}] reduced | Underused boosted`, highlight: false });
-                }
-            }
-
-            // 13. Odd/Even streak reversal
-            let oddStreak = 0;
-            let evenStreak = 0;
-            for (let i = numbers.length - 1; i >= 0; i--) {
-                if (numbers[i] % 2 !== 0) { if (evenStreak === 0) oddStreak++; else break; }
-                else { if (oddStreak === 0) evenStreak++; else break; }
-            }
-            if (oddStreak >= 3) {
-                [0,2,4,6,8].forEach(d => scores[d] += 25);
-                analysis.push({ text: `🔢 ODD streak x${oddStreak} → EVEN number expected`, highlight: true });
-                confidence += 10;
-            }
-            if (evenStreak >= 3) {
-                [1,3,5,7,9].forEach(d => scores[d] += 25);
-                analysis.push({ text: `🔢 EVEN streak x${evenStreak} → ODD number expected`, highlight: true });
-                confidence += 10;
-            }
-
-            // 14. Last 3 same number pattern
-            if (last3.length === 3 && last3[0] === last3[1] && last3[1] === last3[2]) {
-                scores[last3[0]] -= 60;
-                analysis.push({ text: `🚨 Same number x3 (${last3[0]})! Extremely unlikely again`, highlight: true });
-                confidence += 15;
-            }
-
-            // Size stats
-            const sizeStats = { big: 0, small: 0 };
-            numbers.forEach(n => { if (n >= 5) sizeStats.big++; else sizeStats.small++; });
-
-            // Sort
-            const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]).map(e => parseInt(e[0]));
-            const finalPrediction = sorted[0];
-            const alternatives = sorted.slice(0, 4);
-
-            // Streaks info
-            const streaks = [];
-            streaks.push({ label: `${streakColor.toUpperCase()} Color x${colorStreak}`, type: colorStreak >= 3 ? 'hot' : colorStreak >= 2 ? 'warm' : 'neutral' });
-            streaks.push({ label: `${streakSize.toUpperCase()} Size x${sizeStreak}`, type: sizeStreak >= 3 ? 'hot' : sizeStreak >= 2 ? 'warm' : 'neutral' });
-
-            let violetGap = 0;
-            for (let i = numbers.length - 1; i >= 0; i--) {
-                if (!isViolet(numbers[i])) violetGap++;
-                else break;
-            }
-            streaks.push({ label: violetGap >= 3 ? `Violet missing x${violetGap} 🔥` : `Violet gap: ${violetGap}`, type: violetGap >= 3 ? 'hot' : 'cool' });
-
-            if (oddStreak >= 3) streaks.push({ label: `ODD streak x${oddStreak}`, type: 'warm' });
-            if (evenStreak >= 3) streaks.push({ label: `EVEN streak x${evenStreak}`, type: 'warm' });
-
-            return {
-                number: finalPrediction,
-                alternatives,
-                confidence: Math.min(confidence + 15, 95),
-                analysis,
-                colorClass: colorMap[finalPrediction],
-                colorLabel: getColorLabel(finalPrediction),
-                colorEmoji: getColorEmoji(finalPrediction),
-                colorFreq,
-                sizeStats,
-                streaks,
-                numberGaps
-            };
-        }
-
-        function displayPrediction(p) {
-            document.getElementById('predictedNumber').textContent = p.number;
-
-            const cb = document.getElementById('predictionColor');
-            cb.textContent = p.colorLabel;
-            cb.className = 'prediction-color ' + p.colorClass;
-
-            const bs = p.number >= 5 ? 'BIG' : 'SMALL';
-            document.getElementById('bigSmallBadge').textContent = bs;
-
-            document.getElementById('redCount').textContent = p.colorFreq.red;
-            document.getElementById('greenCount').textContent = p.colorFreq.green;
-            document.getElementById('violetCount').textContent = p.colorFreq.violet;
-
-            // Color meters
-            const tc = p.colorFreq.red + p.colorFreq.green;
-            const rp = tc > 0 ? Math.round((p.colorFreq.red / tc) * 100) : 0;
-            const gp = tc > 0 ? Math.round((p.colorFreq.green / tc) * 100) : 0;
-            const tw = enteredNumbers.length;
-            const vp = tw > 0 ? Math.round((p.colorFreq.violet / tw) * 100) : 0;
-
-            setTimeout(() => {
-                setMeter('redMeterBar', 'redMeterPct', rp);
-                setMeter('greenMeterBar', 'greenMeterPct', gp);
-                setMeter('violetMeterBar', 'violetMeterPct', vp);
-            }, 100);
-
-            // Size meters
-            const ts = p.sizeStats.big + p.sizeStats.small;
-            const bp = ts > 0 ? Math.round((p.sizeStats.big / ts) * 100) : 0;
-            const sp = ts > 0 ? Math.round((p.sizeStats.small / ts) * 100) : 0;
-
-            setTimeout(() => {
-                setMeter('bigMeterBar', 'bigMeterPct', bp);
-                setMeter('smallMeterBar', 'smallMeterPct', sp);
-            }, 200);
-
-            // Streaks
-            document.getElementById('streakBadges').innerHTML = p.streaks.map(s =>
-                `<span class="streak-badge ${s.type}">${s.type === 'hot' ? '🔥' : s.type === 'warm' ? '🌡️' : '❄️'} ${s.label}</span>`
-            ).join('');
-
-            // Alternatives
-            document.getElementById('altNumbers').innerHTML = p.alternatives.map(num => {
-                const bg = getChipBg(num);
-                return `<span class="alt-num" style="background: ${bg}; color: white;">${num} <small style="font-size:0.6em;">${getColorLabel(num)}</small></span>`;
-            }).join('');
-
-            // Confidence
-            setTimeout(() => {
-                const bar = document.getElementById('confidenceBar');
-                bar.style.width = p.confidence + '%';
-                bar.textContent = p.confidence + '%';
-            }, 300);
-
-            // Analysis
-            document.getElementById('analysisDetails').innerHTML = p.analysis.map(item =>
-                `<div class="analysis-item ${item.highlight ? 'highlight' : ''}">${item.text}</div>`
-            ).join('');
-
-            // Share text
-            const shareText = buildShareText(p);
-            document.getElementById('shareText').textContent = shareText;
-        }
-
-        function setMeter(barId, pctId, val) {
-            document.getElementById(barId).style.width = val + '%';
-            document.getElementById(barId).textContent = val + '%';
-            document.getElementById(pctId).textContent = val + '%';
-        }
-
-        function buildShareText(p) {
-            const bs = p.number >= 5 ? 'BIG' : 'SMALL';
-            let txt = `🎰 Big Daddy Prediction\n`;
-            txt += `━━━━━━━━━━━━━━━\n`;
-            txt += `🔮 Next Number: ${p.number}\n`;
-            txt += `🎨 Color: ${p.colorLabel} ${p.colorEmoji}\n`;
-            txt += `📏 Size: ${bs}\n`;
-            txt += `📊 Confidence: ${p.confidence}%\n`;
-            txt += `━━━━━━━━━━━━━━━\n`;
-            txt += `🎯 Alternatives: ${p.alternatives.map(n => n + '(' + getColorLabel(n) + ')').join(', ')}\n`;
-            txt += `━━━━━━━━━━━━━━━\n`;
-            txt += `📈 Color: R:${p.colorFreq.red} G:${p.colorFreq.green} V:${p.colorFreq.violet}\n`;
-            txt += `📏 Size: Big:${p.sizeStats.big} Small:${p.sizeStats.small}\n`;
-            txt += `━━━━━━━━━━━━━━━\n`;
-            txt += `🔥 Streaks: ${p.streaks.map(s => s.label).join(' | ')}\n`;
-            txt += `━━━━━━━━━━━━━━━\n`;
-            txt += `Input: [${enteredNumbers.join(', ')}]`;
-            return txt;
-        }
-
-        function copyResult() {
-            const text = document.getElementById('shareText').textContent;
-            const btn = document.getElementById('copyBtn');
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showCopied(btn);
-                }).catch(() => {
-                    fallbackCopy(text, btn);
-                });
-            } else {
-                fallbackCopy(text, btn);
-            }
-        }
-
-        function fallbackCopy(text, btn) {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            ta.style.top = '-9999px';
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            try {
-                document.execCommand('copy');
-                showCopied(btn);
-            } catch (e) {
-                const range = document.createRange();
-                range.selectNodeContents(document.getElementById('shareText'));
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-                btn.textContent = '📌 Text Selected - Manually Copy';
-            }
-            document.body.removeChild(ta);
-        }
-
-        function showCopied(btn) {
-            btn.textContent = '✅ Copied!';
-            btn.classList.add('copied');
-            showToast();
-            setTimeout(() => {
-                btn.textContent = '📋 Tap to Copy Result';
-                btn.classList.remove('copied');
-            }, 2500);
-        }
-
-        function showToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-    </script>
+
+<h2>SHORT TERM HYBRID ENGINE (Colour + Size)</h2>
+
+<div id="buttons"></div>
+<br>
+<button class="controlBtn" onclick="undo()">UNDO</button>
+<button class="controlBtn" onclick="resetAll()">RESET</button>
+
+<div id="history"></div>
+<div id="result"></div>
+
+<h3>Hybrid Confidence</h3>
+<div class="meter"><div id="confidenceBar" class="fill"></div></div>
+
+<div id="priority"></div>
+
+<script>
+
+let history=[];
+const MAX_HISTORY=15;
+
+function getColor(n){
+ if(n==0||n==5) return "Violet";
+ if([1,3,7,9].includes(n)) return "Green";
+ return "Red";
+}
+function getSize(n){
+ return n<=4?"Small":"Big";
+}
+
+for(let i=0;i<=9;i++){
+ let b=document.createElement("button");
+ b.innerText=i;
+ b.onclick=()=>addNumber(i);
+ document.getElementById("buttons").appendChild(b);
+}
+
+function addNumber(n){
+ history.push(n);
+ if(history.length>MAX_HISTORY){
+   history.shift();
+ }
+ updateDisplay();
+ analyze();
+}
+
+function undo(){
+ if(history.length>0){
+   history.pop();
+   updateDisplay();
+   analyze();
+ }
+}
+
+function resetAll(){
+ history=[];
+ document.getElementById("history").innerHTML="";
+ document.getElementById("result").innerHTML="";
+ document.getElementById("priority").innerHTML="";
+ document.getElementById("confidenceBar").style.width="0%";
+}
+
+function updateDisplay(){
+ document.getElementById("history").innerText=
+ history.length>0?"History (Last 15): "+history.join(", "):"History Empty";
+}
+
+function analyze(){
+
+ if(history.length<8){
+   document.getElementById("result").innerText="Need minimum 8 results...";
+   return;
+ }
+
+ let colorVotes={Red:0,Green:0,Violet:0};
+ let sizeVotes={Big:0,Small:0};
+
+ let recentColors=history.map(getColor);
+ let recentSizes=history.map(getSize);
+
+ let lastColor=recentColors[recentColors.length-1];
+ let lastSize=recentSizes[recentSizes.length-1];
+
+ // ===== COLOUR STREAK REVERSAL =====
+ let colorStreak=1;
+ for(let i=recentColors.length-2;i>=0;i--){
+   if(recentColors[i]==lastColor) colorStreak++;
+   else break;
+ }
+ if(colorStreak>=3){
+   let reverse= lastColor=="Red"?"Green":
+                lastColor=="Green"?"Red":"Red";
+   colorVotes[reverse]+=3;
+ }
+
+ // ===== SIZE STREAK REVERSAL =====
+ let sizeStreak=1;
+ for(let i=recentSizes.length-2;i>=0;i--){
+   if(recentSizes[i]==lastSize) sizeStreak++;
+   else break;
+ }
+ if(sizeStreak>=3){
+   let reverseSize= lastSize=="Big"?"Small":"Big";
+   sizeVotes[reverseSize]+=3;
+ }
+
+ // ===== COLOUR MOMENTUM (last 6) =====
+ let last6Colors=recentColors.slice(-6);
+ let red6=last6Colors.filter(x=>x=="Red").length;
+ let green6=last6Colors.filter(x=>x=="Green").length;
+
+ if(red6>=4) colorVotes["Green"]+=2;
+ if(green6>=4) colorVotes["Red"]+=2;
+
+ // ===== SIZE MOMENTUM (last 6) =====
+ let last6Sizes=recentSizes.slice(-6);
+ let big6=last6Sizes.filter(x=>x=="Big").length;
+ let small6=last6Sizes.filter(x=>x=="Small").length;
+
+ if(big6>=4) sizeVotes["Small"]+=2;
+ if(small6>=4) sizeVotes["Big"]+=2;
+
+ // ===== COLOUR-SIZE CORRELATION =====
+ let comboCount={};
+ for(let i=0;i<history.length;i++){
+   let combo=getColor(history[i])+"-"+getSize(history[i]);
+   comboCount[combo]=(comboCount[combo]||0)+1;
+ }
+
+ let lastCombo=lastColor+"-"+lastSize;
+ if(comboCount[lastCombo]>=3){
+   colorVotes[lastColor]+=2;
+   sizeVotes[lastSize]+=2;
+ }
+
+ // ===== VIOLET GAP =====
+ let gap=0;
+ for(let i=recentColors.length-1;i>=0;i--){
+   if(recentColors[i]=="Violet") break;
+   gap++;
+ }
+ if(gap>=7){
+   colorVotes["Violet"]+=3;
+ }
+
+ // ===== FINAL DECISION =====
+ let finalColor=Object.keys(colorVotes)
+   .reduce((a,b)=>colorVotes[a]>colorVotes[b]?a:b);
+
+ let finalSize=Object.keys(sizeVotes)
+   .reduce((a,b)=>sizeVotes[a]>sizeVotes[b]?a:b);
+
+ let totalColorVotes=colorVotes.Red+colorVotes.Green+colorVotes.Violet;
+ let totalSizeVotes=sizeVotes.Big+sizeVotes.Small;
+
+ let colorConfidence = totalColorVotes>0 ?
+   (colorVotes[finalColor]/totalColorVotes) : 0;
+
+ let sizeConfidence = totalSizeVotes>0 ?
+   (sizeVotes[finalSize]/totalSizeVotes) : 0;
+
+ let hybridConfidence=Math.round((colorConfidence+sizeConfidence)/2*100);
+
+ document.getElementById("result").innerHTML=
+ "<br>Next Prediction:<br>"+
+ "Colour: <b>"+finalColor+"</b><br>"+
+ "Size: <b>"+finalSize+"</b><br>"+
+ "Hybrid Confidence: "+hybridConfidence+"%";
+
+ let bar=document.getElementById("confidenceBar");
+ bar.style.width=hybridConfidence+"%";
+ bar.innerText=hybridConfidence+"%";
+ bar.style.background="cyan";
+
+ let priority=document.getElementById("priority");
+
+ if(hybridConfidence>=75){
+   priority.innerHTML="🔥 STRONG HYBRID → Play Colour + Size";
+   priority.style.background="darkgreen";
+ }
+ else if(colorConfidence>sizeConfidence && hybridConfidence>=60){
+   priority.innerHTML="🎯 PRIORITY → Play COLOUR only";
+   priority.style.background="darkred";
+ }
+ else if(sizeConfidence>colorConfidence && hybridConfidence>=60){
+   priority.innerHTML="🎯 PRIORITY → Play SIZE only";
+   priority.style.background="darkblue";
+ }
+ else{
+   priority.innerHTML="⚠ Weak Signal → Skip Round";
+   priority.style.background="#555";
+ }
+
+}
+
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Short Term Ultra Colour Engine</title>
+<style>
+body{background:#111;color:#fff;font-family:Arial;text-align:center}
+button{width:55px;height:55px;margin:4px;font-size:18px;border-radius:8px;border:none;cursor:pointer}
+.controlBtn{width:120px;background:#444;color:white}
+.meter{width:300px;height:20px;background:#333;border-radius:10px;margin:10px auto;overflow:hidden}
+.fill{height:100%;width:0%;line-height:20px;font-size:12px;font-weight:bold}
+#priority{margin-top:15px;font-size:18px;padding:10px;border-radius:8px}
+</style>
+</head>
+<body>
+
+<h2>SHORT TERM ULTRA ENGINE (15 Window)</h2>
+
+<div id="buttons"></div>
+<br>
+<button class="controlBtn" onclick="undo()">UNDO</button>
+<button class="controlBtn" onclick="resetAll()">RESET</button>
+
+<div id="history"></div>
+<div id="result"></div>
+
+<h3>Confidence</h3>
+<div class="meter"><div id="confidenceBar" class="fill"></div></div>
+
+<div id="priority"></div>
+
+<script>
+
+let history=[];
+const MAX_HISTORY=15;
+
+function getColor(n){
+ if(n==0||n==5) return "Violet";
+ if([1,3,7,9].includes(n)) return "Green";
+ return "Red";
+}
+
+for(let i=0;i<=9;i++){
+ let b=document.createElement("button");
+ b.innerText=i;
+ b.onclick=()=>addNumber(i);
+ document.getElementById("buttons").appendChild(b);
+}
+
+function addNumber(n){
+ history.push(n);
+ if(history.length>MAX_HISTORY){
+   history.shift(); // remove oldest automatically
+ }
+ updateDisplay();
+ analyze();
+}
+
+function undo(){
+ if(history.length>0){
+   history.pop();
+   updateDisplay();
+   analyze();
+ }
+}
+
+function resetAll(){
+ history=[];
+ document.getElementById("history").innerHTML="";
+ document.getElementById("result").innerHTML="";
+ document.getElementById("priority").innerHTML="";
+ document.getElementById("confidenceBar").style.width="0%";
+}
+
+function updateDisplay(){
+ document.getElementById("history").innerText=
+ history.length>0?"History (Last 15): "+history.join(", "):"History Empty";
+}
+
+function analyze(){
+
+ if(history.length<8){
+   document.getElementById("result").innerText="Need minimum 8 results...";
+   return;
+ }
+
+ let votes={Red:0,Green:0,Violet:0};
+ let recent=history.map(getColor);
+ let last=recent[recent.length-1];
+
+ // ===== RULE 1: FAST STREAK REVERSAL =====
+ let streak=1;
+ for(let i=recent.length-2;i>=0;i--){
+   if(recent[i]==last) streak++;
+   else break;
+ }
+ if(streak>=3){
+   let reverse= last=="Red"?"Green":
+                last=="Green"?"Red":"Red";
+   votes[reverse]+=3;
+ }
+
+ // ===== RULE 2: MICRO MOMENTUM (last 6) =====
+ let last6=recent.slice(-6);
+ let red6=last6.filter(x=>x=="Red").length;
+ let green6=last6.filter(x=>x=="Green").length;
+
+ if(red6>=4) votes["Green"]+=2;
+ if(green6>=4) votes["Red"]+=2;
+
+ // ===== RULE 3: SHORT WINDOW DOMINANCE (last 10) =====
+ let last10=recent.slice(-10);
+ let red10=last10.filter(x=>x=="Red").length;
+ let green10=last10.filter(x=>x=="Green").length;
+
+ if(red10>green10) votes["Red"]+=1;
+ if(green10>red10) votes["Green"]+=1;
+
+ // ===== RULE 4: TRANSITION BIAS =====
+ let transitions={Red:0,Green:0,Violet:0};
+ for(let i=1;i<recent.length;i++){
+   if(recent[i-1]==last){
+     transitions[recent[i]]++;
+   }
+ }
+ let probable=Object.keys(transitions)
+   .reduce((a,b)=>transitions[a]>transitions[b]?a:b);
+ votes[probable]+=2;
+
+ // ===== RULE 5: VIOLET GAP SHORT =====
+ let gap=0;
+ for(let i=recent.length-1;i>=0;i--){
+   if(recent[i]=="Violet") break;
+   gap++;
+ }
+ if(gap>=7) votes["Violet"]+=3;
+
+ // ===== RULE 6: VOLATILITY FILTER =====
+ let unique=new Set(last6);
+ if(unique.size==1){
+   let reverse= last=="Red"?"Green":"Red";
+   votes[reverse]+=3;
+ }
+
+ // ===== FINAL =====
+ let final=Object.keys(votes)
+   .reduce((a,b)=>votes[a]>votes[b]?a:b);
+
+ let totalVotes=votes.Red+votes.Green+votes.Violet;
+ let confidence= totalVotes>0 ?
+   Math.round((votes[final]/totalVotes)*100) : 0;
+
+ document.getElementById("result").innerHTML=
+ "<br>Next Prediction: <b>"+final+"</b><br>"+
+ "Confidence: "+confidence+"%";
+
+ let bar=document.getElementById("confidenceBar");
+ bar.style.width=confidence+"%";
+ bar.innerText=confidence+"%";
+ bar.style.background=
+ final=="Red"?"red":
+ final=="Green"?"green":"purple";
+
+ let priority=document.getElementById("priority");
+ if(confidence>=75){
+   priority.innerHTML="🔥 Strong Short-Term Signal → Play "+final;
+   priority.style.background="darkgreen";
+ }
+ else if(confidence>=60){
+   priority.innerHTML="⚡ Medium Signal → Controlled Entry";
+   priority.style.background="orange";
+ }
+ else{
+   priority.innerHTML="⚠ Weak Signal → Skip";
+   priority.style.background="#555";
+ }
+
+}
+
+</script>
 </body>
 </html>
