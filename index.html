@@ -3,1707 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 Master Pattern Predictor Pro</title>
+    <meta http-equiv="refresh" content="3">
+    <title>🎯 V22 - AUTO REFRESH</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --bg-primary: #0a0a1a;
-            --bg-secondary: #1a1a3e;
-            --bg-tertiary: #0a192f;
-            --accent-1: #00d9ff;
-            --accent-2: #00ff88;
-            --accent-3: #ff00ff;
-            --text-primary: #fff;
-            --text-secondary: #888;
-            --small-color: #ff6b6b;
-            --big-color: #00e676;
-            --card-bg: rgba(255,255,255,0.05);
-        }
-
-        [data-theme="purple"] {
-            --bg-primary: #1a0a2e;
-            --bg-secondary: #2d1b4e;
-            --bg-tertiary: #0f0a1a;
-            --accent-1: #bf00ff;
-            --accent-2: #ff00bf;
-            --accent-3: #00ffff;
-        }
-
-        [data-theme="green"] {
-            --bg-primary: #0a1a0a;
-            --bg-secondary: #1a3e1a;
-            --bg-tertiary: #0f2f0a;
-            --accent-1: #00ff88;
-            --accent-2: #88ff00;
-            --accent-3: #00ffff;
-        }
-
-        [data-theme="cyberpunk"] {
-            --bg-primary: #0d0d0d;
-            --bg-secondary: #1a1a1a;
-            --bg-tertiary: #0a0a0a;
-            --accent-1: #ff00ff;
-            --accent-2: #00ffff;
-            --accent-3: #ffff00;
-            --small-color: #ff0066;
-            --big-color: #00ff66;
-        }
-
-        [data-theme="ocean"] {
-            --bg-primary: #001a33;
-            --bg-secondary: #003366;
-            --bg-tertiary: #000d1a;
-            --accent-1: #00bfff;
-            --accent-2: #00ffcc;
-            --accent-3: #0066ff;
-        }
-
-        [data-theme="sunset"] {
-            --bg-primary: #1a0a0a;
-            --bg-secondary: #3e1a1a;
-            --bg-tertiary: #2f0a0a;
-            --accent-1: #ff6600;
-            --accent-2: #ff0066;
-            --accent-3: #ffcc00;
-        }
-
-        [data-theme="gold"] {
-            --bg-primary: #1a1400;
-            --bg-secondary: #2e2400;
-            --bg-tertiary: #0f0a00;
-            --accent-1: #ffd700;
-            --accent-2: #ffaa00;
-            --accent-3: #ff6600;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #f0f4f8;
-            --bg-secondary: #e0e8f0;
-            --bg-tertiary: #d0d8e0;
-            --accent-1: #0066cc;
-            --accent-2: #00aa66;
-            --accent-3: #cc0066;
-            --text-primary: #1a1a2e;
-            --text-secondary: #555;
-            --card-bg: rgba(0,0,0,0.05);
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-            min-height: 100vh;
-            padding: 10px;
-            color: var(--text-primary);
-            overflow-x: hidden;
-            transition: all 0.5s ease;
-        }
-
-        .container {
-            max-width: 450px;
-            margin: 0 auto;
-        }
-
-        /* Top Controls */
-        .top-controls {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .control-btn {
-            padding: 12px 8px;
-            font-size: 11px;
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            backdrop-filter: blur(10px);
-        }
-
-        .control-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border-color: var(--accent-1);
-        }
-
-        .control-btn.active {
-            background: linear-gradient(145deg, var(--accent-1), var(--accent-2));
-            color: #000;
-            border-color: transparent;
-            box-shadow: 0 5px 20px rgba(0,255,136,0.3);
-        }
-
-        .control-btn .icon {
-            font-size: 20px;
-        }
-
-        .control-btn.recording {
-            animation: recordPulse 1s infinite;
-            border-color: #ff0000;
-            background: rgba(255,0,0,0.2);
-        }
-
-        @keyframes recordPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,0,0,0.5); }
-            50% { box-shadow: 0 0 0 15px rgba(255,0,0,0); }
-        }
-
-        /* Theme indicator */
-        .theme-name {
-            font-size: 9px;
-            opacity: 0.8;
-        }
-
-        /* Voice Status Bar */
-        .voice-status-bar {
-            background: linear-gradient(145deg, rgba(255,0,0,0.2), rgba(255,0,0,0.1));
-            border: 2px solid #ff0000;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: none;
-            text-align: center;
-            animation: voiceBarPulse 2s infinite;
-        }
-
-        .voice-status-bar.show {
-            display: block;
-        }
-
-        @keyframes voiceBarPulse {
-            0%, 100% { border-color: #ff0000; }
-            50% { border-color: #ff6666; }
-        }
-
-        .voice-status-bar .status-text {
-            font-size: 16px;
-            font-weight: bold;
-            color: #ff6666;
-            margin-bottom: 8px;
-        }
-
-        .voice-status-bar .heard-text {
-            font-size: 14px;
-            color: #fff;
-            padding: 8px 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            display: inline-block;
-            min-height: 35px;
-        }
-
-        .voice-waves {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            margin-top: 10px;
-        }
-
-        .voice-wave {
-            width: 4px;
-            height: 20px;
-            background: #ff0000;
-            border-radius: 2px;
-            animation: waveAnim 0.5s infinite ease-in-out;
-        }
-
-        .voice-wave:nth-child(1) { animation-delay: 0s; }
-        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
-        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
-        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
-        .voice-wave:nth-child(5) { animation-delay: 0.4s; }
-
-        @keyframes waveAnim {
-            0%, 100% { height: 10px; }
-            50% { height: 30px; }
-        }
-
-        /* Voice Commands Help */
-        .voice-commands-help {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: none;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .voice-commands-help.show {
-            display: block;
-        }
-
-        .voice-commands-help h4 {
-            color: var(--accent-1);
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .commands-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            font-size: 11px;
-        }
-
-        .command-item {
-            background: rgba(0,0,0,0.2);
-            padding: 8px;
-            border-radius: 8px;
-        }
-
-        .command-item strong {
-            color: var(--accent-2);
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: var(--card-bg);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .header h1 {
-            font-size: 20px;
-            background: linear-gradient(45deg, var(--accent-1), var(--accent-2), var(--accent-3));
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        /* Number Buttons */
-        .number-buttons-section {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 12px;
-            color: var(--accent-1);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .number-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-        }
-
-        .num-btn {
-            position: relative;
-            height: 55px;
-            font-size: 22px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.3), 0 6px 15px rgba(0,0,0,0.3);
-        }
-
-        .num-btn.small-num {
-            background: linear-gradient(145deg, var(--small-color), #ee5a5a);
-            color: #fff;
-        }
-
-        .num-btn.big-num {
-            background: linear-gradient(145deg, var(--big-color), #00c853);
-            color: #fff;
-        }
-
-        .num-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 15px 30px rgba(0,0,0,0.4);
-        }
-
-        .num-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.3);
-        }
-
-        .num-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
-            border-radius: 12px 12px 50% 50%;
-            pointer-events: none;
-        }
-
-        .num-btn .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.5);
-            transform: scale(0);
-            animation: rippleEffect 0.6s linear;
-            pointer-events: none;
-        }
-
-        @keyframes rippleEffect {
-            to { transform: scale(4); opacity: 0; }
-        }
-
-        .undo-btn {
-            width: 100%;
-            margin-top: 10px;
-            padding: 12px;
-            font-size: 13px;
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .undo-btn:hover {
-            border-color: var(--small-color);
-            background: rgba(255,100,100,0.1);
-        }
-
-        /* Main Output */
-        .main-output {
-            background: linear-gradient(145deg, rgba(26,42,74,0.9), rgba(15,26,46,0.9));
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            text-align: center;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .main-output::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.02), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-
-        .prediction-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .prediction-result {
-            font-size: 50px;
-            font-weight: bold;
-            margin: 10px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .prediction-result.big {
-            color: var(--big-color);
-            text-shadow: 0 0 30px var(--big-color), 0 0 60px var(--big-color);
-        }
-
-        .prediction-result.small {
-            color: var(--small-color);
-            text-shadow: 0 0 30px var(--small-color), 0 0 60px var(--small-color);
-        }
-
-        .prediction-result.waiting {
-            color: #ffd93d;
-            font-size: 18px;
-            text-shadow: 0 0 20px #ffd93d;
-        }
-
-        .confidence {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 13px;
-            font-weight: bold;
-            margin-top: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .confidence.high {
-            background: linear-gradient(145deg, #00e676, #00c853);
-            color: #000;
-        }
-
-        .confidence.medium {
-            background: linear-gradient(145deg, #ffb300, #ff9800);
-            color: #000;
-        }
-
-        .confidence.low {
-            background: linear-gradient(145deg, #ff5252, #d32f2f);
-            color: #fff;
-        }
-
-        .pattern-display {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .pattern-sequence {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .pattern-item {
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .pattern-item.big {
-            background: linear-gradient(145deg, var(--big-color), #00a844);
-            color: #fff;
-        }
-
-        .pattern-item.small {
-            background: linear-gradient(145deg, var(--small-color), #c62828);
-            color: #fff;
-        }
-
-        .pattern-item.next {
-            background: linear-gradient(145deg, #ffd700, #ff8f00);
-            color: #000;
-            animation: nextPulse 1s ease-in-out infinite;
-        }
-
-        @keyframes nextPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .matched-pattern-box {
-            margin-top: 12px;
-            padding: 12px;
-            background: linear-gradient(145deg, rgba(0,255,136,0.1), rgba(0,217,255,0.05));
-            border: 1px solid rgba(0,255,136,0.2);
-            border-radius: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .matched-pattern-box .pattern-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--accent-2);
-        }
-
-        .matched-pattern-box .pattern-desc {
-            font-size: 11px;
-            color: #aaa;
-            margin-top: 3px;
-        }
-
-        .accuracy-meter {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .meter-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-        }
-
-        .meter-label span:last-child {
-            color: var(--text-primary);
-            font-weight: bold;
-        }
-
-        .meter-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .meter-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-
-        .meter-fill.high {
-            background: linear-gradient(90deg, #00c853, #00ff88);
-        }
-
-        .meter-fill.medium {
-            background: linear-gradient(90deg, #ff9800, #ffc107);
-        }
-
-        .meter-fill.low {
-            background: linear-gradient(90deg, #f44336, #ff5252);
-        }
-
-        /* History */
-        .history-box {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 15px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .history-header h3 {
-            color: var(--accent-1);
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .clear-btn {
-            padding: 6px 14px;
-            font-size: 10px;
-            font-weight: bold;
-            border: 1px solid var(--small-color);
-            border-radius: 15px;
-            background: transparent;
-            color: var(--small-color);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .clear-btn:hover {
-            background: var(--small-color);
-            color: #fff;
-        }
-
-        .history-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            max-height: 100px;
-            overflow-y: auto;
-            padding: 8px 0;
-        }
-
-        .history-item {
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-        }
-
-        .history-item.big {
-            background: linear-gradient(145deg, var(--big-color), #00a844);
-            color: #fff;
-        }
-
-        .history-item.small {
-            background: linear-gradient(145deg, var(--small-color), #c62828);
-            color: #fff;
-        }
-
-        .no-history {
-            color: #555;
-            width: 100%;
-            text-align: center;
-            padding: 15px;
-            font-size: 12px;
-        }
-
-        .history-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 12px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-        }
-
-        .stat-item .value {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .stat-item .label {
-            font-size: 9px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            text-transform: uppercase;
-        }
-
-        .stat-item.big-stat .value {
-            color: var(--big-color);
-        }
-
-        .stat-item.small-stat .value {
-            color: var(--small-color);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            padding: 12px 25px;
-            background: linear-gradient(145deg, rgba(0,0,0,0.95), rgba(30,30,60,0.95));
-            border-radius: 25px;
-            color: #fff;
-            font-size: 13px;
-            z-index: 3000;
-            opacity: 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 1px solid var(--accent-1);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            animation: particleFloat 15s infinite;
-        }
-
-        @keyframes particleFloat {
-            0%, 100% { transform: translateY(100vh); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh); opacity: 0; }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.2);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-1);
-            border-radius: 2px;
-        }
-
-        /* Fullscreen adjustments */
-        body:fullscreen .container {
-            max-width: 600px;
-        }
-
-        body:fullscreen .num-btn {
-            height: 70px;
-            font-size: 28px;
-        }
-
-        body:fullscreen .prediction-result {
-            font-size: 70px;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        body{background:linear-gradient(135deg,#0a0a0f,#1a1a2e,#0f0f1a);min-height:100vh;padding:8px;color:#fff}
+        .container{max-width:400px;margin:0 auto}
+        
+        .header{text-align:center;padding:12px;background:linear-gradient(145deg,rgba(0,255,136,0.2),rgba(0,200,100,0.05));border:3px solid #00ff88;border-radius:15px;margin-bottom:8px}
+        .header h1{font-size:20px;color:#00ff88}
+        .header p{font-size:9px;color:#00ff88;margin-top:4px}
+        
+        .refresh-bar{background:#1a1a2e;padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+        .refresh-bar .left{font-size:10px;color:#00ff88}
+        .refresh-bar .right{font-size:10px;color:#888}
+        .live-dot{display:inline-block;width:8px;height:8px;background:#00ff88;border-radius:50%;margin-right:5px;animation:blink 1s infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+        
+        .mode-box{padding:15px;border-radius:12px;text-align:center;margin-bottom:8px}
+        .mode-box.opp{background:rgba(0,217,255,0.15);border:2px solid #00d9ff}
+        .mode-box.same{background:rgba(255,0,255,0.15);border:2px solid #ff00ff}
+        .mode-box.hybrid{background:rgba(255,215,0,0.15);border:2px solid #ffd700}
+        .mode-icon{font-size:28px}
+        .mode-name{font-size:16px;font-weight:bold;margin-top:5px}
+        .mode-box.opp .mode-name{color:#00d9ff}
+        .mode-box.same .mode-name{color:#ff00ff}
+        .mode-box.hybrid .mode-name{color:#ffd700}
+        .mode-desc{font-size:10px;color:#888;margin-top:3px}
+        
+        .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+        .stat{background:rgba(0,0,0,0.4);border-radius:8px;padding:10px 4px;text-align:center}
+        .stat-val{font-size:22px;font-weight:bold}
+        .stat-val.g{color:#00ff88}.stat-val.r{color:#ff5252}.stat-val.y{color:#ffd700}.stat-val.b{color:#00d9ff}
+        .stat-lbl{font-size:7px;color:#666;text-transform:uppercase;margin-top:2px}
+        
+        .wrong-row{display:flex;justify-content:center;gap:8px;margin-bottom:8px}
+        .w-dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold}
+        .w-dot.empty{background:rgba(255,255,255,0.05);border:2px dashed #333;color:#333}
+        .w-dot.filled{background:#d32f2f;border:2px solid #f44336;color:#fff}
+        .w-dot.safe{background:#388e3c;border:2px solid #4caf50;color:#fff}
+        
+        .results-row{display:flex;justify-content:center;gap:5px;margin-bottom:8px}
+        .r-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold}
+        .r-dot.c{background:#00c853}
+        .r-dot.w{background:#d32f2f}
+        .r-dot.e{background:rgba(255,255,255,0.05);color:#333}
+        
+        .voice-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:6px;background:rgba(0,217,255,0.08);border-radius:8px;margin-bottom:8px}
+        .voice-row input{width:20px;height:20px;cursor:pointer}
+        .voice-row span{font-size:12px}
+        
+        .pred-box{background:linear-gradient(145deg,#1a1a2e,#0f0f1a);border-radius:20px;padding:20px;text-align:center;margin-bottom:8px;border:3px solid rgba(255,255,255,0.1)}
+        .pred-label{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px}
+        .pred-main{font-size:85px;font-weight:bold;margin:8px 0;line-height:1}
+        .pred-main.big{color:#00ff88;text-shadow:0 0 50px rgba(0,255,136,0.6)}
+        .pred-main.small{color:#ff5252;text-shadow:0 0 50px rgba(255,82,82,0.6)}
+        .pred-main.wait{color:#333;font-size:16px}
+        .pred-logic{font-size:10px;color:#888;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;margin-top:10px}
+        .pred-logic strong{color:#ffd700}
+        
+        .pattern-show{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:10px}
+        .p-item{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;font-weight:bold}
+        .p-item.b{background:#00a844}
+        .p-item.s{background:#c62828}
+        .p-item.n{background:linear-gradient(145deg,#ffd700,#ff8f00);color:#000;animation:pop 0.5s infinite}
+        @keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+        
+        .input-box{background:rgba(255,215,0,0.1);border:2px solid rgba(255,215,0,0.4);border-radius:12px;padding:10px;margin-bottom:8px}
+        .input-row{display:flex;gap:8px}
+        .inp{flex:1;padding:12px;font-size:22px;font-weight:bold;text-align:center;border:2px solid rgba(255,215,0,0.4);border-radius:10px;background:rgba(0,0,0,0.6);color:#fff;outline:none}
+        .inp:focus{border-color:#ffd700}
+        .add-btn{padding:12px 25px;font-size:18px;font-weight:bold;border:none;border-radius:10px;background:linear-gradient(145deg,#ffd700,#ff8f00);color:#000;cursor:pointer}
+        
+        .num-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px}
+        .num-btn{height:55px;font-size:24px;font-weight:bold;border:none;border-radius:10px;cursor:pointer}
+        .num-btn:active{transform:scale(0.9)}
+        .num-btn.s{background:linear-gradient(145deg,#e53935,#b71c1c)}
+        .num-btn.b{background:linear-gradient(145deg,#43a047,#2e7d32)}
+        
+        .action-row{display:flex;gap:8px;margin-bottom:8px}
+        .action-btn{flex:1;padding:10px;font-size:11px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;background:rgba(255,255,255,0.03);color:#666;cursor:pointer}
+        
+        .history{background:rgba(0,0,0,0.25);border-radius:10px;padding:10px}
+        .history-head{display:flex;justify-content:space-between;margin-bottom:6px}
+        .history-title{font-size:10px;color:#00d9ff}
+        .clear-btn{font-size:8px;padding:3px 8px;border:1px solid #ff5252;border-radius:4px;background:transparent;color:#ff5252;cursor:pointer}
+        .history-list{display:flex;flex-wrap:wrap;gap:3px;max-height:40px;overflow-y:auto}
+        .h-item{min-width:22px;height:18px;padding:0 4px;display:flex;align-items:center;justify-content:center;border-radius:3px;font-size:8px;font-weight:bold}
+        .h-item.b{background:#2e7d32}.h-item.s{background:#c62828}
+        .empty{color:#444;text-align:center;padding:8px;font-size:9px}
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    <div id="toast" class="toast"></div>
-
     <div class="container">
-        <!-- Top Controls -->
-        <div class="top-controls">
-            <button id="micBtn" class="control-btn" onclick="toggleVoice()">
-                <span class="icon">🎤</span>
-                <span id="micText">Voice</span>
-            </button>
-            
-            <button id="soundBtn" class="control-btn active" onclick="toggleSound()">
-                <span id="soundIcon" class="icon">🔊</span>
-                <span>Sound</span>
-            </button>
-            
-            <button id="themeBtn" class="control-btn" onclick="cycleTheme()">
-                <span class="icon">🎨</span>
-                <span id="themeName" class="theme-name">Default</span>
-            </button>
-            
-            <button id="fullscreenBtn" class="control-btn" onclick="toggleFullscreen()">
-                <span id="fsIcon" class="icon">⛶</span>
-                <span id="fsText">Full</span>
-            </button>
-        </div>
-
-        <!-- Voice Status Bar -->
-        <div id="voiceStatusBar" class="voice-status-bar">
-            <div class="status-text">🎤 Listening... Say a command!</div>
-            <div id="heardText" class="heard-text">...</div>
-            <div class="voice-waves">
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-            </div>
-        </div>
-
-        <!-- Voice Commands Help -->
-        <div id="voiceHelp" class="voice-commands-help">
-            <h4>🎤 Voice Commands (English & Hindi)</h4>
-            <div class="commands-grid">
-                <div class="command-item">
-                    <strong>Numbers:</strong><br>
-                    "zero" to "nine"<br>
-                    "sunya" से "nau"
-                </div>
-                <div class="command-item">
-                    <strong>Undo:</strong><br>
-                    "undo", "back"<br>
-                    "wapas", "hatao"
-                </div>
-                <div class="command-item">
-                    <strong>Clear:</strong><br>
-                    "clear", "reset"<br>
-                    "saaf", "mita do"
-                </div>
-                <div class="command-item">
-                    <strong>Theme:</strong><br>
-                    "theme", "change theme"<br>
-                    "rang badlo"
-                </div>
-                <div class="command-item">
-                    <strong>Fullscreen:</strong><br>
-                    "fullscreen", "full"<br>
-                    "bada karo"
-                </div>
-                <div class="command-item">
-                    <strong>Sound:</strong><br>
-                    "sound on/off"<br>
-                    "awaz on/off"
-                </div>
-                <div class="command-item">
-                    <strong>Stop Voice:</strong><br>
-                    "stop", "band karo"<br>
-                    "ruko"
-                </div>
-                <div class="command-item">
-                    <strong>Help:</strong><br>
-                    "help", "madad"<br>
-                    "commands"
-                </div>
-            </div>
-        </div>
-
-        <!-- Header -->
         <div class="header">
-            <h1>🎯 MASTER PATTERN PREDICTOR</h1>
-            <p>Voice Controlled • AI Powered</p>
+            <h1>🎯 V22 AUTO-SYNC</h1>
+            <p>⚡ Auto Refresh 3s • No Glitch • Max 3 Wrong</p>
         </div>
 
-        <!-- Number Buttons -->
-        <div class="number-buttons-section">
-            <div class="section-title">⚡ Add Result</div>
-            <div class="number-grid">
-                <button class="num-btn small-num" onclick="addNumber(0)">0</button>
-                <button class="num-btn small-num" onclick="addNumber(1)">1</button>
-                <button class="num-btn small-num" onclick="addNumber(2)">2</button>
-                <button class="num-btn small-num" onclick="addNumber(3)">3</button>
-                <button class="num-btn small-num" onclick="addNumber(4)">4</button>
-                <button class="num-btn big-num" onclick="addNumber(5)">5</button>
-                <button class="num-btn big-num" onclick="addNumber(6)">6</button>
-                <button class="num-btn big-num" onclick="addNumber(7)">7</button>
-                <button class="num-btn big-num" onclick="addNumber(8)">8</button>
-                <button class="num-btn big-num" onclick="addNumber(9)">9</button>
-            </div>
-            <button class="undo-btn" onclick="undoLast()">↩️ UNDO LAST</button>
+        <!-- REFRESH BAR -->
+        <div class="refresh-bar">
+            <div class="left"><span class="live-dot"></span>LIVE SYNC</div>
+            <div class="right" id="timeDisplay">--:--:--</div>
         </div>
 
-        <!-- Main Output -->
-        <div class="main-output">
-            <div class="prediction-label">🎯 Next Prediction</div>
-            <div id="predictionResult" class="prediction-result waiting">Add 3 Results</div>
-            <div id="confidenceBadge" class="confidence" style="display: none;">0%</div>
+        <!-- MODE -->
+        <div id="modeBox" class="mode-box opp">
+            <div id="modeIcon" class="mode-icon">↔️</div>
+            <div id="modeName" class="mode-name">OPPOSITE</div>
+            <div id="modeDesc" class="mode-desc">Predicting opposite of last</div>
+        </div>
 
-            <div class="pattern-display">
-                <div style="font-size: 11px; color: var(--text-secondary);">📊 Current Pattern</div>
-                <div id="patternSequence" class="pattern-sequence">
-                    <div class="pattern-item" style="background: #333;">-</div>
-                    <div class="pattern-item" style="background: #333;">-</div>
-                    <div class="pattern-item" style="background: #333;">-</div>
-                    <div class="pattern-item next">?</div>
-                </div>
-            </div>
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat"><div id="sC" class="stat-val g">0</div><div class="stat-lbl">Correct</div></div>
+            <div class="stat"><div id="sW" class="stat-val r">0</div><div class="stat-lbl">Wrong</div></div>
+            <div class="stat"><div id="sA" class="stat-val b">-</div><div class="stat-lbl">Accuracy</div></div>
+            <div class="stat"><div id="sM" class="stat-val y">0</div><div class="stat-lbl">Max</div></div>
+        </div>
 
-            <div id="matchedPatternBox" class="matched-pattern-box" style="display: none;">
-                <div id="patternName" class="pattern-name"></div>
-                <div id="patternDesc" class="pattern-desc"></div>
-            </div>
+        <!-- WRONG DOTS -->
+        <div class="wrong-row">
+            <div id="wd1" class="w-dot empty">1</div>
+            <div id="wd2" class="w-dot empty">2</div>
+            <div id="wd3" class="w-dot empty">3</div>
+            <div id="wd4" class="w-dot safe">✓</div>
+        </div>
 
-            <div class="accuracy-meter">
-                <div class="meter-label">
-                    <span>🎯 Accuracy</span>
-                    <span id="accuracyValue">0%</span>
-                </div>
-                <div class="meter-bar">
-                    <div id="meterFill" class="meter-fill" style="width: 0%"></div>
-                </div>
+        <!-- RESULTS -->
+        <div id="resultsRow" class="results-row"></div>
+
+        <!-- VOICE -->
+        <div class="voice-row">
+            <span>🔊</span>
+            <input type="checkbox" id="voice">
+            <span id="vLbl">OFF</span>
+        </div>
+
+        <!-- PREDICTION -->
+        <div class="pred-box">
+            <div class="pred-label">🎯 PREDICTION</div>
+            <div id="predMain" class="pred-main wait">Add 3 Results</div>
+            <div id="predLogic" class="pred-logic" style="display:none"></div>
+            <div id="patternShow" class="pattern-show"></div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="input-box">
+            <div class="input-row">
+                <input type="text" id="inp" class="inp" placeholder="?" maxlength="4">
+                <button class="add-btn" onclick="addNum()">ADD</button>
             </div>
         </div>
 
-        <!-- History -->
-        <div class="history-box">
-            <div class="history-header">
-                <h3>📜 History</h3>
-                <button class="clear-btn" onclick="clearHistory()">🗑️ Clear</button>
+        <!-- NUMBER GRID -->
+        <div class="num-grid">
+            <button class="num-btn s" onclick="addNum('0')">0</button>
+            <button class="num-btn s" onclick="addNum('1')">1</button>
+            <button class="num-btn s" onclick="addNum('2')">2</button>
+            <button class="num-btn s" onclick="addNum('3')">3</button>
+            <button class="num-btn s" onclick="addNum('4')">4</button>
+            <button class="num-btn b" onclick="addNum('5')">5</button>
+            <button class="num-btn b" onclick="addNum('6')">6</button>
+            <button class="num-btn b" onclick="addNum('7')">7</button>
+            <button class="num-btn b" onclick="addNum('8')">8</button>
+            <button class="num-btn b" onclick="addNum('9')">9</button>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="action-row">
+            <button class="action-btn" onclick="undoLast()">↩️ Undo</button>
+            <button class="action-btn" onclick="clearAll()">🗑️ Clear</button>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="history">
+            <div class="history-head">
+                <span class="history-title">📜 History</span>
+                <button class="clear-btn" onclick="clearAll()">Clear</button>
             </div>
-            <div id="historyList" class="history-list">
-                <div class="no-history">No results yet</div>
-            </div>
-            <div class="history-stats">
-                <div class="stat-item big-stat">
-                    <div id="bigCount" class="value">0</div>
-                    <div class="label">Big (5-9)</div>
-                </div>
-                <div class="stat-item small-stat">
-                    <div id="smallCount" class="value">0</div>
-                    <div class="label">Small (0-4)</div>
-                </div>
-            </div>
+            <div id="histList" class="history-list"></div>
         </div>
     </div>
 
     <script>
-        // ========== AUDIO SYSTEM ==========
-        let audioCtx;
-        let soundEnabled = true;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
-
-        function playSound(type) {
-            if (!soundEnabled) return;
-            initAudio();
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            const now = audioCtx.currentTime;
-
-            switch(type) {
-                case 'click':
-                    osc.frequency.setValueAtTime(800, now);
-                    osc.frequency.exponentialRampToValueAtTime(500, now + 0.1);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                    osc.start(now);
-                    osc.stop(now + 0.1);
-                    break;
-
-                case 'big':
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523, now);
-                    osc.frequency.setValueAtTime(659, now + 0.1);
-                    osc.frequency.setValueAtTime(784, now + 0.2);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                    osc.start(now);
-                    osc.stop(now + 0.4);
-                    break;
-
-                case 'small':
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(392, now);
-                    osc.frequency.setValueAtTime(330, now + 0.1);
-                    osc.frequency.setValueAtTime(262, now + 0.2);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                    osc.start(now);
-                    osc.stop(now + 0.4);
-                    break;
-
-                case 'undo':
-                    osc.frequency.setValueAtTime(400, now);
-                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-                    break;
-
-                case 'clear':
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                    break;
-
-                case 'voice':
-                    osc.frequency.setValueAtTime(1200, now);
-                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                    osc.start(now);
-                    osc.stop(now + 0.1);
-                    break;
-
-                case 'theme':
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(600, now);
-                    osc.frequency.setValueAtTime(800, now + 0.1);
-                    osc.frequency.setValueAtTime(1000, now + 0.2);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                    break;
-
-                case 'success':
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523, now);
-                    osc.frequency.setValueAtTime(659, now + 0.15);
-                    osc.frequency.setValueAtTime(784, now + 0.3);
-                    osc.frequency.setValueAtTime(1047, now + 0.45);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-                    osc.start(now);
-                    osc.stop(now + 0.6);
-                    break;
+        // ========== SIMPLE HELPERS ==========
+        const $=id=>document.getElementById(id);
+        
+        // ========== STATE (from localStorage) ==========
+        let STATE = {
+            data: [],           // [{num, cat}]
+            results: [],        // [true/false]
+            consecWrong: 0,
+            mode: 'opp',        // 'opp' | 'same' | 'hybrid'
+            stats: {c:0, w:0, max:0}
+        };
+        
+        // ========== LOAD STATE ==========
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('v22state');
+                if (saved) {
+                    STATE = JSON.parse(saved);
+                }
+            } catch(e) {
+                console.log('Load error:', e);
             }
         }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const btn = document.getElementById('soundBtn');
-            const icon = document.getElementById('soundIcon');
+        
+        // ========== SAVE STATE ==========
+        function saveState() {
+            try {
+                localStorage.setItem('v22state', JSON.stringify(STATE));
+            } catch(e) {
+                console.log('Save error:', e);
+            }
+        }
+        
+        // ========== DETECT BIG/SMALL ==========
+        function detect(n) {
+            n = String(n).trim();
+            const v = parseInt(n);
+            if (n.length === 1) return v >= 5 ? 'B' : 'S';
+            if (v >= 500) return 'B';
+            if (v >= 100) return 'S';
+            if (v >= 50) return 'B';
+            if (v >= 10) return 'S';
+            return v >= 5 ? 'B' : 'S';
+        }
+        
+        // ========== GET PREDICTION ==========
+        function getPrediction() {
+            if (STATE.data.length < 3) return null;
             
-            if (soundEnabled) {
-                btn.classList.add('active');
-                icon.textContent = '🔊';
-                playSound('click');
-                showToast('🔊 Sound ON');
-            } else {
-                btn.classList.remove('active');
-                icon.textContent = '🔇';
-                showToast('🔇 Sound OFF');
+            const len = STATE.data.length;
+            const last = STATE.data[len-1].cat;
+            const prev = STATE.data[len-2].cat;
+            
+            let pred, logic, mode;
+            
+            // HYBRID after 3 wrong
+            if (STATE.consecWrong >= 3) {
+                const last3 = STATE.data.slice(-3).map(d => d.cat);
+                const bCount = last3.filter(c => c === 'B').length;
+                pred = bCount >= 2 ? 'B' : 'S';
+                logic = `🔒 HYBRID: Majority (${bCount}B/${3-bCount}S)`;
+                mode = 'hybrid';
             }
-            localStorage.setItem('soundEnabled', soundEnabled);
+            // SAME after 2 wrong
+            else if (STATE.consecWrong === 2) {
+                pred = last;
+                logic = `🔄 FOLLOW: Same as last (2 wrong)`;
+                mode = 'same';
+            }
+            // SWITCH after 1 wrong
+            else if (STATE.consecWrong === 1) {
+                pred = last;
+                logic = `🔄 FOLLOW: Switching (1 wrong)`;
+                mode = 'same';
+            }
+            // NORMAL: Check for streak or use opposite
+            else {
+                let streak = 1;
+                for (let i = len-2; i >= 0; i--) {
+                    if (STATE.data[i].cat === last) streak++;
+                    else break;
+                }
+                
+                if (streak >= 3) {
+                    pred = last;
+                    logic = `📈 STREAK ${streak}x: Following trend`;
+                    mode = 'same';
+                } else {
+                    pred = last === 'B' ? 'S' : 'B';
+                    logic = `↔️ OPPOSITE: Flip from ${last==='B'?'BIG':'SMALL'}`;
+                    mode = 'opp';
+                }
+            }
+            
+            return { pred, logic, mode };
         }
-
-        // ========== THEME SYSTEM ==========
-        const themes = [
-            { id: 'default', name: 'Default' },
-            { id: 'purple', name: 'Purple' },
-            { id: 'green', name: 'Matrix' },
-            { id: 'cyberpunk', name: 'Cyberpunk' },
-            { id: 'ocean', name: 'Ocean' },
-            { id: 'sunset', name: 'Sunset' },
-            { id: 'gold', name: 'Gold' },
-            { id: 'light', name: 'Light' }
-        ];
-        let currentThemeIndex = 0;
-
-        function cycleTheme() {
-            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-            applyTheme(themes[currentThemeIndex]);
-        }
-
-        function applyTheme(theme) {
-            if (theme.id === 'default') {
-                document.body.removeAttribute('data-theme');
-            } else {
-                document.body.setAttribute('data-theme', theme.id);
+        
+        // ========== ADD NUMBER ==========
+        function addNum(num) {
+            // Get from input if not passed
+            if (num === undefined) {
+                num = $('inp').value.trim();
+                $('inp').value = '';
             }
-            document.getElementById('themeName').textContent = theme.name;
-            localStorage.setItem('selectedTheme', theme.id);
-            playSound('theme');
-            showToast(`🎨 Theme: ${theme.name}`);
-            recreateParticles();
-        }
-
-        function setThemeByName(name) {
-            const theme = themes.find(t => t.name.toLowerCase() === name.toLowerCase() || t.id === name);
-            if (theme) {
-                currentThemeIndex = themes.indexOf(theme);
-                applyTheme(theme);
-            }
-        }
-
-        // ========== FULLSCREEN ==========
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().then(() => {
-                    document.getElementById('fsIcon').textContent = '⛶';
-                    document.getElementById('fsText').textContent = 'Exit';
-                    document.getElementById('fullscreenBtn').classList.add('active');
-                    playSound('click');
-                    showToast('📺 Fullscreen ON');
-                }).catch(() => showToast('❌ Fullscreen failed'));
-            } else {
-                document.exitFullscreen().then(() => {
-                    document.getElementById('fsIcon').textContent = '⛶';
-                    document.getElementById('fsText').textContent = 'Full';
-                    document.getElementById('fullscreenBtn').classList.remove('active');
-                    playSound('click');
-                    showToast('📺 Fullscreen OFF');
-                });
-            }
-        }
-
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                document.getElementById('fsIcon').textContent = '⛶';
-                document.getElementById('fsText').textContent = 'Full';
-                document.getElementById('fullscreenBtn').classList.remove('active');
-            }
-        });
-
-        // ========== VOICE RECOGNITION ==========
-        let recognition;
-        let isListening = false;
-
-        function initVoice() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                return false;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-
-            recognition.onresult = function(event) {
-                let finalTranscript = '';
-                let interimTranscript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript;
+            
+            if (!num || isNaN(num)) return;
+            
+            const cat = detect(num);
+            
+            // Check previous prediction
+            if (STATE.data.length >= 3) {
+                const prediction = getPrediction();
+                if (prediction) {
+                    if (prediction.pred === cat) {
+                        // CORRECT
+                        STATE.stats.c++;
+                        STATE.consecWrong = 0;
+                        STATE.results.push(true);
                     } else {
-                        interimTranscript += transcript;
+                        // WRONG
+                        STATE.stats.w++;
+                        STATE.consecWrong++;
+                        STATE.stats.max = Math.max(STATE.stats.max, STATE.consecWrong);
+                        STATE.results.push(false);
                     }
+                    if (STATE.results.length > 30) STATE.results.shift();
                 }
-
-                // Show what's being heard
-                document.getElementById('heardText').textContent = 
-                    finalTranscript || interimTranscript || '...';
-
-                if (finalTranscript) {
-                    processVoiceCommand(finalTranscript.toLowerCase().trim());
+            }
+            
+            // Add to data
+            STATE.data.push({ num, cat });
+            
+            // Save immediately
+            saveState();
+            
+            // Render
+            render();
+        }
+        
+        // ========== UNDO ==========
+        function undoLast() {
+            if (STATE.data.length === 0) return;
+            
+            STATE.data.pop();
+            
+            if (STATE.results.length > 0) {
+                const wasCorrect = STATE.results.pop();
+                if (wasCorrect) {
+                    STATE.stats.c--;
+                } else {
+                    STATE.stats.w--;
                 }
+            }
+            
+            // Recalculate consecWrong
+            STATE.consecWrong = 0;
+            for (let i = STATE.results.length - 1; i >= 0; i--) {
+                if (!STATE.results[i]) STATE.consecWrong++;
+                else break;
+            }
+            
+            saveState();
+            render();
+        }
+        
+        // ========== CLEAR ALL ==========
+        function clearAll() {
+            if (STATE.data.length === 0) return;
+            if (!confirm('Clear all data?')) return;
+            
+            STATE = {
+                data: [],
+                results: [],
+                consecWrong: 0,
+                mode: 'opp',
+                stats: {c:0, w:0, max:0}
             };
-
-            recognition.onerror = function(event) {
-                console.log('Voice error:', event.error);
-                if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                    showToast('🎤 Error: ' + event.error);
+            
+            saveState();
+            render();
+        }
+        
+        // ========== RENDER ==========
+        function render() {
+            // Time
+            const now = new Date();
+            $('timeDisplay').textContent = now.toLocaleTimeString();
+            
+            // Mode
+            const pred = getPrediction();
+            const modeBox = $('modeBox');
+            const modeIcon = $('modeIcon');
+            const modeName = $('modeName');
+            const modeDesc = $('modeDesc');
+            
+            if (pred) {
+                modeBox.className = 'mode-box ' + pred.mode;
+                if (pred.mode === 'opp') {
+                    modeIcon.textContent = '↔️';
+                    modeName.textContent = 'OPPOSITE';
+                    modeDesc.textContent = 'Predicting opposite';
+                } else if (pred.mode === 'same') {
+                    modeIcon.textContent = '➡️';
+                    modeName.textContent = 'FOLLOW';
+                    modeDesc.textContent = 'Following trend';
+                } else {
+                    modeIcon.textContent = '🔒';
+                    modeName.textContent = 'HYBRID';
+                    modeDesc.textContent = 'Using majority';
                 }
-            };
-
-            recognition.onend = function() {
-                if (isListening) {
+            }
+            
+            // Stats
+            $('sC').textContent = STATE.stats.c;
+            $('sW').textContent = STATE.stats.w;
+            const total = STATE.stats.c + STATE.stats.w;
+            $('sA').textContent = total ? Math.round((STATE.stats.c/total)*100)+'%' : '-';
+            $('sM').textContent = STATE.stats.max;
+            $('sM').className = 'stat-val ' + (STATE.stats.max <= 3 ? 'g' : 'r');
+            
+            // Wrong dots
+            $('wd1').className = 'w-dot ' + (STATE.consecWrong >= 1 ? 'filled' : 'empty');
+            $('wd2').className = 'w-dot ' + (STATE.consecWrong >= 2 ? 'filled' : 'empty');
+            $('wd3').className = 'w-dot ' + (STATE.consecWrong >= 3 ? 'filled' : 'empty');
+            
+            // Results row
+            const last6 = STATE.results.slice(-6);
+            let dotsHtml = '';
+            for (let i = 0; i < 6; i++) {
+                if (i < last6.length) {
+                    dotsHtml += `<div class="r-dot ${last6[i]?'c':'w'}">${last6[i]?'✓':'✗'}</div>`;
+                } else {
+                    dotsHtml += '<div class="r-dot e">-</div>';
+                }
+            }
+            $('resultsRow').innerHTML = dotsHtml;
+            
+            // Voice
+            const voiceOn = localStorage.getItem('v22voice') === 'true';
+            $('voice').checked = voiceOn;
+            $('vLbl').textContent = voiceOn ? 'ON' : 'OFF';
+            $('vLbl').style.color = voiceOn ? '#00ff88' : '#888';
+            
+            // Prediction
+            const pm = $('predMain');
+            const pl = $('predLogic');
+            
+            if (STATE.data.length < 3) {
+                pm.textContent = `Add ${3 - STATE.data.length} more`;
+                pm.className = 'pred-main wait';
+                pl.style.display = 'none';
+            } else {
+                pm.textContent = pred.pred === 'B' ? 'BIG' : 'SMALL';
+                pm.className = 'pred-main ' + (pred.pred === 'B' ? 'big' : 'small');
+                pl.style.display = 'block';
+                pl.innerHTML = `<strong>Logic:</strong> ${pred.logic}`;
+            }
+            
+            // Pattern
+            const last10 = STATE.data.slice(-10);
+            $('patternShow').innerHTML = last10.map(d => 
+                `<div class="p-item ${d.cat==='B'?'b':'s'}">${d.num}</div>`
+            ).join('') + (STATE.data.length >= 3 ? '<div class="p-item n">?</div>' : '');
+            
+            // History
+            const hl = $('histList');
+            if (STATE.data.length === 0) {
+                hl.innerHTML = '<div class="empty">No data</div>';
+            } else {
+                hl.innerHTML = STATE.data.map(d => 
+                    `<div class="h-item ${d.cat==='B'?'b':'s'}">${d.num}</div>`
+                ).join('');
+                hl.scrollTop = hl.scrollHeight;
+            }
+        }
+        
+        // ========== VOICE TOGGLE ==========
+        $('voice').onchange = function() {
+            localStorage.setItem('v22voice', this.checked);
+            $('vLbl').textContent = this.checked ? 'ON' : 'OFF';
+            $('vLbl').style.color = this.checked ? '#00ff88' : '#888';
+        };
+        
+        // ========== ENTER KEY ==========
+        $('inp').onkeypress = function(e) {
+            if (e.key === 'Enter') addNum();
+        };
+        
+        // ========== INIT ==========
+        loadState();
+        render();
+        
+        // Speak prediction on load (if voice on and prediction exists)
+        setTimeout(function() {
+            const voiceOn = localStorage.getItem('v22voice') === 'true';
+            if (voiceOn && STATE.data.length >= 3) {
+                const pred = getPrediction();
+                if (pred) {
                     try {
-                        recognition.start();
+                        speechSynthesis.cancel();
+                        const u = new SpeechSynthesisUtterance(pred.pred === 'B' ? 'Big' : 'Small');
+                        u.rate = 1;
+                        u.lang = 'en-US';
+                        speechSynthesis.speak(u);
                     } catch(e) {}
                 }
-            };
-
-            return true;
-        }
-
-        function toggleVoice() {
-            if (!recognition && !initVoice()) {
-                showToast('❌ Voice not supported');
-                return;
             }
-
-            if (isListening) {
-                stopVoice();
-            } else {
-                startVoice();
-            }
-        }
-
-        function startVoice() {
-            try {
-                recognition.start();
-                isListening = true;
-                
-                const btn = document.getElementById('micBtn');
-                btn.classList.add('active', 'recording');
-                document.getElementById('micText').textContent = 'Stop';
-                document.getElementById('voiceStatusBar').classList.add('show');
-                document.getElementById('voiceHelp').classList.add('show');
-                document.getElementById('heardText').textContent = '...';
-                
-                playSound('voice');
-                showToast('🎤 Voice Started! Speak now...');
-            } catch(e) {
-                showToast('❌ Could not start voice');
-            }
-        }
-
-        function stopVoice() {
-            isListening = false;
-            try {
-                recognition.stop();
-            } catch(e) {}
-            
-            const btn = document.getElementById('micBtn');
-            btn.classList.remove('active', 'recording');
-            document.getElementById('micText').textContent = 'Voice';
-            document.getElementById('voiceStatusBar').classList.remove('show');
-            document.getElementById('voiceHelp').classList.remove('show');
-            
-            playSound('click');
-            showToast('🎤 Voice Stopped');
-        }
-
-        function processVoiceCommand(command) {
-            console.log('Command:', command);
-            playSound('voice');
-
-            // Number mappings (English and Hindi)
-            const numberMap = {
-                'zero': 0, 'sunya': 0, 'shunya': 0, '0': 0,
-                'one': 1, 'ek': 1, 'won': 1, '1': 1,
-                'two': 2, 'do': 2, 'to': 2, 'too': 2, '2': 2,
-                'three': 3, 'teen': 3, 'tin': 3, 'tree': 3, '3': 3,
-                'four': 4, 'char': 4, 'for': 4, 'chaar': 4, '4': 4,
-                'five': 5, 'paanch': 5, 'panch': 5, 'punch': 5, '5': 5,
-                'six': 6, 'chhe': 6, 'che': 6, 'chhah': 6, '6': 6,
-                'seven': 7, 'saat': 7, 'sat': 7, '7': 7,
-                'eight': 8, 'aath': 8, 'aat': 8, 'ate': 8, '8': 8,
-                'nine': 9, 'nau': 9, 'no': 9, 'nai': 9, '9': 9
-            };
-
-            // Check for numbers first
-            for (const [word, num] of Object.entries(numberMap)) {
-                if (command.includes(word)) {
-                    addNumber(num);
-                    speak(`Added ${num}`);
-                    return;
-                }
-            }
-
-            // Undo commands
-            if (command.includes('undo') || command.includes('back') || 
-                command.includes('wapas') || command.includes('hatao') ||
-                command.includes('peeche') || command.includes('undo')) {
-                undoLast();
-                speak('Undone');
-                return;
-            }
-
-            // Clear commands
-            if (command.includes('clear') || command.includes('reset') || 
-                command.includes('saaf') || command.includes('mita') ||
-                command.includes('delete all') || command.includes('sab hatao')) {
-                clearHistory();
-                speak('Cleared');
-                return;
-            }
-
-            // Theme commands
-            if (command.includes('theme') || command.includes('rang') || 
-                command.includes('color') || command.includes('colour')) {
-                cycleTheme();
-                speak('Theme changed');
-                return;
-            }
-
-            // Specific themes
-            if (command.includes('purple')) { setThemeByName('purple'); speak('Purple theme'); return; }
-            if (command.includes('green') || command.includes('matrix')) { setThemeByName('green'); speak('Green theme'); return; }
-            if (command.includes('cyber')) { setThemeByName('cyberpunk'); speak('Cyberpunk theme'); return; }
-            if (command.includes('ocean') || command.includes('blue')) { setThemeByName('ocean'); speak('Ocean theme'); return; }
-            if (command.includes('sunset') || command.includes('orange')) { setThemeByName('sunset'); speak('Sunset theme'); return; }
-            if (command.includes('gold')) { setThemeByName('gold'); speak('Gold theme'); return; }
-            if (command.includes('light') || command.includes('white')) { setThemeByName('light'); speak('Light theme'); return; }
-            if (command.includes('dark') || command.includes('default')) { setThemeByName('default'); speak('Default theme'); return; }
-
-            // Fullscreen commands
-            if (command.includes('full screen') || command.includes('fullscreen') || 
-                command.includes('bada') || command.includes('maximize') ||
-                command.includes('full') && !document.fullscreenElement) {
-                toggleFullscreen();
-                speak('Fullscreen');
-                return;
-            }
-
-            if (command.includes('exit') || command.includes('minimize') || 
-                command.includes('chhota') || command.includes('small screen')) {
-                if (document.fullscreenElement) {
-                    toggleFullscreen();
-                    speak('Exit fullscreen');
-                }
-                return;
-            }
-
-            // Sound commands
-            if (command.includes('sound on') || command.includes('awaz on') || 
-                command.includes('volume on') || command.includes('unmute')) {
-                if (!soundEnabled) toggleSound();
-                speak('Sound on');
-                return;
-            }
-
-            if (command.includes('sound off') || command.includes('awaz off') || 
-                command.includes('mute') || command.includes('volume off') ||
-                command.includes('chup') || command.includes('silent')) {
-                if (soundEnabled) toggleSound();
-                return;
-            }
-
-            // Stop voice
-            if (command.includes('stop') || command.includes('band') || 
-                command.includes('ruko') || command.includes('stop listening')) {
-                stopVoice();
-                return;
-            }
-
-            // Help
-            if (command.includes('help') || command.includes('madad') || 
-                command.includes('command') || command.includes('kya bol')) {
-                const helpDiv = document.getElementById('voiceHelp');
-                helpDiv.classList.toggle('show');
-                speak('Showing commands');
-                return;
-            }
-
-            showToast(`🎤 "${command}"`);
-        }
-
-        function speak(text) {
-            if (soundEnabled && 'speechSynthesis' in window) {
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.rate = 1.2;
-                utter.pitch = 1;
-                utter.volume = 0.8;
-                speechSynthesis.speak(utter);
-            }
-        }
-
-        // ========== TOAST NOTIFICATION ==========
-        let toastTimeout;
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
-        }
-
-        // ========== PARTICLES ==========
-        function createParticles() {
-            const container = document.getElementById('particles');
-            container.innerHTML = '';
-            
-            const colors = ['#00d9ff', '#00ff88', '#ff6b6b', '#ffd93d', '#ff00ff'];
-            
-            for (let i = 0; i < 25; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (12 + Math.random() * 8) + 's';
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.boxShadow = `0 0 ${5 + Math.random() * 10}px ${particle.style.background}`;
-                container.appendChild(particle);
-            }
-        }
-
-        function recreateParticles() {
-            createParticles();
-        }
-
-        // ========== MAIN LOGIC ==========
-        let results = [];
-
-        const masterPatterns = {
-            "S-S-S-0": ["BIG", 72], "B-S-S-0": ["SMALL", 68], "S-B-S-0": ["BIG", 65],
-            "B-B-S-0": ["SMALL", 70], "S-S-B-0": ["BIG", 66], "B-S-B-0": ["SMALL", 64],
-            "S-B-B-0": ["SMALL", 67], "B-B-B-0": ["SMALL", 71],
-            "S-S-S-1": ["BIG", 69], "B-S-S-1": ["BIG", 66], "S-B-S-1": ["SMALL", 71],
-            "B-B-S-1": ["BIG", 68], "S-S-B-1": ["SMALL", 65], "B-S-B-1": ["SMALL", 67],
-            "S-B-B-1": ["SMALL", 69], "B-B-B-1": ["SMALL", 72],
-            "S-S-S-2": ["BIG", 75], "B-S-S-2": ["SMALL", 67], "S-B-S-2": ["BIG", 69],
-            "B-B-S-2": ["SMALL", 72], "S-S-B-2": ["BIG", 66], "B-S-B-2": ["SMALL", 68],
-            "S-B-B-2": ["SMALL", 70], "B-B-B-2": ["SMALL", 73],
-            "S-S-S-3": ["BIG", 70], "B-S-S-3": ["BIG", 68], "S-B-S-3": ["SMALL", 66],
-            "B-B-S-3": ["SMALL", 73], "S-S-B-3": ["BIG", 64], "B-S-B-3": ["SMALL", 67],
-            "S-B-B-3": ["SMALL", 69], "B-B-B-3": ["SMALL", 71],
-            "S-S-S-4": ["BIG", 71], "B-S-S-4": ["SMALL", 69], "S-B-S-4": ["BIG", 67],
-            "B-B-S-4": ["BIG", 65], "S-S-B-4": ["SMALL", 68], "B-S-B-4": ["SMALL", 70],
-            "S-B-B-4": ["SMALL", 66], "B-B-B-4": ["SMALL", 72],
-            "S-S-S-5": ["BIG", 68], "B-S-S-5": ["SMALL", 70], "S-B-S-5": ["SMALL", 66],
-            "B-B-S-5": ["SMALL", 71], "S-S-B-5": ["SMALL", 74], "B-S-B-5": ["SMALL", 71],
-            "S-B-B-5": ["SMALL", 69], "B-B-B-5": ["SMALL", 76],
-            "S-S-S-6": ["BIG", 67], "B-S-S-6": ["SMALL", 69], "S-B-S-6": ["BIG", 65],
-            "B-B-S-6": ["SMALL", 70], "S-S-B-6": ["SMALL", 72], "B-S-B-6": ["BIG", 66],
-            "S-B-B-6": ["SMALL", 70], "B-B-B-6": ["SMALL", 73],
-            "S-S-S-7": ["BIG", 69], "B-S-S-7": ["SMALL", 71], "S-B-S-7": ["BIG", 66],
-            "B-B-S-7": ["SMALL", 72], "S-S-B-7": ["SMALL", 73], "B-S-B-7": ["SMALL", 70],
-            "S-B-B-7": ["BIG", 67], "B-B-B-7": ["SMALL", 75],
-            "S-S-S-8": ["BIG", 68], "B-S-S-8": ["SMALL", 70], "S-B-S-8": ["BIG", 65],
-            "B-B-S-8": ["SMALL", 71], "S-S-B-8": ["SMALL", 71], "B-S-B-8": ["SMALL", 74],
-            "S-B-B-8": ["BIG", 66], "B-B-B-8": ["SMALL", 77],
-            "S-S-S-9": ["BIG", 70], "B-S-S-9": ["SMALL", 72], "S-B-S-9": ["SMALL", 68],
-            "B-B-S-9": ["SMALL", 74], "S-S-B-9": ["SMALL", 76], "B-S-B-9": ["SMALL", 72],
-            "S-B-B-9": ["SMALL", 74], "B-B-B-9": ["SMALL", 78]
-        };
-
-        const simplePatterns = {
-            "S-S-S": ["BIG", 70], "B-B-B": ["SMALL", 75],
-            "S-S-B": ["SMALL", 72], "B-B-S": ["SMALL", 71],
-            "S-B-S": ["BIG", 67], "B-S-B": ["SMALL", 70],
-            "S-B-B": ["SMALL", 69], "B-S-S": ["BIG", 68]
-        };
-
-        function isBig(num) { return num >= 5; }
-        function getCategory(num) { return isBig(num) ? "B" : "S"; }
-
-        function addNumber(num) {
-            results.push(num);
-            playSound('click');
-            
-            // Visual feedback on button
-            const btns = document.querySelectorAll('.num-btn');
-            btns[num].style.transform = 'scale(0.95)';
-            setTimeout(() => btns[num].style.transform = '', 150);
-            
-            updateUI();
-            saveToStorage();
-            
-            // Play prediction sound
-            setTimeout(() => {
-                const pred = getPrediction();
-                if (pred.prediction) {
-                    playSound(pred.prediction.toLowerCase());
-                }
-            }, 200);
-            
-            showToast(`✅ Added: ${num}`);
-        }
-
-        function undoLast() {
-            if (results.length > 0) {
-                const removed = results.pop();
-                playSound('undo');
-                updateUI();
-                saveToStorage();
-                showToast(`↩️ Removed: ${removed}`);
-            } else {
-                showToast('❌ Nothing to undo');
-            }
-        }
-
-        function clearHistory() {
-            if (results.length === 0) {
-                showToast('❌ Already empty');
-                return;
-            }
-            results = [];
-            playSound('clear');
-            updateUI();
-            saveToStorage();
-            showToast('🗑️ History cleared!');
-        }
-
-        function getPrediction() {
-            if (results.length < 3) {
-                return { prediction: null, accuracy: 0, pattern: null, description: "" };
-            }
-
-            const last3 = results.slice(-3);
-            const last4 = results.slice(-4);
-            let bestMatch = null;
-            let highestAccuracy = 0;
-
-            // Check master patterns
-            if (results.length >= 4) {
-                const pattern = last4.slice(0, 3).map(n => getCategory(n)).join('-') + '-' + last4[3];
-                if (masterPatterns[pattern] && masterPatterns[pattern][1] > highestAccuracy) {
-                    bestMatch = {
-                        prediction: masterPatterns[pattern][0],
-                        accuracy: masterPatterns[pattern][1],
-                        pattern: pattern,
-                        description: pattern + " → " + masterPatterns[pattern][0]
-                    };
-                    highestAccuracy = masterPatterns[pattern][1];
-                }
-            }
-
-            // Check simple patterns
-            const simpleSeq = last3.map(n => getCategory(n)).join('-');
-            if (simplePatterns[simpleSeq] && (!bestMatch || simplePatterns[simpleSeq][1] >= highestAccuracy)) {
-                bestMatch = {
-                    prediction: simplePatterns[simpleSeq][0],
-                    accuracy: simplePatterns[simpleSeq][1],
-                    pattern: simpleSeq,
-                    description: simpleSeq + " → " + simplePatterns[simpleSeq][0]
-                };
-            }
-
-            if (!bestMatch) {
-                bestMatch = {
-                    prediction: "BIG",
-                    accuracy: 60,
-                    pattern: simpleSeq,
-                    description: "Basic analysis"
-                };
-            }
-
-            return bestMatch;
-        }
-
-        function updateUI() {
-            updateHistory();
-            updatePrediction();
-            updateStats();
-        }
-
-        function updateHistory() {
-            const list = document.getElementById('historyList');
-            if (results.length === 0) {
-                list.innerHTML = '<div class="no-history">No results yet</div>';
-                return;
-            }
-            list.innerHTML = results.map(num => 
-                `<div class="history-item ${isBig(num) ? 'big' : 'small'}">${num}</div>`
-            ).join('');
-            list.scrollTop = list.scrollHeight;
-        }
-
-        function updatePrediction() {
-            const result = document.getElementById('predictionResult');
-            const badge = document.getElementById('confidenceBadge');
-            const sequence = document.getElementById('patternSequence');
-            const matchBox = document.getElementById('matchedPatternBox');
-            const patternName = document.getElementById('patternName');
-            const patternDesc = document.getElementById('patternDesc');
-            const accuracyValue = document.getElementById('accuracyValue');
-            const meterFill = document.getElementById('meterFill');
-
-            if (results.length < 3) {
-                result.textContent = `Add ${3 - results.length} more`;
-                result.className = 'prediction-result waiting';
-                badge.style.display = 'none';
-                matchBox.style.display = 'none';
-                
-                const last = results.slice(-3);
-                sequence.innerHTML = [0, 1, 2].map(i => {
-                    if (last[i] !== undefined) {
-                        return `<div class="pattern-item ${isBig(last[i]) ? 'big' : 'small'}">${last[i]}</div>`;
-                    }
-                    return `<div class="pattern-item" style="background: #333;">-</div>`;
-                }).join('') + `<div class="pattern-item next">?</div>`;
-                
-                accuracyValue.textContent = '0%';
-                meterFill.style.width = '0%';
-                meterFill.className = 'meter-fill';
-                return;
-            }
-
-            const pred = getPrediction();
-            
-            result.textContent = pred.prediction;
-            result.className = `prediction-result ${pred.prediction.toLowerCase()}`;
-            
-            badge.style.display = 'inline-block';
-            badge.textContent = `${pred.accuracy}% Confidence`;
-            badge.className = `confidence ${pred.accuracy >= 73 ? 'high' : pred.accuracy >= 68 ? 'medium' : 'low'}`;
-
-            const last3 = results.slice(-3);
-            sequence.innerHTML = last3.map(num => 
-                `<div class="pattern-item ${isBig(num) ? 'big' : 'small'}">${num}</div>`
-            ).join('') + `<div class="pattern-item next">?</div>`;
-
-            matchBox.style.display = 'block';
-            patternName.textContent = pred.pattern;
-            patternDesc.textContent = pred.description;
-
-            accuracyValue.textContent = `${pred.accuracy}%`;
-            meterFill.style.width = `${pred.accuracy}%`;
-            meterFill.className = `meter-fill ${pred.accuracy >= 73 ? 'high' : pred.accuracy >= 68 ? 'medium' : 'low'}`;
-        }
-
-        function updateStats() {
-            document.getElementById('bigCount').textContent = results.filter(n => isBig(n)).length;
-            document.getElementById('smallCount').textContent = results.filter(n => !isBig(n)).length;
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('patternResults', JSON.stringify(results));
-        }
-
-        function loadFromStorage() {
-            // Load results
-            const saved = localStorage.getItem('patternResults');
-            if (saved) results = JSON.parse(saved);
-            
-            // Load theme
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme) {
-                const theme = themes.find(t => t.id === savedTheme);
-                if (theme) {
-                    currentThemeIndex = themes.indexOf(theme);
-                    if (theme.id !== 'default') {
-                        document.body.setAttribute('data-theme', theme.id);
-                    }
-                    document.getElementById('themeName').textContent = theme.name;
-                }
-            }
-            
-            // Load sound
-            const savedSound = localStorage.getItem('soundEnabled');
-            if (savedSound === 'false') {
-                soundEnabled = false;
-                document.getElementById('soundBtn').classList.remove('active');
-                document.getElementById('soundIcon').textContent = '🔇';
-            }
-            
-            updateUI();
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            loadFromStorage();
-            initVoice();
-            
-            // Add ripple effect to buttons
-            document.querySelectorAll('.num-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const ripple = document.createElement('span');
-                    ripple.className = 'ripple';
-                    const rect = this.getBoundingClientRect();
-                    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
-                    ripple.style.left = e.clientX - rect.left - rect.width/2 + 'px';
-                    ripple.style.top = e.clientY - rect.top - rect.height/2 + 'px';
-                    this.appendChild(ripple);
-                    setTimeout(() => ripple.remove(), 600);
-                });
-            });
-            
-            // Touch support for audio
-            document.body.addEventListener('touchstart', initAudio, { once: true });
-            document.body.addEventListener('click', initAudio, { once: true });
-        });
+        }, 500);
     </script>
 </body>
 </html>
