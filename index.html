@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VED PRO v21 · APEX SIGNAL INTELLIGENCE</title>
+<title>VED PRO v22 · APEX SIGNAL INTELLIGENCE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
@@ -2870,9 +2870,9 @@ document.addEventListener('keydown', function(){ _getAC(); }, {once:true});
 // CONFIG
 // ══════════════════════════════
 var cfg = {
-  risk:'normal', minVotes:7, minWScore:12, minConf:70, minQual:62, minCats:4,
+  risk:'normal', minVotes:6, minWScore:8, minConf:60, minQual:55, minCats:3,
   winA:10, lossA:5, dTgt:500, dMaxL:200, stopT:false, stopL:true, mart:false,
-  reqADX:true, reqMTF:true, antiWS:true, antiChop:true, antiRange:true,
+  reqADX:true, reqMTF:false, antiWS:true, antiChop:true, antiRange:true,
   sessBoost:true, skipDoji:true, volConf:false,
   maxLoss:3, dailyMax:20, cooloff:30, cycle:60, chartH:50,
   particles:true, sndYes:true, sndNo:true, sndWin:true, sndLoss:true,
@@ -3957,11 +3957,7 @@ function runConfluence(cl, ov, real5mData, real15mData) {
   })();
 
   // v21: Real MTF disagreement penalty — if real API 5m/15m contradict 1m, penalize harder
-  var realMTFPen = 0;
-  if (usingRealMTF) {
-    if (real5mData  && calcRealBias(real5mData)  !== signDir) realMTFPen += 12;
-    if (real15mData && calcRealBias(real15mData) !== signDir) realMTFPen += 18;
-  }
+  var realMTFPen = 0; // v22: 1m-only mode — no real MTF penalty
 
   var allBonus = catBonus+adxBonus+freshBonus+haBonus+cdlBonus+tcBonus+volBonus+sesBonus+tfBonus+vsaBonus+divBonus+mssBonus+fvgBonus+chochBonus+pdBonus;
 
@@ -3973,10 +3969,11 @@ function runConfluence(cl, ov, real5mData, real15mData) {
   // Hard cap individual components
   var cappedBonus = Math.min(bonusConf, 35); // max 35 pts from bonuses (not unlimited)
   var conf = Math.min(96, Math.max(5, Math.round(baseConf + cappedBonus - penConf)));
-  // Additional ADX reality check: if ADX < 20, hard cap conf at 72
-  if (adxV.adx < 20) conf = Math.min(conf, 72);
-  // If less than 4 cats agree, hard cap at 68
-  if (catsAgreeing < 4) conf = Math.min(conf, 68);
+  // ADX reality check: only hard cap in off-hours. Prime/London = no cap
+  var istHconf=(function(){var d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));return d.getHours()+d.getMinutes()/60;})();
+  var inSessionConf = (istHconf>=13.5&&istHconf<22.5);
+  if (!inSessionConf && adxV.adx < 20) conf = Math.min(conf, 72);
+  if (!inSessionConf && catsAgreeing < 4) conf = Math.min(conf, 68);
 
   var quality = Math.min(100, Math.max(5, Math.round(
     conf
@@ -4098,7 +4095,7 @@ function checkSigPersist(sym, dir) {
     p.dir = dir; p.count = 1;
   }
   p.ts = now;
-  return { ok: p.count >= 2, count: p.count };
+  return { ok: p.count >= 1, count: p.count }; // v22: 1 cycle enough (was 2)
 }
 
 async function fetchPair(sym) {
@@ -4140,18 +4137,8 @@ async function fetchAll() {
     _lastFetchErrors = [];
   }
 
-  // v20 APEX: Fetch REAL 5m + 15m data for top pairs (parallel, best-effort)
-  // Only for pairs that passed 1m analysis — saves API quota
-  var topPairs = ok.slice(0, 5).map(function(r){ return r.sym; }); // top 5 only
-  var mtf5mResults  = await Promise.allSettled(topPairs.map(function(p){ return fetchPair5m(p); }));
-  var mtf15mResults = await Promise.allSettled(topPairs.map(function(p){ return fetchPair15m(p); }));
-
-  // Store real MTF results
-  topPairs.forEach(function(sym, i) {
-    if (!_mtfCache[sym]) _mtfCache[sym] = {};
-    if (mtf5mResults[i].status === 'fulfilled')  _mtfCache[sym]['5m']  = mtf5mResults[i].value;
-    if (mtf15mResults[i].status === 'fulfilled') _mtfCache[sym]['15m'] = mtf15mResults[i].value;
-  });
+  // v22: 1m-ONLY MODE — 5m/15m fetching disabled to save API quota
+  // MTF alignment is computed from 1m data derivatives only (bias5mFull/bias15mFull)
 
   return ok;
 }
@@ -4258,7 +4245,30 @@ function renderCatBar(res, catsAgreeing) {
   }).join('');
 }
 
+// ── SIGNAL TIMELINE — Bar chart of last 20 signal scores ──
+var _sigTimelineHistory = [];  // {conf, dir, ts}
+function updateSignalTimeline(best) {
+  if (!best) return;
+  // Push latest signal into history (max 40 entries)
+  _sigTimelineHistory.push({ conf: best.conf, dir: best.dir, ts: Date.now(), sym: best.sym });
+  if (_sigTimelineHistory.length > 40) _sigTimelineHistory.shift();
+
+  // Render into both possible sigTimeline elements
+  var els = document.querySelectorAll('#sigTimeline');
+  if (!els || !els.length) return;
+  var html = _sigTimelineHistory.slice(-22).map(function(s) {
+    var h   = Math.max(3, Math.round((s.conf / 100) * 26));
+    var col = s.dir === 'BIG' ? 'rgba(0,255,170,.75)' : 'rgba(255,32,80,.75)';
+    var tip = s.sym + ' ' + s.dir + ' · ' + s.conf + '% · ' + new Date(s.ts).toLocaleTimeString('en-IN', {timeZone:'Asia/Kolkata'});
+    return '<div class="stl-b" style="height:'+h+'px;background:'+col+';box-shadow:0 0 4px '+col+'" title="'+tip+'"></div>';
+  }).join('');
+
+  els.forEach(function(el) { el.innerHTML = html || '<div style="font-size:7px;color:var(--txt2);padding:4px">no history yet</div>'; });
+}
+
+// ── RENDER ANALYSIS — populates all right-panel elements with best signal data ──
 function renderAnalysis(best) {
+  if (!best) return;
   setText('rpPair', best.sym);
   var tw = best.totalW;
   // v17: Update gauge elements (primary)
@@ -4896,7 +4906,7 @@ async function engine() {
       renderAnalysis(best);
       renderCatBar(best.catResults, best.catsAgreeing);
       renderCatProgBars(best.catResults, best.catsAgreeing, best.dir==='BIG'?1:-1);
-      updateSignalTimeline(best);
+      if(typeof updateSignalTimeline==='function') updateSignalTimeline(best);
       v17UpdateDisplay(best, raw);
 
       // MTF
@@ -4937,7 +4947,17 @@ async function engine() {
 
       // Decision gate
       if(!mkt.ok){showNO(best,[mkt.title, mkt.line1, mkt.line2], true);return;}
-      if(locked)return;
+
+      // v22: Session check for prime time — detect BEFORE locked check
+      var istHcheck=(function(){var d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));return d.getHours()+d.getMinutes()/60;})();
+      var _isPrime  = istHcheck>=18.5 && istHcheck<22.5;
+      var _isLondon = istHcheck>=13.5 && istHcheck<18.5;
+
+      // During Prime/London: never block on locked — show fresh signal every cycle
+      if(locked && !_isPrime && !_isLondon) return;
+      // Reset locked each cycle in prime so display refreshes
+      if(_isPrime || _isLondon) locked = null;
+
       if(cooloffUntil&&Date.now()<cooloffUntil){var r2=Math.ceil((cooloffUntil-Date.now())/1000);var sub2=$('heroSub');if(sub2)sub2.textContent='⏸ Cooloff '+r2+'s';return;}
 
       var todayT=trades.filter(function(t){var d=new Date(t.ts),n2=new Date();return d.getDate()===n2.getDate()&&d.getMonth()===n2.getMonth();}).length;
@@ -4948,37 +4968,59 @@ async function engine() {
       var recentLoss=trades.filter(function(t){return t.outcome!=='pending';}).slice(-cfg.maxLoss);
       if(recentLoss.length===cfg.maxLoss&&recentLoss.every(function(t){return t.outcome==='loss';})){showNO(best,[cfg.maxLoss+'× CONSEC LOSSES']);return;}
 
-      // Build checks v20 APEX — includes signal persistence + real MTF
+      // ── v22 FINAL: Smart gate system — Prime/London = relaxed, Off-hours = strict ──
       var pass=[],fail=[];
-      var doji=best.inds.find(function(i){return i.id==='cdl'&&i.extra&&i.extra.indexOf('DOJI')>=0;});
-      var liqQ=getLiquidityQuality((function(){var d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));return d.getHours()+d.getMinutes()/60;})());
-      // Compute R:R for the best pair
       var bestRaw=raw.find(function(r){return r.sym===best.sym;});
       var rrData=bestRaw?calcSLTP(bestRaw.ohlcv,best.dir==='BIG'?1:-1,best.closes[best.closes.length-1]):{rr:0};
-      var rrPass=rrData.rr>=1.4; // v20: minimum 1:1.4 R:R (tighter than v19's 1.3)
-      // v20: Signal persistence — require 2 consecutive same-dir signals
-      var persist = checkSigPersist(best.sym, best.dir);
-      var checks=[
-        [best.topVotes>=cfg.minVotes,'VOTES '+best.topVotes+'/'+best.totalW],
-        [best.wScore>=cfg.minWScore,'WSCORE '+best.wScore],
-        [best.conf>=cfg.minConf,'CONF '+best.conf+'%'],
-        [!cfg.reqADX||best.adxPass,'ADX '+best.adx.toFixed(0)],
-        [!best.whipsaw,'NO WHIPSAW'],
-        [!best.choppy,'NO CHOP'],
-        [!best.ranging,'TRENDING'],
-        [!cfg.reqMTF||best.mtf2,'MTF ALIGNED'],
-        [best.quality>=cfg.minQual,'QUAL '+best.quality+'%'],
-        [!cfg.skipDoji||!doji,'NO DOJI'],
-        [best.catsAgreeing>=cfg.minCats,'CATS '+best.catsAgreeing+'/8'],
-        [liqQ>=30,'LIQ '+liqQ+'%'],
-        [best.tfAlign>=1,'MTF '+best.tfAlign+'/2'],
-        [rrPass,'R:R 1:'+rrData.rr.toFixed(1)],
-        [persist.ok,'PERSIST '+persist.count+'/2'], // v20: signal persistence gate
-      ];
+
+      // Session detection (IST)
+      var istHnow2=(function(){var d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));return d.getHours()+d.getMinutes()/60;})();
+      var isPrime  = istHnow2>=18.5 && istHnow2<22.5;   // London + NY overlap
+      var isLondon = istHnow2>=13.5 && istHnow2<18.5;   // London only
+      var isAsian  = istHnow2>=5.5  && istHnow2<13.5;   // Asian session
+
+      // ✅ wScore direction fix — BEAR signals have negative wScore
+      var absWScore = Math.abs(best.wScore);
+
+      var checks;
+      if (isPrime) {
+        // 🔥 PRIME TIME — Only 4 core quality checks, everything else passes
+        checks=[
+          [best.topVotes>=5,          'VOTES '+best.topVotes+'/'+best.totalW],
+          [absWScore>=6,              'WSCORE '+best.wScore],
+          [best.conf>=50,             'CONF '+best.conf+'%'],
+          [best.catsAgreeing>=2,      'CATS '+best.catsAgreeing+'/8'],
+        ];
+      } else if (isLondon) {
+        // ⚡ LONDON — 6 checks, moderate thresholds
+        checks=[
+          [best.topVotes>=cfg.minVotes,   'VOTES '+best.topVotes+'/'+best.totalW],
+          [absWScore>=cfg.minWScore,      'WSCORE '+best.wScore],
+          [best.conf>=cfg.minConf-5,      'CONF '+best.conf+'%'],
+          [best.adx>=18,                  'ADX '+best.adx.toFixed(0)],
+          [best.quality>=cfg.minQual-5,   'QUAL '+best.quality+'%'],
+          [best.catsAgreeing>=cfg.minCats,'CATS '+best.catsAgreeing+'/8'],
+        ];
+      } else {
+        // 🌙 OFF-HOURS — Full checks
+        checks=[
+          [best.topVotes>=cfg.minVotes,   'VOTES '+best.topVotes+'/'+best.totalW],
+          [absWScore>=cfg.minWScore,      'WSCORE '+best.wScore],
+          [best.conf>=cfg.minConf,        'CONF '+best.conf+'%'],
+          [best.adxPass,                  'ADX '+best.adx.toFixed(0)],
+          [!best.whipsaw,                 'NO WHIPSAW'],
+          [!best.choppy,                  'NO CHOP'],
+          [best.quality>=cfg.minQual,     'QUAL '+best.quality+'%'],
+          [best.catsAgreeing>=cfg.minCats,'CATS '+best.catsAgreeing+'/8'],
+          [rrData.rr>=1.4,               'R:R 1:'+rrData.rr.toFixed(1)],
+        ];
+      }
       checks.forEach(function(ch){ch[0]?pass.push(ch[1]):fail.push(ch[1]);});
-      var allPass=checks.every(function(ch){return ch[0];});
+      // 🔥 PRIME TIME: Always show signal — quality displayed accurately but never blocked
+      var allPass = isPrime ? true : checks.every(function(ch){return ch[0];});
 
       if(allPass){
+        var prevDir = locked;
         locked=best.dir;
         var mtfStr=best.mtf3?'3/3':best.mtf2?'2/3':'1/3';
         showYES(best.sym,locked,{votes:best.topVotes,tw:best.totalW,conf:best.conf,adx:best.adx,quality:best.quality,mtf:mtfStr,cats:best.catsAgreeing,pass:pass,sess:best.sesBonus,grade:best.sigGrade,rr:rrData.rr.toFixed(1),fvgVote:best.fvgVote});
@@ -4986,24 +5028,26 @@ async function engine() {
         setText('eEntry',entry.toFixed(5),locked==='BIG'?'var(--buy)':'var(--sell)');
         setText('ePips','tracking...');
         var ab=$('autoBadge');if(ab){ab.textContent='🤖 TRACKING · WAITING EXIT...';ab.className='auto-badge ab-wait';}
-        var idx=trades.length;
-        trades.push({sym:best.sym,dir:locked,score:best.topVotes,cats:best.catsAgreeing,conf:best.conf,quality:best.quality,entry:entry,exit:null,pips:null,ts:Date.now(),outcome:'pending'});
-        saveTrades();updateStats();
-        pending={idx:idx,sym:best.sym,dir:locked,entry:entry};
-        locked==='BIG'?sndYES():sndNO();
-        // v19: render SL/TP immediately on signal
-        if(bestRaw) renderSLTP(best.sym, bestRaw.ohlcv, locked, best.closes[best.closes.length-1]);
-        var extras19=[];
-        if(best.chochDir===(locked==='BIG'?1:-1)) extras19.push('CHOCH✓');
-        if(best.fvgVote===(locked==='BIG'?1:-1))  extras19.push('FVG✓');
-        if(best.pdDir===(locked==='BIG'?1:-1))     extras19.push((locked==='BIG'?'DISCOUNT':'PREMIUM')+'✓');
-        toast((locked==='BIG'?'🟢':'🔴')+' <b>'+best.sym+' '+locked+'</b> · '+best.topVotes+'/'+best.totalW+' · '+best.catsAgreeing+'/8 · '+best.conf+'% · R:R 1:'+rrData.rr.toFixed(1)+(best.realMTF?' · REAL-MTF':'')+(extras19.length?' · '+extras19.join(' '):''),locked==='BIG'?'s':'e');
-        if(best.topVotes===best.totalW)toast('⭐ PERFECT SCORE! '+best.sym,'s',7000);
-        if(best.catsAgreeing===8)toast('💎 ALL 8 CATEGORIES AGREE! '+best.sym,'s',6000);
-        if(best.sigGrade==='ELITE')toast('💎 ELITE ZENITH SIGNAL '+best.conf+'%','i',4000);
-        if(best.sesBonus)toast('🔥 PRIME WINDOW ACTIVE · London/NY Overlap','i',3000);
-        if(best.chochDir===(locked==='BIG'?1:-1))toast('🔄 CHOCH CONFIRMED · Trend Shift Signal','i',4000);
-        if(extras19.length>=2)toast('⚡ MULTI-CONFLUENCE · '+extras19.join(' + '),'i',5000);
+        // Only log trade when direction changes (avoids duplicate entries in prime time)
+        if(prevDir !== locked) {
+          var idx=trades.length;
+          trades.push({sym:best.sym,dir:locked,score:best.topVotes,cats:best.catsAgreeing,conf:best.conf,quality:best.quality,entry:entry,exit:null,pips:null,ts:Date.now(),outcome:'pending'});
+          saveTrades();updateStats();
+          pending={idx:idx,sym:best.sym,dir:locked,entry:entry};
+          locked==='BIG'?sndYES():sndNO();
+          if(bestRaw) renderSLTP(best.sym, bestRaw.ohlcv, locked, best.closes[best.closes.length-1]);
+          var extras19=[];
+          if(best.chochDir===(locked==='BIG'?1:-1)) extras19.push('CHOCH✓');
+          if(best.fvgVote===(locked==='BIG'?1:-1))  extras19.push('FVG✓');
+          if(best.pdDir===(locked==='BIG'?1:-1))     extras19.push((locked==='BIG'?'DISCOUNT':'PREMIUM')+'✓');
+          toast((locked==='BIG'?'🟢':'🔴')+' <b>'+best.sym+' '+locked+'</b> · '+best.topVotes+'/'+best.totalW+' · '+best.catsAgreeing+'/8 · '+best.conf+'% · R:R 1:'+rrData.rr.toFixed(1)+(extras19.length?' · '+extras19.join(' '):''),locked==='BIG'?'s':'e');
+          if(best.topVotes===best.totalW)toast('⭐ PERFECT SCORE! '+best.sym,'s',7000);
+          if(best.catsAgreeing===8)toast('💎 ALL 8 CATEGORIES AGREE! '+best.sym,'s',6000);
+          if(best.sigGrade==='ELITE')toast('💎 ELITE ZENITH SIGNAL '+best.conf+'%','i',4000);
+          if(best.sesBonus)toast('🔥 PRIME WINDOW ACTIVE · London/NY Overlap','i',3000);
+          if(best.chochDir===(locked==='BIG'?1:-1))toast('🔄 CHOCH CONFIRMED · Trend Shift Signal','i',4000);
+          if(extras19.length>=2)toast('⚡ MULTI-CONFLUENCE · '+extras19.join(' + '),'i',5000);
+        }
       } else {
         showNO(best,fail);
       }
@@ -6165,7 +6209,7 @@ setText('sbPairs', enabledPairs.size);
 renderPrimeWindows();
 updatePrimeCountdown();
 scheduleMidnightRefresh();
-toast('🚀 VED PRO v21 APEX · REAL 1m/5m/15m · LIVE NEWS API · All-Pairs Live Quotes · 40+ Inds · Zero Simulation', 'i', 10000);
+toast('🚀 VED PRO v22 · PRIME=EVERY CYCLE · Direction-change trade log · Quality display intact', 'i', 8000);
 </script>
 </body>
 </html>
