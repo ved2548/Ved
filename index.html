@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VED - Smart 1 Minute Engine</title>
+<title>VED - Ultimate Trading Engine</title>
 
 <style>
 
@@ -12,6 +12,10 @@
   --red:#ef4444;
   --yellow:#facc15;
   --cyan:#06b6d4;
+  --purple:#a855f7;
+  --pink:#ec4899;
+  --orange:#f97316;
+  --blue:#3b82f6;
   --bg:#020617;
   --card:rgba(255,255,255,.08);
   --text:#eaf6ff;
@@ -62,95 +66,98 @@ header{
   backdrop-filter:blur(8px);
 }
 
-/* ═══════════════════════════════════════
-   400 WATT GLOWING VED BOX
-   Transparent + Bright Light Effect
-═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   ULTIMATE RAINBOW VED BOX
+   Multi-Color Animated Geometric Design
+═══════════════════════════════════════════════════════════════ */
 
 .brand{
   display:flex;
   align-items:center;
   justify-content:center;
+  position:relative;
+  overflow:hidden;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(15px);
+  border:3px solid transparent;
+  background-clip:padding-box;
+  box-shadow:
+    0 0 30px rgba(6,182,212,0.3),
+    0 0 60px rgba(168,85,247,0.2),
+    inset 0 0 30px rgba(236,72,153,0.1);
+}
+
+.ved-text{
   font-size:52px;
   font-weight:900;
   color:#fff;
-  background:rgba(250,204,21,0.12);
-  backdrop-filter:blur(12px);
+  letter-spacing:12px;
+  z-index:20;
   position:relative;
-  overflow:hidden;
-  border:2px solid rgba(250,204,21,0.3);
-  box-shadow:
-    0 0 20px rgba(250,204,21,0.4),
-    inset 0 0 20px rgba(250,204,21,0.1);
   text-shadow:
-    0 0 10px rgba(250,204,21,1),
-    0 0 20px rgba(250,204,21,1),
-    0 0 30px rgba(250,204,21,1),
-    0 0 40px rgba(250,204,21,0.9),
-    0 0 70px rgba(250,204,21,0.8),
-    0 0 100px rgba(250,204,21,0.7),
-    0 0 150px rgba(250,204,21,0.6),
-    0 0 200px rgba(250,204,21,0.5);
-  animation:vedGlow 2s ease-in-out infinite;
-  letter-spacing:8px;
+    0 0 10px rgba(255,255,255,1),
+    0 0 20px rgba(6,182,212,1),
+    0 0 30px rgba(168,85,247,1),
+    0 0 40px rgba(236,72,153,1),
+    0 0 70px rgba(59,130,246,1),
+    0 0 100px rgba(16,185,129,1),
+    0 0 150px rgba(249,115,22,1),
+    0 0 200px rgba(239,68,68,1),
+    0 0 250px rgba(6,182,212,0.5);
+  animation:megaGlow 3s ease-in-out infinite;
 }
 
-/* Rotating halo background */
-.brand::before{
-  content:'';
-  position:absolute;
-  top:-50%;
-  left:-50%;
-  width:200%;
-  height:200%;
-  background:
-    radial-gradient(circle, rgba(250,204,21,0.3) 0%, transparent 60%);
-  animation:rotateHalo 4s linear infinite;
-}
-
-/* Blurred shadow duplicate */
-.brand::after{
-  content:'VED';
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:52px;
-  font-weight:900;
-  color: rgba(250, 204, 21, 0);
-  filter:blur(12px);
-  z-index:-1;
-  letter-spacing:8px;
-}
-
-/* Breathing glow animation */
-@keyframes vedGlow {
+@keyframes megaGlow {
   0%, 100% {
     text-shadow:
-      0 0 10px rgba(250,204,21,1),
-      0 0 20px rgba(250,204,21,1),
-      0 0 30px rgba(250,204,21,1),
-      0 0 40px rgba(250,204,21,0.9),
-      0 0 70px rgba(250,204,21,0.8),
-      0 0 100px rgba(250,204,21,0.7),
-      0 0 150px rgba(250,204,21,0.6),
-      0 0 200px rgba(250,204,21,0.5);
+      0 0 10px rgba(255,255,255,1),
+      0 0 20px rgba(6,182,212,1),
+      0 0 30px rgba(168,85,247,1),
+      0 0 40px rgba(236,72,153,1),
+      0 0 70px rgba(59,130,246,1),
+      0 0 100px rgba(16,185,129,1),
+      0 0 150px rgba(249,115,22,1),
+      0 0 200px rgba(239,68,68,1),
+      0 0 250px rgba(6,182,212,0.5);
+    transform:scale(1);
   }
   50% {
     text-shadow:
-      0 0 15px rgba(250,204,21,1),
-      0 0 30px rgba(250,204,21,1),
-      0 0 45px rgba(250,204,21,1),
-      0 0 60px rgba(250,204,21,1),
-      0 0 100px rgba(250,204,21,0.9),
-      0 0 140px rgba(250,204,21,0.8),
-      0 0 180px rgba(250,204,21,0.7),
-      0 0 250px rgba(250,204,21,0.6);
+      0 0 20px rgba(255,255,255,1),
+      0 0 40px rgba(168,85,247,1),
+      0 0 60px rgba(236,72,153,1),
+      0 0 80px rgba(249,115,22,1),
+      0 0 120px rgba(16,185,129,1),
+      0 0 160px rgba(59,130,246,1),
+      0 0 200px rgba(6,182,212,1),
+      0 0 280px rgba(239,68,68,1),
+      0 0 350px rgba(168,85,247,0.5);
+    transform:scale(1.05);
   }
 }
 
-/* Rotating halo animation */
-@keyframes rotateHalo {
+/* Animated Rainbow Border */
+.brand::before{
+  content:'';
+  position:absolute;
+  inset:-3px;
+  background:conic-gradient(
+    from 0deg,
+    #06b6d4,
+    #a855f7,
+    #ec4899,
+    #f97316,
+    #10b981,
+    #3b82f6,
+    #ef4444,
+    #06b6d4
+  );
+  border-radius:24px;
+  animation:rotateBorder 4s linear infinite;
+  z-index:-1;
+}
+
+@keyframes rotateBorder {
   0% {
     transform:rotate(0deg);
   }
@@ -159,9 +166,242 @@ header{
   }
 }
 
-/* ═══════════════════════════════════════
-   REST OF THE STYLES
-═══════════════════════════════════════ */
+/* Rotating Circles */
+.geo-circle{
+  position:absolute;
+  border-radius:50%;
+  border:2px solid;
+  opacity:0.6;
+}
+
+.geo-circle-1{
+  width:80px;
+  height:80px;
+  top:20%;
+  left:10%;
+  border-color:#06b6d4;
+  animation:rotateCircle1 5s linear infinite;
+}
+
+.geo-circle-2{
+  width:60px;
+  height:60px;
+  top:60%;
+  right:15%;
+  border-color:#a855f7;
+  animation:rotateCircle2 6s linear infinite reverse;
+}
+
+.geo-circle-3{
+  width:50px;
+  height:50px;
+  bottom:20%;
+  left:20%;
+  border-color:#ec4899;
+  animation:rotateCircle3 4s ease-in-out infinite;
+}
+
+@keyframes rotateCircle1 {
+  0% {
+    transform:rotate(0deg) translateY(0);
+    opacity:0.6;
+  }
+  50% {
+    opacity:0.3;
+  }
+  100% {
+    transform:rotate(360deg) translateY(-10px);
+    opacity:0.6;
+  }
+}
+
+@keyframes rotateCircle2 {
+  0% {
+    transform:rotate(0deg) scale(1);
+  }
+  50% {
+    transform:rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform:rotate(360deg) scale(1);
+  }
+}
+
+@keyframes rotateCircle3 {
+  0%, 100% {
+    transform:translateX(0) translateY(0);
+  }
+  25% {
+    transform:translateX(10px) translateY(-10px);
+  }
+  75% {
+    transform:translateX(-10px) translateY(10px);
+  }
+}
+
+/* Animated Lines */
+.geo-line{
+  position:absolute;
+  height:2px;
+  background:linear-gradient(90deg, transparent, currentColor, transparent);
+  opacity:0.5;
+}
+
+.geo-line-1{
+  width:100px;
+  top:30%;
+  right:10%;
+  color:#f97316;
+  animation:moveLine1 3s ease-in-out infinite;
+}
+
+.geo-line-2{
+  width:80px;
+  bottom:30%;
+  left:15%;
+  color:#10b981;
+  animation:moveLine2 4s ease-in-out infinite;
+}
+
+.geo-line-3{
+  width:60px;
+  top:50%;
+  left:5%;
+  color:#3b82f6;
+  animation:moveLine3 3.5s linear infinite;
+  transform:rotate(45deg);
+}
+
+.geo-line-4{
+  width:90px;
+  bottom:40%;
+  right:20%;
+  color:#ef4444;
+  animation:moveLine4 5s ease-in-out infinite;
+  transform:rotate(-45deg);
+}
+
+@keyframes moveLine1 {
+  0%, 100% {
+    transform:translateX(0) scaleX(1);
+    opacity:0.5;
+  }
+  50% {
+    transform:translateX(-20px) scaleX(1.3);
+    opacity:0.8;
+  }
+}
+
+@keyframes moveLine2 {
+  0%, 100% {
+    transform:translateY(0);
+  }
+  50% {
+    transform:translateY(-15px);
+  }
+}
+
+@keyframes moveLine3 {
+  0% {
+    transform:rotate(45deg) translateX(0);
+    opacity:0.3;
+  }
+  50% {
+    opacity:0.7;
+  }
+  100% {
+    transform:rotate(45deg) translateX(30px);
+    opacity:0.3;
+  }
+}
+
+@keyframes moveLine4 {
+  0%, 100% {
+    transform:rotate(-45deg) scale(1);
+  }
+  50% {
+    transform:rotate(-45deg) scale(1.5);
+  }
+}
+
+/* Animated Triangles */
+.geo-triangle{
+  position:absolute;
+  width:0;
+  height:0;
+  border-left:20px solid transparent;
+  border-right:20px solid transparent;
+  opacity:0.4;
+}
+
+.geo-tri-1{
+  border-bottom:35px solid #06b6d4;
+  top:15%;
+  right:25%;
+  animation:floatTriangle1 4s ease-in-out infinite;
+}
+
+.geo-tri-2{
+  border-bottom:30px solid #a855f7;
+  bottom:25%;
+  left:30%;
+  animation:floatTriangle2 5s ease-in-out infinite;
+  transform:rotate(180deg);
+}
+
+@keyframes floatTriangle1 {
+  0%, 100% {
+    transform:translateY(0) rotate(0deg);
+  }
+  50% {
+    transform:translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes floatTriangle2 {
+  0%, 100% {
+    transform:rotate(180deg) translateY(0);
+  }
+  50% {
+    transform:rotate(360deg) translateY(15px);
+  }
+}
+
+/* Particle Effects */
+.particles{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  background-image:
+    radial-gradient(circle, #06b6d4 1px, transparent 1px),
+    radial-gradient(circle, #a855f7 1px, transparent 1px),
+    radial-gradient(circle, #ec4899 1px, transparent 1px);
+  background-size:50px 50px, 70px 70px, 90px 90px;
+  background-position:0 0, 25px 25px, 50px 50px;
+  opacity:0.15;
+  animation:particleMove 20s linear infinite;
+}
+
+.particles-2{
+  background-image:
+    radial-gradient(circle, #f97316 1px, transparent 1px),
+    radial-gradient(circle, #10b981 1px, transparent 1px);
+  background-size:60px 60px, 80px 80px;
+  animation:particleMove 25s linear infinite reverse;
+}
+
+@keyframes particleMove {
+  0% {
+    background-position:0 0, 25px 25px, 50px 50px;
+  }
+  100% {
+    background-position:50px 50px, 75px 75px, 100px 100px;
+  }
+}
+
+/* Rest of styles continue... */
 
 .timer{
   font-size:72px;
@@ -175,6 +415,45 @@ header{
   font-size:58px;
   font-weight:900;
   margin-top:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
+}
+
+.signalRating{
+  font-size:72px;
+  font-weight:900;
+  text-shadow:
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 30px currentColor;
+  animation:ratingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ratingPulse {
+  0%, 100% {
+    transform:scale(1);
+  }
+  50% {
+    transform:scale(1.1);
+  }
+}
+
+.strengthBar{
+  width:100%;
+  height:8px;
+  background:rgba(255,255,255,0.1);
+  border-radius:10px;
+  margin-top:12px;
+  overflow:hidden;
+}
+
+.strengthFill{
+  height:100%;
+  width:0%;
+  border-radius:10px;
+  transition:width 0.5s ease, background-color 0.5s ease;
 }
 
 .big{
@@ -212,6 +491,12 @@ header{
   background:rgba(255,255,255,.06);
   font-weight:800;
   font-size:16px;
+}
+
+.assetChange{
+  font-size:12px;
+  opacity:0.8;
+  margin-top:4px;
 }
 
 .up{
@@ -300,6 +585,144 @@ path{
   50% { opacity: 0.5; }
 }
 
+/* Signal History Styles */
+.historyCard{
+  margin-top:20px;
+}
+
+.clearBtn{
+  background:linear-gradient(135deg, #ef4444, #dc2626);
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 4px 12px rgba(239,68,68,0.3);
+}
+
+.clearBtn:hover{
+  background:linear-gradient(135deg, #dc2626, #b91c1c);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(239,68,68,0.4);
+}
+
+.clearBtn:active{
+  transform:translateY(0);
+}
+
+.historyContainer{
+  max-height:300px;
+  overflow-y:auto;
+  padding:10px;
+  background:rgba(0,0,0,0.2);
+  border-radius:12px;
+}
+
+.historyContainer::-webkit-scrollbar{
+  width:8px;
+}
+
+.historyContainer::-webkit-scrollbar-track{
+  background:rgba(255,255,255,0.05);
+  border-radius:10px;
+}
+
+.historyContainer::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,0.2);
+  border-radius:10px;
+}
+
+.historyContainer::-webkit-scrollbar-thumb:hover{
+  background:rgba(255,255,255,0.3);
+}
+
+.historyEmpty{
+  text-align:center;
+  opacity:0.5;
+  padding:30px;
+  font-style:italic;
+}
+
+.historyItem{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 16px;
+  margin-bottom:8px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  border-left:4px solid;
+  animation:slideIn 0.3s ease;
+  transition:all 0.2s ease;
+}
+
+.historyItem:hover{
+  background:rgba(255,255,255,0.08);
+  transform:translateX(4px);
+}
+
+@keyframes slideIn {
+  from{
+    opacity:0;
+    transform:translateX(-20px);
+  }
+  to{
+    opacity:1;
+    transform:translateX(0);
+  }
+}
+
+.historyItem.big{
+  border-left-color:#22c55e;
+  background:rgba(34,197,94,0.08);
+}
+
+.historyItem.small{
+  border-left-color:#ef4444;
+  background:rgba(239,68,68,0.08);
+}
+
+.historyItem.skip{
+  border-left-color:#facc15;
+  background:rgba(250,204,21,0.08);
+}
+
+.historySignal{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.historySignalText{
+  font-size:20px;
+  font-weight:900;
+}
+
+.historyRating{
+  font-size:24px;
+  font-weight:900;
+  min-width:40px;
+  text-align:center;
+  padding:4px 12px;
+  background:rgba(255,255,255,0.1);
+  border-radius:8px;
+}
+
+.historyTime{
+  font-size:13px;
+  opacity:0.7;
+  font-weight:600;
+}
+
+.historyStrength{
+  font-size:12px;
+  opacity:0.6;
+  margin-top:4px;
+}
+
 @media (max-width: 1024px) {
   .grid{
     grid-template-columns:1fr;
@@ -307,10 +730,7 @@ path{
   .footerGrid{
     grid-template-columns:1fr 1fr;
   }
-  .brand{
-    font-size:48px;
-  }
-  .brand::after{
+  .ved-text{
     font-size:48px;
   }
 }
@@ -323,18 +743,19 @@ path{
     font-size:60px;
   }
   .signal{
-    font-size:48px;
+    font-size:42px;
+    flex-direction:column;
+    gap:8px;
+  }
+  .signalRating{
+    font-size:56px;
   }
   .apiUsage{
     font-size:42px;
   }
-  .brand{
+  .ved-text{
     font-size:42px;
-    letter-spacing:4px;
-  }
-  .brand::after{
-    font-size:42px;
-    letter-spacing:4px;
+    letter-spacing:6px;
   }
 }
 
@@ -359,9 +780,23 @@ path{
 
 <div class="grid">
 
-  <!-- 400 WATT GLOWING VED BOX -->
+  <!-- ULTIMATE ANIMATED RAINBOW VED BOX -->
   <div class="card brand">
-    VED
+    <!-- Animated Geometric Shapes -->
+    <div class="geo-circle geo-circle-1"></div>
+    <div class="geo-circle geo-circle-2"></div>
+    <div class="geo-circle geo-circle-3"></div>
+    <div class="geo-line geo-line-1"></div>
+    <div class="geo-line geo-line-2"></div>
+    <div class="geo-line geo-line-3"></div>
+    <div class="geo-line geo-line-4"></div>
+    <div class="geo-triangle geo-tri-1"></div>
+    <div class="geo-triangle geo-tri-2"></div>
+    <div class="particles"></div>
+    <div class="particles particles-2"></div>
+    
+    <!-- VED Text -->
+    <span class="ved-text">VED</span>
   </div>
 
   <div class="card">
@@ -380,14 +815,19 @@ path{
 
   <div class="card">
 
-    <h3>Live Signal</h3>
+    <h3>Live Signal with Rating</h3>
 
-    <div class="signal skip" id="signal">
-      WAIT
+    <div class="signal skip">
+      <span id="signal">WAIT</span>
+      <span class="signalRating" id="signalRating" style="display:none">0</span>
     </div>
 
-    <div class="info">
-      API Calls Only At 20s Left
+    <div class="strengthBar">
+      <div class="strengthFill" id="strengthFill"></div>
+    </div>
+
+    <div class="info" id="strengthInfo">
+      Waiting for signal...
     </div>
 
   </div>
@@ -398,7 +838,6 @@ path{
 
     <svg viewBox="0 0 300 120">
 
-      <!-- Grid lines -->
       <line x1="0" y1="20" x2="300" y2="20" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
       <line x1="0" y1="55" x2="300" y2="55" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
       <line x1="0" y1="75" x2="300" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
@@ -408,7 +847,6 @@ path{
       <path id="smallLine" stroke="#ef4444"/>
       <path id="skipLine" stroke="#facc15"/>
 
-      <!-- Labels -->
       <text x="5" y="15" fill="#22c55e" font-size="10" font-weight="bold">BIG</text>
       <text x="5" y="70" fill="#facc15" font-size="10" font-weight="bold">SKIP</text>
       <text x="5" y="115" fill="#ef4444" font-size="10" font-weight="bold">SMALL</text>
@@ -479,67 +917,191 @@ path{
     <h3>Assets Monitor</h3>
 
     <div class="asset" id="btcBox">
-      BTC/USD : WAIT
+      <div>BTC/USD : WAIT</div>
+      <div class="assetChange" id="btcChange"></div>
     </div>
 
     <div class="asset" id="goldBox">
-      XAU/USD : WAIT
+      <div>XAU/USD : WAIT</div>
+      <div class="assetChange" id="goldChange"></div>
     </div>
 
     <div class="asset" id="gbpBox">
-      GBP/JPY : WAIT
+      <div>GBP/JPY : WAIT</div>
+      <div class="assetChange" id="gbpChange"></div>
     </div>
 
   </div>
 
 </div>
+
+<!-- SIGNAL HISTORY BOX -->
+<div class="wrap" style="padding-top:0">
+  <div class="card historyCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3>📜 Signal History</h3>
+      <button class="clearBtn" id="clearHistoryBtn" onclick="clearHistory()">
+        🗑️ Clear History
+      </button>
+    </div>
+    
+    <div class="historyContainer" id="historyContainer">
+      <div class="historyEmpty">
+        No signals yet. Waiting for first signal...
+      </div>
+    </div>
+  </div>
 </div>
 
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 
-/* ═══════════════════════════════════════════════════════════════
-   VED SMART 1 MINUTE TRADING ENGINE
-   Version 3.0 - Final
-   
-   Features:
-   ✅ 400 Watt Glowing VED Logo
-   ✅ Date-wise API Tracking (localStorage)
-   ✅ Instant Counter Updates
-   ✅ Automatic Midnight Reset
-   ✅ Cycle Reset Every Minute
-   ✅ API Calls Only at 20s
-   ✅ BIG/SMALL/SKIP Signals
-   ✅ Beautiful Glassmorphism UI
-═══════════════════════════════════════════════════════════════ */
+/* VED ULTIMATE TRADING ENGINE with Rating System */
 
-/* =========================
-   API CONFIGURATION
-========================= */
-
-const TWELVE_KEY = "c0abbc33813e4b4fbf1254a0a3650db2";
+const TWELVE_KEY = "246618a38ee84e1abdb9511a378c46d4";
 
 let directions = {};
+let priceChanges = {};
 let apiCalled = false;
+let signalHistory = [];
 
 /* =========================
-   DATE-WISE API TRACKING SYSTEM
-   (LOCAL STORAGE)
+   SIGNAL HISTORY FUNCTIONS
 ========================= */
 
-// Get current date in format: "18 May 2026"
+function loadHistory() {
+  try {
+    const stored = localStorage.getItem('ved_signal_history');
+    if (stored) {
+      signalHistory = JSON.parse(stored);
+      displayHistory();
+      console.log(`📜 Loaded ${signalHistory.length} history items`);
+    }
+  } catch (e) {
+    console.error('❌ Error loading history:', e);
+    signalHistory = [];
+  }
+}
+
+function saveHistory() {
+  try {
+    localStorage.setItem('ved_signal_history', JSON.stringify(signalHistory));
+    console.log('💾 History saved');
+  } catch (e) {
+    console.error('❌ Error saving history:', e);
+  }
+}
+
+function addToHistory(signal, rating, strength, avgChange) {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true 
+  });
+  
+  const historyItem = {
+    signal: signal,
+    rating: rating,
+    strength: strength,
+    avgChange: avgChange,
+    time: timeStr,
+    timestamp: now.getTime()
+  };
+  
+  // Add to beginning of array (newest first)
+  signalHistory.unshift(historyItem);
+  
+  // Keep only last 50 items
+  if (signalHistory.length > 50) {
+    signalHistory = signalHistory.slice(0, 50);
+  }
+  
+  saveHistory();
+  displayHistory();
+  
+  console.log(`📝 Added to history: ${signal} ${rating || ''} at ${timeStr}`);
+}
+
+function displayHistory() {
+  const container = document.getElementById('historyContainer');
+  
+  if (signalHistory.length === 0) {
+    container.innerHTML = `
+      <div class="historyEmpty">
+        No signals yet. Waiting for first signal...
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '';
+  
+  signalHistory.forEach(item => {
+    const signalClass = item.signal.toLowerCase();
+    const signalColor = 
+      item.signal === 'BIG' ? '#22c55e' : 
+      item.signal === 'SMALL' ? '#ef4444' : 
+      '#facc15';
+    
+    const ratingHtml = item.rating !== null && item.rating !== undefined
+      ? `<div class="historyRating" style="color:${signalColor}">${item.rating}</div>`
+      : '';
+    
+    const strengthHtml = item.strength
+      ? `<div class="historyStrength">${item.strength}</div>`
+      : '';
+    
+    const changeHtml = item.avgChange !== null && item.avgChange !== undefined
+      ? `<div class="historyStrength">Avg: ${item.avgChange.toFixed(2)}%</div>`
+      : '';
+    
+    html += `
+      <div class="historyItem ${signalClass}">
+        <div class="historySignal">
+          <div class="historySignalText" style="color:${signalColor}">
+            ${item.signal}
+          </div>
+          ${ratingHtml}
+        </div>
+        <div style="text-align:right">
+          <div class="historyTime">${item.time}</div>
+          ${strengthHtml}
+          ${changeHtml}
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function clearHistory() {
+  if (confirm('Are you sure you want to clear all signal history?')) {
+    signalHistory = [];
+    saveHistory();
+    displayHistory();
+    console.log('🗑️ History cleared');
+  }
+}
+
+// Load history on page load
+loadHistory();
+
 function getCurrentDateKey() {
   const d = new Date();
   const options = { day: 'numeric', month: 'short', year: 'numeric' };
   return d.toLocaleDateString('en-GB', options);
 }
 
-// Get today's date for storage key
 function getTodayKey() {
   const d = new Date();
-  return d.toDateString(); // "Tue May 18 2026"
+  return d.toDateString();
 }
 
-// Initialize or load API call count for today
 function loadTodayApiCount() {
   try {
     const todayKey = getTodayKey();
@@ -548,12 +1110,10 @@ function loadTodayApiCount() {
     if (stored) {
       const data = JSON.parse(stored);
       
-      // Check if it's the same day
       if (data.date === todayKey) {
         console.log(`✅ Loaded count for ${todayKey}: ${data.count}`);
         return data.count;
       } else {
-        // New day - reset count
         console.log(`🔄 New day! Old: ${data.date}, New: ${todayKey}`);
         const newData = {
           date: todayKey,
@@ -564,7 +1124,6 @@ function loadTodayApiCount() {
         return 0;
       }
     } else {
-      // First time - initialize
       const newData = {
         date: todayKey,
         count: 0,
@@ -580,7 +1139,6 @@ function loadTodayApiCount() {
   }
 }
 
-// Save updated count to localStorage
 function saveApiCount(count) {
   try {
     const todayKey = getTodayKey();
@@ -599,18 +1157,12 @@ function saveApiCount(count) {
   }
 }
 
-// Increment API call count by 3 (BTC, Gold, GBP)
 function incrementApiCount() {
   const currentCount = loadTodayApiCount();
   const newCount = currentCount + 3;
   
-  // Save to localStorage
   saveApiCount(newCount);
-  
-  // Update UI immediately
   updateApiCountUI(newCount);
-  
-  // Show update badge
   showUpdateBadge();
   
   console.log(`📈 API calls incremented: ${currentCount} → ${newCount}`);
@@ -618,13 +1170,11 @@ function incrementApiCount() {
   return newCount;
 }
 
-// Update UI with current count
 function updateApiCountUI(count) {
   apiUsageCount.textContent = count;
   currentDateInfo.textContent = getCurrentDateKey();
 }
 
-// Show "Updated" badge briefly
 function showUpdateBadge() {
   updateBadge.style.display = 'inline-block';
   setTimeout(() => {
@@ -632,7 +1182,6 @@ function showUpdateBadge() {
   }, 2000);
 }
 
-// Check if date has changed (called every second)
 function checkDateChange() {
   const stored = localStorage.getItem('ved_api_tracking');
   if (stored) {
@@ -640,12 +1189,10 @@ function checkDateChange() {
     const todayKey = getTodayKey();
     
     if (data.date !== todayKey) {
-      // Date changed! Reset count
       console.log('🔄 MIDNIGHT RESET! New day started.');
       saveApiCount(0);
       updateApiCountUI(0);
       
-      // Show visual feedback
       apiUsageCount.style.color = '#22c55e';
       setTimeout(() => {
         apiUsageCount.style.color = '#06b6d4';
@@ -654,13 +1201,8 @@ function checkDateChange() {
   }
 }
 
-// Initialize counter on page load
 let currentApiCount = loadTodayApiCount();
 updateApiCountUI(currentApiCount);
-
-/* =========================
-   CLOCK & DATE
-========================= */
 
 setInterval(() => {
 
@@ -674,14 +1216,9 @@ setInterval(() => {
   clock.textContent = "IST " + d.toTimeString().slice(0, 8);
   date.textContent = d.toDateString();
 
-  // Check for date change every second
   checkDateChange();
 
 }, 1000);
-
-/* =========================
-   TREND FLOW
-========================= */
 
 const MAX_POINTS = 60;
 
@@ -698,10 +1235,6 @@ function buildPath(a) {
   return "M " + a.map((p, i) => `${i * 5},${p}`).join(" L ");
 }
 
-/* =========================
-   GET DIRECTION FROM API
-========================= */
-
 async function getDirection(symbol) {
   try {
     const r = await fetch(
@@ -714,7 +1247,6 @@ async function getDirection(symbol) {
 
     const j = await r.json();
 
-    // Check for API errors
     if (j.status === 'error' || j.code) {
       throw new Error(j.message || 'API Error');
     }
@@ -730,7 +1262,14 @@ async function getDirection(symbol) {
       throw new Error("Invalid price data");
     }
 
-    return curr >= prev ? "UP" : "DOWN";
+    const changePercent = ((curr - prev) / prev) * 100;
+
+    return {
+      direction: curr >= prev ? "UP" : "DOWN",
+      changePercent: Math.abs(changePercent),
+      prev: prev,
+      curr: curr
+    };
 
   } catch (err) {
     console.error(`❌ Error fetching ${symbol}:`, err);
@@ -738,26 +1277,37 @@ async function getDirection(symbol) {
   }
 }
 
-/* =========================
-   SYNC ALL ASSETS
-   (3 API CALLS)
-========================= */
+function calculateRating(signalType, averageChange) {
+  if (signalType === 'BIG') {
+    if (averageChange >= 2.0) return 9;
+    else if (averageChange >= 1.5) return 8;
+    else if (averageChange >= 1.0) return 7;
+    else if (averageChange >= 0.5) return 6;
+    else return 5;
+    
+  } else if (signalType === 'SMALL') {
+    if (averageChange >= 2.0) return 0;
+    else if (averageChange >= 1.5) return 1;
+    else if (averageChange >= 1.0) return 2;
+    else if (averageChange >= 0.5) return 3;
+    else return 4;
+  }
+  
+  return null;
+}
 
 async function syncAssets() {
   try {
-    // Set status to waiting
     apiHealth.textContent = "WAITING";
     apiHealth.style.color = "#facc15";
 
-    // Get current IST time
     const istDate = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
     );
 
     console.log('🚀 Making API calls...');
 
-    // Make 3 parallel API calls for market data
-    const [btc, gold, gbp] = await Promise.all([
+    const [btcData, goldData, gbpData] = await Promise.all([
       getDirection("BTC/USD"),
       getDirection("XAU/USD"),
       getDirection("GBP/JPY")
@@ -765,145 +1315,210 @@ async function syncAssets() {
 
     console.log('✅ API calls successful!');
 
-    // *** TURANT COUNT UPDATE ***
-    // Increment counter by 3 (BTC + Gold + GBP)
+    directions = {
+      btc: btcData.direction,
+      gold: goldData.direction,
+      gbp: gbpData.direction
+    };
+
+    priceChanges = {
+      btc: btcData.changePercent,
+      gold: goldData.changePercent,
+      gbp: gbpData.changePercent
+    };
+
     incrementApiCount();
 
-    // Update last call time
     lastCallTime.textContent = "Last: " + istDate.toLocaleTimeString();
 
-    // Store directions
-    directions = { btc, gold, gbp };
-
-    // Update API Health to CONNECTED (GREEN)
     apiHealth.textContent = "CONNECTED";
     apiHealth.style.color = "#22c55e";
 
-    // Update UI with signals
     updateUI();
 
   } catch (error) {
     console.error("❌ API Error:", error);
     
-    // Show ERROR status (RED)
     apiHealth.textContent = "ERROR";
     apiHealth.style.color = "#ef4444";
     
-    // Update last call time with error
     const istDate = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
     );
     lastCallTime.textContent = "Error at " + istDate.toLocaleTimeString();
-    
-    // NOTE: On error, we DON'T increment the counter
-    // because API calls failed
   }
 }
 
-/* =========================
-   UPDATE UI AFTER API CALL
-========================= */
-
 function updateUI() {
 
-  // Update asset boxes
-  setBox("btcBox", "BTC/USD", directions.btc);
-  setBox("goldBox", "XAU/USD", directions.gold);
-  setBox("gbpBox", "GBP/JPY", directions.gbp);
+  setBox("btcBox", "btcChange", "BTC/USD", directions.btc, priceChanges.btc);
+  setBox("goldBox", "goldChange", "XAU/USD", directions.gold, priceChanges.gold);
+  setBox("gbpBox", "gbpChange", "GBP/JPY", directions.gbp, priceChanges.gbp);
 
   const vals = Object.values(directions);
   const allUp = vals.every(v => v === "UP");
   const allDown = vals.every(v => v === "DOWN");
 
-  if (allUp) {
-    // BIG SIGNAL (Full Bullish)
-    signal.textContent = "BIG";
-    signal.className = "signal big";
+  const avgChange = (priceChanges.btc + priceChanges.gold + priceChanges.gbp) / 3;
 
+  const signalEl = document.getElementById('signal');
+  const ratingEl = document.getElementById('signalRating');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthInfo = document.getElementById('strengthInfo');
+
+  if (allUp) {
+    const rating = calculateRating('BIG', avgChange);
+    
+    signalEl.textContent = "BIG";
+    signalEl.parentElement.className = "signal big";
+    
+    ratingEl.textContent = rating;
+    ratingEl.style.display = "block";
+    ratingEl.style.color = "#22c55e";
+    
     biasText.textContent = "FULL BULLISH";
     biasText.style.color = "#22c55e";
-
+    
     biasBar.style.width = "100%";
     biasBar.style.backgroundColor = "#22c55e";
-  }
-  else if (allDown) {
-    // SMALL SIGNAL (Full Bearish)
-    signal.textContent = "SMALL";
-    signal.className = "signal small";
-
+    
+    const strengthPercent = ((rating - 5) / 4) * 100;
+    strengthFill.style.width = strengthPercent + "%";
+    strengthFill.style.backgroundColor = "#22c55e";
+    
+    const strengthLabels = {
+      5: "Weak Bullish",
+      6: "Moderate Bullish",
+      7: "Good Bullish",
+      8: "Strong Bullish",
+      9: "Very Strong Bullish"
+    };
+    
+    strengthInfo.textContent = `${strengthLabels[rating]} • Avg Change: ${avgChange.toFixed(2)}%`;
+    
+    console.log(`📊 BIG Signal - Rating: ${rating} - Strength: ${strengthLabels[rating]}`);
+    
+    // Add to history
+    addToHistory('BIG', rating, strengthLabels[rating], avgChange);
+    
+  } else if (allDown) {
+    const rating = calculateRating('SMALL', avgChange);
+    
+    signalEl.textContent = "SMALL";
+    signalEl.parentElement.className = "signal small";
+    
+    ratingEl.textContent = rating;
+    ratingEl.style.display = "block";
+    ratingEl.style.color = "#ef4444";
+    
     biasText.textContent = "FULL BEARISH";
     biasText.style.color = "#ef4444";
-
+    
     biasBar.style.width = "100%";
     biasBar.style.backgroundColor = "#ef4444";
-  }
-  else {
-    // SKIP SIGNAL (Mixed)
-    signal.textContent = "SKIP";
-    signal.className = "signal skip";
-
+    
+    const strengthPercent = ((4 - rating) / 4) * 100;
+    strengthFill.style.width = strengthPercent + "%";
+    strengthFill.style.backgroundColor = "#ef4444";
+    
+    const strengthLabels = {
+      4: "Weak Bearish",
+      3: "Moderate Bearish",
+      2: "Good Bearish",
+      1: "Strong Bearish",
+      0: "Very Strong Bearish"
+    };
+    
+    strengthInfo.textContent = `${strengthLabels[rating]} • Avg Change: ${avgChange.toFixed(2)}%`;
+    
+    console.log(`📊 SMALL Signal - Rating: ${rating} - Strength: ${strengthLabels[rating]}`);
+    
+    // Add to history
+    addToHistory('SMALL', rating, strengthLabels[rating], avgChange);
+    
+  } else {
+    signalEl.textContent = "SKIP";
+    signalEl.parentElement.className = "signal skip";
+    
+    ratingEl.style.display = "none";
+    
     biasText.textContent = "MIXED";
     biasText.style.color = "#facc15";
-
+    
     biasBar.style.width = "60%";
     biasBar.style.backgroundColor = "#facc15";
+    
+    strengthFill.style.width = "50%";
+    strengthFill.style.backgroundColor = "#facc15";
+    
+    strengthInfo.textContent = `Mixed Market • No Clear Trend`;
+    
+    console.log(`📊 SKIP Signal - Mixed directions`);
+    
+    // Add to history
+    addToHistory('SKIP', null, 'Mixed Market', avgChange);
   }
 }
 
-/* =========================
-   SET ASSET BOX
-========================= */
-
-function setBox(id, name, dir) {
-  const box = document.getElementById(id);
-  box.textContent = name + " : " + dir;
+function setBox(boxId, changeId, name, dir, changePercent) {
+  const box = document.getElementById(boxId);
+  const changeEl = document.getElementById(changeId);
+  
+  const firstChild = box.querySelector('div:first-child');
+  if (firstChild) {
+    firstChild.textContent = `${name} : ${dir}`;
+  }
+  
   box.className = "asset";
-
   if (dir === "UP") {
     box.classList.add("up");
+    changeEl.textContent = `▲ +${changePercent.toFixed(3)}%`;
+    changeEl.style.color = "#22c55e";
   } else if (dir === "DOWN") {
     box.classList.add("down");
+    changeEl.textContent = `▼ -${changePercent.toFixed(3)}%`;
+    changeEl.style.color = "#ef4444";
   }
 }
 
-/* =========================
-   RESET CYCLE
-========================= */
-
 function resetCycle() {
-  // Reset API called flag
   apiCalled = false;
 
-  // Reset signal to WAIT
-  signal.textContent = "WAIT";
-  signal.className = "signal skip";
+  const signalEl = document.getElementById('signal');
+  const ratingEl = document.getElementById('signalRating');
+  
+  signalEl.textContent = "WAIT";
+  signalEl.parentElement.className = "signal skip";
+  ratingEl.style.display = "none";
 
-  // Reset bias
   biasText.textContent = "WAIT";
   biasText.style.color = "#facc15";
   biasBar.style.width = "0%";
 
-  // Reset assets
-  btcBox.textContent = "BTC/USD : WAIT";
+  const btcBox = document.getElementById('btcBox');
+  btcBox.querySelector('div:first-child').textContent = "BTC/USD : WAIT";
   btcBox.className = "asset";
+  document.getElementById('btcChange').textContent = "";
 
-  goldBox.textContent = "XAU/USD : WAIT";
+  const goldBox = document.getElementById('goldBox');
+  goldBox.querySelector('div:first-child').textContent = "XAU/USD : WAIT";
   goldBox.className = "asset";
+  document.getElementById('goldChange').textContent = "";
 
-  gbpBox.textContent = "GBP/JPY : WAIT";
+  const gbpBox = document.getElementById('gbpBox');
+  gbpBox.querySelector('div:first-child').textContent = "GBP/JPY : WAIT";
   gbpBox.className = "asset";
+  document.getElementById('gbpChange').textContent = "";
 
-  // Reset API status
   apiHealth.textContent = "WAITING";
   apiHealth.style.color = "#facc15";
 
-  // Clear directions
-  directions = {};
-}
+  document.getElementById('strengthFill').style.width = "0%";
+  document.getElementById('strengthInfo').textContent = "Waiting for signal...";
 
-/* =========================
-   MAIN ENGINE (1 SECOND LOOP)
-========================= */
+  directions = {};
+  priceChanges = {};
+}
 
 setInterval(() => {
 
@@ -919,34 +1534,20 @@ setInterval(() => {
 
   timer.textContent = rem;
 
-  // Update "next call" info
   if (rem > 20) {
     nextCallInfo.textContent = `API calls in ${rem - 20}s`;
   } else {
     nextCallInfo.textContent = "Showing results...";
   }
 
-  /* =========================
-     RESET CYCLE AT 0 SECONDS
-  ========================= */
-
   if (sec === 0) {
     resetCycle();
   }
-
-  /* =========================
-     API CALL AT 20s REMAINING
-     (ONLY ONCE PER MINUTE)
-  ========================= */
 
   if (rem === 20 && !apiCalled) {
     apiCalled = true;
     syncAssets();
   }
-
-  /* =========================
-     TREND FLOW ANIMATION
-  ========================= */
 
   bigY = nextY(bigY, 6, 20, 55);
   smallY = nextY(smallY, 6, 65, 100);
@@ -968,26 +1569,19 @@ setInterval(() => {
 
 }, 1000);
 
-/* =========================
-   DEBUG INFO (Console)
-========================= */
-
 console.log('═══════════════════════════════════════════════════════');
-console.log('   💡 VED TRADING ENGINE - Version 3.0 FINAL 💡      ');
+console.log('   🌈 VED ULTIMATE ENGINE - Rainbow Edition 🌈       ');
 console.log('═══════════════════════════════════════════════════════');
-console.log('✅ 400 Watt Glowing VED Logo');
-console.log('✅ Date-wise API tracking enabled');
-console.log('✅ Auto-reset at midnight');
-console.log('✅ Instant counter updates');
-console.log('✅ LocalStorage-based tracking');
-console.log('✅ Transparent glass box effect');
-console.log('✅ Breathing animation (2s cycle)');
-console.log('✅ Rotating halo (4s cycle)');
+console.log('✅ Multi-Color Animated VED Box');
+console.log('✅ Rotating Circles (Cyan, Purple, Pink)');
+console.log('✅ Animated Lines (Orange, Green, Blue, Red)');
+console.log('✅ Floating Triangles');
+console.log('✅ Particle Effects');
+console.log('✅ Rainbow Glow Effect');
+console.log('✅ Signal Rating System (0-9)');
 console.log('═══════════════════════════════════════════════════════');
 console.log(`📅 Today: ${getCurrentDateKey()}`);
 console.log(`📊 API Calls: ${currentApiCount}`);
-console.log('═══════════════════════════════════════════════════════');
-console.log('🚀 Ready to trade! Open file and watch VED glow! 💡✨');
 console.log('═══════════════════════════════════════════════════════');
 
 </script>
