@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VED - Ultimate Trading Engine</title>
+<title>VED - Crypto Trading Engine</title>
 
 <style>
 
@@ -386,6 +386,40 @@ header{
   margin-top:4px;
 }
 
+/* Rank badge inside asset box */
+.rankBadge{
+  display:inline-block;
+  font-size:11px;
+  font-weight:900;
+  padding:2px 8px;
+  border-radius:6px;
+  margin-left:8px;
+  vertical-align:middle;
+  letter-spacing:1px;
+}
+.rank1{
+  background:linear-gradient(135deg,#facc15,#f97316);
+  color:#000;
+  box-shadow:0 0 8px rgba(250,204,21,0.5);
+  animation:rankGlow 1.2s ease-in-out infinite;
+}
+.rank2{
+  background:rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.6);
+}
+@keyframes rankGlow {
+  0%,100%{ box-shadow:0 0 8px rgba(250,204,21,0.5); }
+  50%    { box-shadow:0 0 18px rgba(249,115,22,0.8); }
+}
+
+/* Stronger border when ranked #1 */
+.asset.topRank{
+  border:1px solid rgba(250,204,21,0.5);
+  background:rgba(250,204,21,0.07);
+  transform:translateX(4px);
+  transition:all 0.4s ease;
+}
+
 .up   { color:var(--green); }
 .down { color:var(--red); }
 
@@ -675,22 +709,14 @@ path{
 
   <div class="card">
     <h3>Assets Monitor</h3>
-    <div class="asset" id="btcBox">
-      <div>BTC/USD : WAIT</div>
-      <div class="assetChange" id="btcChange"></div>
+    <div class="asset" id="dogeBox">
+      <div>DOGE/USD : WAIT</div>
+      <div class="assetChange" id="dogeChange"></div>
     </div>
-    <div class="asset" id="goldBox">
-      <div>XAU/USD : WAIT</div>
-      <div class="assetChange" id="goldChange"></div>
+    <div class="asset" id="xrpBox">
+      <div>XRP/USD : WAIT</div>
+      <div class="assetChange" id="xrpChange"></div>
     </div>
-    <div class="asset" id="ethBox">
-      <div>ETH/USD : WAIT</div>
-      <div class="assetChange" id="ethChange"></div>
-    </div>
-  </div>
-
-</div><!-- /footerGrid -->
-
 <!-- SIGNAL HISTORY -->
 <div class="wrap" style="padding-top:0">
   <div class="card historyCard">
@@ -709,11 +735,11 @@ path{
 <script>
 
 /* ═══════════════════════════════════════════════════
-   VED ULTIMATE TRADING ENGINE — ETH Edition
+   VED ULTIMATE TRADING ENGINE — Crypto Edition
    Rating Scale: 0-10 (11 levels, full spectrum)
 ═══════════════════════════════════════════════════ */
 
-const TWELVE_KEY = "fbecb3e6b46845deb7fab1f5e728ccc7";
+const TWELVE_KEY = "246618a38ee84e1abdb9511a378c46d4";
 
 let directions   = {};
 let priceChanges = {};
@@ -985,14 +1011,13 @@ async function syncAssets() {
     apiHealth.style.color = "#facc15";
 
     const istDate = new Date(new Date().toLocaleString("en-US",{ timeZone:"Asia/Kolkata" }));
-    const [btcData, goldData, ethData] = await Promise.all([
-      getDirection("BTC/USD"),
-      getDirection("XAU/USD"),
-      getDirection("ETH/USD")
+    const [dogeData, xrpData] = await Promise.all([
+      getDirection("DOGE/USD"),
+      getDirection("XRP/USD")
     ]);
 
-    directions   = { btc: btcData.direction,   gold: goldData.direction,   eth: ethData.direction };
-    priceChanges = { btc: btcData.changePercent, gold: goldData.changePercent, eth: ethData.changePercent };
+    directions   = { doge: dogeData.direction, xrp: xrpData.direction };
+    priceChanges = { doge: dogeData.changePercent, xrp: xrpData.changePercent };
 
     incrementApiCount();
     document.getElementById('lastCallTime').textContent = "Last: " + istDate.toLocaleTimeString();
@@ -1011,14 +1036,25 @@ async function syncAssets() {
 }
 
 function updateUI() {
-  setBox("btcBox",  "btcChange",  "BTC/USD", directions.btc,  priceChanges.btc);
-  setBox("goldBox", "goldChange", "XAU/USD", directions.gold, priceChanges.gold);
-  setBox("ethBox",  "ethChange",  "ETH/USD", directions.eth,  priceChanges.eth);
+  // Build pair list and sort by strength descending
+  const pairList = [
+    { boxId:"dogeBox", changeId:"dogeChange", name:"DOGE/USD", dir:directions.doge, changePct:priceChanges.doge },
+    { boxId:"xrpBox",  changeId:"xrpChange",  name:"XRP/USD",  dir:directions.xrp,  changePct:priceChanges.xrp  },
+  ];
+  pairList.sort((a, b) => b.changePct - a.changePct);
+
+  // Get the assets container and reorder DOM + render
+  const assetsCard = document.getElementById('dogeBox').parentElement;
+  pairList.forEach((p, idx) => {
+    setBox(p.boxId, p.changeId, p.name, p.dir, p.changePct, idx + 1);
+    // Move DOM element to sorted position
+    assetsCard.appendChild(document.getElementById(p.boxId));
+  });
 
   const vals    = Object.values(directions);
   const allUp   = vals.every(v => v === "UP");
   const allDown = vals.every(v => v === "DOWN");
-  const avgChange = (priceChanges.btc + priceChanges.gold + priceChanges.eth) / 3;
+  const avgChange = (priceChanges.doge + priceChanges.xrp) / 2;
 
   const signalEl     = document.getElementById('signal');
   const badgeWrap    = document.getElementById('ratingBadgeWrap');
@@ -1098,12 +1134,20 @@ function updateUI() {
   }
 }
 
-function setBox(boxId, changeId, name, dir, changePct) {
+function setBox(boxId, changeId, name, dir, changePct, rank) {
   const box      = document.getElementById(boxId);
   const changeEl = document.getElementById(changeId);
   const first    = box.querySelector('div:first-child');
-  if (first) first.textContent = `${name} : ${dir}`;
-  box.className = "asset";
+
+  // Rank badge HTML
+  const rankBadge = rank === 1
+    ? `<span class="rankBadge rank1">🥇 #1 STRONGEST</span>`
+    : `<span class="rankBadge rank2">#${rank}</span>`;
+
+  if (first) first.innerHTML = `${name} : ${dir} ${rankBadge}`;
+
+  box.className = rank === 1 ? "asset topRank" : "asset";
+
   if (dir === "UP") {
     box.classList.add("up");
     changeEl.textContent   = `▲ +${changePct.toFixed(3)}%`;
@@ -1130,14 +1174,19 @@ function resetCycle() {
   document.getElementById('biasText').style.color   = "#facc15";
   document.getElementById('biasBar').style.width    = "0%";
 
-  ['btcBox','goldBox','ethBox'].forEach((id, i) => {
-    const names = ['BTC/USD','XAU/USD','ETH/USD'];
-    const ids   = ['btcChange','goldChange','ethChange'];
+  // Restore original DOM order and clear content
+  const assetsCard = document.getElementById('dogeBox').parentElement;
+  ['dogeBox','xrpBox'].forEach((id, i) => {
+    const names = ['DOGE/USD','XRP/USD'];
+    const ids   = ['dogeChange','xrpChange'];
     const box   = document.getElementById(id);
-    box.querySelector('div:first-child').textContent = `${names[i]} : WAIT`;
+    box.querySelector('div:first-child').innerHTML = `${names[i]} : WAIT`;
     box.className = "asset";
     document.getElementById(ids[i]).textContent = "";
   });
+  // Restore original order in DOM
+  assetsCard.appendChild(document.getElementById('dogeBox'));
+  assetsCard.appendChild(document.getElementById('xrpBox'));
 
   document.getElementById('apiHealth').textContent   = "WAITING";
   document.getElementById('apiHealth').style.color   = "#facc15";
@@ -1175,9 +1224,9 @@ setInterval(() => {
 }, 1000);
 
 console.log('══════════════════════════════════════════════════════');
-console.log('   🌈 VED ULTIMATE ENGINE — ETH Edition 🌈          ');
+console.log('   🌈 VED ULTIMATE ENGINE — Crypto Edition 🌈          ');
 console.log('══════════════════════════════════════════════════════');
-console.log('✅ ETH/USD replaces GBP/JPY');
+console.log('✅ DOGE/USD, XRP/USD');
 console.log('✅ Rating Scale: 0–10 (11 levels)');
 console.log('✅ BIG  → 6 (Weak) to 10 (Ultra Bullish 🔥)');
 console.log('✅ SMALL→ 4 (Weak) to  0 (Ultra Bearish 💀)');
