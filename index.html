@@ -1,1238 +1,1243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VED - Crypto Trading Engine</title>
-
-<style>
-
-:root{
-  --green:#22c55e;
-  --red:#ef4444;
-  --yellow:#facc15;
-  --cyan:#06b6d4;
-  --purple:#a855f7;
-  --pink:#ec4899;
-  --orange:#f97316;
-  --blue:#3b82f6;
-  --bg:#020617;
-  --card:rgba(255,255,255,.08);
-  --text:#eaf6ff;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-body{
-  font-family:system-ui, -apple-system, sans-serif;
-  background:
-    radial-gradient(circle at top, rgba(255,255,255,.12), transparent 40%),
-    linear-gradient(180deg,#0ea5e9 0%, #0369a1 45%, #020617 100%);
-  min-height:100vh;
-  color:var(--text);
-}
-
-header{
-  display:flex;
-  justify-content:space-between;
-  padding:18px 24px;
-  font-weight:900;
-}
-
-.clock{
-  color:#7dd3fc;
-  font-size:18px;
-}
-
-.wrap{
-  padding:20px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1.2fr 1.5fr 1.5fr;
-  gap:20px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   ULTIMATE RAINBOW VED BOX
-═══════════════════════════════════════════════════════════════ */
-
-.brand{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(15px);
-  border:3px solid transparent;
-  background-clip:padding-box;
-  box-shadow:
-    0 0 30px rgba(6,182,212,0.3),
-    0 0 60px rgba(168,85,247,0.2),
-    inset 0 0 30px rgba(236,72,153,0.1);
-}
-
-.ved-text{
-  font-size:52px;
-  font-weight:900;
-  color:#fff;
-  letter-spacing:12px;
-  z-index:20;
-  position:relative;
-  text-shadow:
-    0 0 10px rgba(255,255,255,1),
-    0 0 20px rgba(6,182,212,1),
-    0 0 30px rgba(168,85,247,1),
-    0 0 40px rgba(236,72,153,1),
-    0 0 70px rgba(59,130,246,1),
-    0 0 100px rgba(16,185,129,1),
-    0 0 150px rgba(249,115,22,1),
-    0 0 200px rgba(239,68,68,1),
-    0 0 250px rgba(6,182,212,0.5);
-  animation:megaGlow 3s ease-in-out infinite;
-}
-
-@keyframes megaGlow {
-  0%, 100% {
-    text-shadow:
-      0 0 10px rgba(255,255,255,1),
-      0 0 20px rgba(6,182,212,1),
-      0 0 30px rgba(168,85,247,1),
-      0 0 40px rgba(236,72,153,1),
-      0 0 70px rgba(59,130,246,1),
-      0 0 100px rgba(16,185,129,1),
-      0 0 150px rgba(249,115,22,1),
-      0 0 200px rgba(239,68,68,1),
-      0 0 250px rgba(6,182,212,0.5);
-    transform:scale(1);
-  }
-  50% {
-    text-shadow:
-      0 0 20px rgba(255,255,255,1),
-      0 0 40px rgba(168,85,247,1),
-      0 0 60px rgba(236,72,153,1),
-      0 0 80px rgba(249,115,22,1),
-      0 0 120px rgba(16,185,129,1),
-      0 0 160px rgba(59,130,246,1),
-      0 0 200px rgba(6,182,212,1),
-      0 0 280px rgba(239,68,68,1),
-      0 0 350px rgba(168,85,247,0.5);
-    transform:scale(1.05);
-  }
-}
-
-.brand::before{
-  content:'';
-  position:absolute;
-  inset:-3px;
-  background:conic-gradient(
-    from 0deg,
-    #06b6d4,
-    #a855f7,
-    #ec4899,
-    #f97316,
-    #10b981,
-    #3b82f6,
-    #ef4444,
-    #06b6d4
-  );
-  border-radius:24px;
-  animation:rotateBorder 4s linear infinite;
-  z-index:-1;
-}
-
-@keyframes rotateBorder {
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
-}
-
-.geo-circle{
-  position:absolute;
-  border-radius:50%;
-  border:2px solid;
-  opacity:0.6;
-}
-
-.geo-circle-1{
-  width:80px; height:80px; top:20%; left:10%;
-  border-color:#06b6d4;
-  animation:rotateCircle1 5s linear infinite;
-}
-
-.geo-circle-2{
-  width:60px; height:60px; top:60%; right:15%;
-  border-color:#a855f7;
-  animation:rotateCircle2 6s linear infinite reverse;
-}
-
-.geo-circle-3{
-  width:50px; height:50px; bottom:20%; left:20%;
-  border-color:#ec4899;
-  animation:rotateCircle3 4s ease-in-out infinite;
-}
-
-@keyframes rotateCircle1 {
-  0%   { transform:rotate(0deg) translateY(0); opacity:0.6; }
-  50%  { opacity:0.3; }
-  100% { transform:rotate(360deg) translateY(-10px); opacity:0.6; }
-}
-@keyframes rotateCircle2 {
-  0%   { transform:rotate(0deg) scale(1); }
-  50%  { transform:rotate(180deg) scale(1.2); }
-  100% { transform:rotate(360deg) scale(1); }
-}
-@keyframes rotateCircle3 {
-  0%, 100% { transform:translateX(0) translateY(0); }
-  25%       { transform:translateX(10px) translateY(-10px); }
-  75%       { transform:translateX(-10px) translateY(10px); }
-}
-
-.geo-line{
-  position:absolute;
-  height:2px;
-  background:linear-gradient(90deg, transparent, currentColor, transparent);
-  opacity:0.5;
-}
-.geo-line-1{ width:100px; top:30%; right:10%; color:#f97316; animation:moveLine1 3s ease-in-out infinite; }
-.geo-line-2{ width:80px; bottom:30%; left:15%; color:#10b981; animation:moveLine2 4s ease-in-out infinite; }
-.geo-line-3{ width:60px; top:50%; left:5%; color:#3b82f6; animation:moveLine3 3.5s linear infinite; transform:rotate(45deg); }
-.geo-line-4{ width:90px; bottom:40%; right:20%; color:#ef4444; animation:moveLine4 5s ease-in-out infinite; transform:rotate(-45deg); }
-
-@keyframes moveLine1 {
-  0%, 100% { transform:translateX(0) scaleX(1); opacity:0.5; }
-  50%       { transform:translateX(-20px) scaleX(1.3); opacity:0.8; }
-}
-@keyframes moveLine2 {
-  0%, 100% { transform:translateY(0); }
-  50%       { transform:translateY(-15px); }
-}
-@keyframes moveLine3 {
-  0%   { transform:rotate(45deg) translateX(0); opacity:0.3; }
-  50%  { opacity:0.7; }
-  100% { transform:rotate(45deg) translateX(30px); opacity:0.3; }
-}
-@keyframes moveLine4 {
-  0%, 100% { transform:rotate(-45deg) scale(1); }
-  50%       { transform:rotate(-45deg) scale(1.5); }
-}
-
-.geo-triangle{
-  position:absolute;
-  width:0; height:0;
-  border-left:20px solid transparent;
-  border-right:20px solid transparent;
-  opacity:0.4;
-}
-.geo-tri-1{ border-bottom:35px solid #06b6d4; top:15%; right:25%; animation:floatTriangle1 4s ease-in-out infinite; }
-.geo-tri-2{ border-bottom:30px solid #a855f7; bottom:25%; left:30%; animation:floatTriangle2 5s ease-in-out infinite; transform:rotate(180deg); }
-
-@keyframes floatTriangle1 {
-  0%, 100% { transform:translateY(0) rotate(0deg); }
-  50%       { transform:translateY(-20px) rotate(180deg); }
-}
-@keyframes floatTriangle2 {
-  0%, 100% { transform:rotate(180deg) translateY(0); }
-  50%       { transform:rotate(360deg) translateY(15px); }
-}
-
-.particles{
-  position:absolute;
-  width:100%; height:100%;
-  top:0; left:0;
-  background-image:
-    radial-gradient(circle, #06b6d4 1px, transparent 1px),
-    radial-gradient(circle, #a855f7 1px, transparent 1px),
-    radial-gradient(circle, #ec4899 1px, transparent 1px);
-  background-size:50px 50px, 70px 70px, 90px 90px;
-  background-position:0 0, 25px 25px, 50px 50px;
-  opacity:0.15;
-  animation:particleMove 20s linear infinite;
-}
-.particles-2{
-  background-image:
-    radial-gradient(circle, #f97316 1px, transparent 1px),
-    radial-gradient(circle, #10b981 1px, transparent 1px);
-  background-size:60px 60px, 80px 80px;
-  animation:particleMove 25s linear infinite reverse;
-}
-@keyframes particleMove {
-  0%   { background-position:0 0, 25px 25px, 50px 50px; }
-  100% { background-position:50px 50px, 75px 75px, 100px 100px; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RATING BADGE — new visual style
-═══════════════════════════════════════════════════════════════ */
-
-.ratingBadge{
-  display:inline-flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  border:3px solid currentColor;
-  font-weight:900;
-  animation:ratingPulse 1.5s ease-in-out infinite;
-  position:relative;
-}
-
-.ratingNum{
-  font-size:36px;
-  line-height:1;
-}
-
-.ratingMax{
-  font-size:11px;
-  opacity:0.7;
-  letter-spacing:1px;
-}
-
-/* Grade label strip */
-.gradeStrip{
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:2px;
-  padding:3px 10px;
-  border-radius:6px;
-  margin-top:6px;
-  text-transform:uppercase;
-  background:rgba(255,255,255,0.1);
-  text-align:center;
-}
-
-@keyframes ratingPulse {
-  0%, 100% { transform:scale(1); box-shadow:0 0 0 0 currentColor; }
-  50%       { transform:scale(1.06); box-shadow:0 0 16px 4px rgba(255,255,255,0.15); }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   REST OF STYLES
-═══════════════════════════════════════════════════════════════ */
-
-.timer{
-  font-size:72px;
-  text-align:center;
-  font-weight:900;
-  color:#7dd3fc;
-}
-
-.signal{
-  text-align:center;
-  font-size:58px;
-  font-weight:900;
-  margin-top:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:20px;
-}
-
-.strengthBar{
-  width:100%;
-  height:8px;
-  background:rgba(255,255,255,0.1);
-  border-radius:10px;
-  margin-top:12px;
-  overflow:hidden;
-}
-
-.strengthFill{
-  height:100%;
-  width:0%;
-  border-radius:10px;
-  transition:width 0.6s cubic-bezier(.4,0,.2,1), background-color 0.5s ease;
-}
-
-.big   { color:var(--green); }
-.small { color:var(--red); }
-.skip  { color:var(--yellow); }
-
-.barWrap{
-  height:18px;
-  background:rgba(255,255,255,.15);
-  border-radius:12px;
-  overflow:hidden;
-  margin-top:14px;
-}
-
-.bar{
-  height:100%;
-  width:0%;
-  background:var(--green);
-  border-radius:12px;
-  transition:width 0.6s cubic-bezier(.4,0,.2,1), background-color 0.5s ease;
-}
-
-.asset{
-  margin-top:12px;
-  padding:14px;
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-  font-weight:800;
-  font-size:16px;
-}
-
-.assetChange{
-  font-size:12px;
-  opacity:0.8;
-  margin-top:4px;
-}
-
-/* Rank badge inside asset box */
-.rankBadge{
-  display:inline-block;
-  font-size:11px;
-  font-weight:900;
-  padding:2px 8px;
-  border-radius:6px;
-  margin-left:8px;
-  vertical-align:middle;
-  letter-spacing:1px;
-}
-.rank1{
-  background:linear-gradient(135deg,#facc15,#f97316);
-  color:#000;
-  box-shadow:0 0 8px rgba(250,204,21,0.5);
-  animation:rankGlow 1.2s ease-in-out infinite;
-}
-.rank2{
-  background:rgba(255,255,255,0.12);
-  color:rgba(255,255,255,0.6);
-}
-@keyframes rankGlow {
-  0%,100%{ box-shadow:0 0 8px rgba(250,204,21,0.5); }
-  50%    { box-shadow:0 0 18px rgba(249,115,22,0.8); }
-}
-
-/* Stronger border when ranked #1 */
-.asset.topRank{
-  border:1px solid rgba(250,204,21,0.5);
-  background:rgba(250,204,21,0.07);
-  transform:translateX(4px);
-  transition:all 0.4s ease;
-}
-
-.up   { color:var(--green); }
-.down { color:var(--red); }
-
-.bias{
-  font-size:38px;
-  text-align:center;
-  font-weight:900;
-}
-
-.footerGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr 1fr;
-  gap:20px;
-  margin-top:20px;
-}
-
-svg{ width:100%; height:160px; }
-
-path{
-  fill:none;
-  stroke-width:2.5;
-  stroke-linecap:round;
-}
-
-.info{
-  text-align:center;
-  opacity:.7;
-  margin-top:10px;
-  font-size:14px;
-}
-
-.apiUsage{
-  font-size:52px;
-  text-align:center;
-  font-weight:900;
-  color:var(--cyan);
-  margin-top:14px;
-}
-
-.lastCall{
-  text-align:center;
-  opacity:.6;
-  margin-top:8px;
-  font-size:13px;
-}
-
-.subtitle{
-  text-align:center;
-  opacity:.6;
-  margin-top:8px;
-  font-size:13px;
-}
-
-.dateInfo{
-  text-align:center;
-  opacity:.5;
-  font-size:12px;
-  margin-top:6px;
-  font-weight:600;
-}
-
-.updateBadge{
-  display:inline-block;
-  background:rgba(34,197,94,0.2);
-  color:#22c55e;
-  padding:4px 12px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:800;
-  margin-top:8px;
-  animation:pulse 1s ease-in-out;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity:1; }
-  50%       { opacity:0.5; }
-}
-
-/* ─── Signal History ─── */
-.historyCard{ margin-top:20px; }
-
-.clearBtn{
-  background:linear-gradient(135deg,#ef4444,#dc2626);
-  color:#fff;
-  border:none;
-  padding:10px 20px;
-  border-radius:12px;
-  font-weight:800;
-  font-size:14px;
-  cursor:pointer;
-  transition:all 0.3s ease;
-  box-shadow:0 4px 12px rgba(239,68,68,0.3);
-}
-.clearBtn:hover{
-  background:linear-gradient(135deg,#dc2626,#b91c1c);
-  transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(239,68,68,0.4);
-}
-.clearBtn:active{ transform:translateY(0); }
-
-.historyContainer{
-  max-height:300px;
-  overflow-y:auto;
-  padding:10px;
-  background:rgba(0,0,0,0.2);
-  border-radius:12px;
-}
-.historyContainer::-webkit-scrollbar{ width:8px; }
-.historyContainer::-webkit-scrollbar-track{ background:rgba(255,255,255,0.05); border-radius:10px; }
-.historyContainer::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.2); border-radius:10px; }
-.historyContainer::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,0.3); }
-
-.historyEmpty{
-  text-align:center;
-  opacity:0.5;
-  padding:30px;
-  font-style:italic;
-}
-
-.historyItem{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 16px;
-  margin-bottom:8px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.05);
-  border-left:4px solid;
-  animation:slideIn 0.3s ease;
-  transition:all 0.2s ease;
-}
-.historyItem:hover{ background:rgba(255,255,255,0.08); transform:translateX(4px); }
-
-@keyframes slideIn {
-  from{ opacity:0; transform:translateX(-20px); }
-  to  { opacity:1; transform:translateX(0); }
-}
-
-.historyItem.big  { border-left-color:#22c55e; background:rgba(34,197,94,0.08); }
-.historyItem.small{ border-left-color:#ef4444; background:rgba(239,68,68,0.08); }
-.historyItem.skip { border-left-color:#facc15; background:rgba(250,204,21,0.08); }
-
-.historySignal{ display:flex; align-items:center; gap:12px; }
-.historySignalText{ font-size:20px; font-weight:900; }
-
-/* new rating mini-badge in history */
-.historyRatingBadge{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  border:2px solid currentColor;
-  font-weight:900;
-}
-.historyRatingNum{ font-size:18px; line-height:1; }
-.historyRatingLabel{ font-size:9px; opacity:0.7; letter-spacing:0.5px; }
-
-.historyGrade{
-  font-size:10px;
-  font-weight:800;
-  padding:2px 8px;
-  border-radius:6px;
-  background:rgba(255,255,255,0.1);
-  margin-top:4px;
-  letter-spacing:1px;
-}
-
-.historyTime    { font-size:13px; opacity:0.7; font-weight:600; }
-.historyStrength{ font-size:12px; opacity:0.6; margin-top:4px; }
-
-@media (max-width:1024px){
-  .grid{ grid-template-columns:1fr; }
-  .footerGrid{ grid-template-columns:1fr 1fr; }
-  .ved-text{ font-size:48px; }
-}
-@media (max-width:640px){
-  .footerGrid{ grid-template-columns:1fr; }
-  .timer{ font-size:60px; }
-  .signal{ font-size:42px; flex-direction:column; gap:8px; }
-  .ratingBadge{ width:70px; height:70px; }
-  .ratingNum{ font-size:28px; }
-  .apiUsage{ font-size:42px; }
-  .ved-text{ font-size:42px; letter-spacing:6px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 WinGo Auto-Cycle Scanner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #1a1a3e;
+            --accent-1: #00d9ff;
+            --accent-2: #00ff88;
+            --small-color: #ff6b6b;
+            --big-color: #00e676;
+            --card-bg: rgba(255,255,255,0.05);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Website Frame Container */
+        .website-container {
+            position: relative;
+            background: #000;
+            border-right: 2px solid var(--accent-1);
+            overflow: hidden;
+        }
+
+        .website-header {
+            background: linear-gradient(145deg, rgba(0,217,255,0.2), rgba(0,255,136,0.1));
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--accent-1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .website-header h3 {
+            font-size: 16px;
+            color: var(--accent-1);
+        }
+
+        .website-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .website-controls button {
+            padding: 8px 15px;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .website-controls button:hover {
+            background: var(--accent-1);
+            color: #000;
+        }
+
+        /* Cycle Timer Display */
+        .cycle-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            border: 1px solid var(--accent-1);
+        }
+
+        .cycle-timer .label {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .cycle-timer .time {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-2);
+            font-family: 'Courier New', monospace;
+        }
+
+        #wingoFrame {
+            width: 100%;
+            height: calc(100vh - 60px);
+            border: none;
+            background: #fff;
+        }
+
+        /* Analyzer Panel */
+        .analyzer-panel {
+            background: linear-gradient(145deg, rgba(26,42,74,0.98), rgba(15,26,46,0.98));
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 2px solid var(--accent-1);
+            position: relative;
+        }
+
+        .analyzer-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0,217,255,0.3);
+        }
+
+        .analyzer-header h2 {
+            font-size: 20px;
+            background: linear-gradient(45deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .analyzer-header p {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Auto-Cycle Status */
+        .auto-cycle-status {
+            background: linear-gradient(145deg, rgba(0,217,255,0.15), rgba(0,255,136,0.1));
+            border: 2px solid var(--accent-1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auto-cycle-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: scanLine 2s infinite;
+        }
+
+        @keyframes scanLine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .cycle-status-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .cycle-status-main {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-2);
+            margin: 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cycle-countdown {
+            font-size: 48px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-1);
+            margin: 15px 0;
+            text-shadow: 0 0 20px var(--accent-1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .cycle-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cycle-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            border-radius: 4px;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--accent-1);
+        }
+
+        /* Control Buttons */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ctrl-btn {
+            padding: 15px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-btn .icon {
+            font-size: 24px;
+        }
+
+        .ctrl-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-1);
+            box-shadow: 0 5px 20px rgba(0,217,255,0.3);
+        }
+
+        .ctrl-btn.active {
+            background: linear-gradient(145deg, var(--accent-1), var(--accent-2));
+            color: #000;
+            border-color: transparent;
+            animation: btnPulse 2s infinite;
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,217,255,0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(0,217,255,0); }
+        }
+
+        /* Manual Input */
+        .manual-input {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .manual-input h4 {
+            color: var(--accent-1);
+            font-size: 11px;
+            margin-bottom: 12px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .num-btn {
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #fff;
+        }
+
+        .num-btn.small { background: linear-gradient(145deg, #ff6b6b, #ee5a5a); }
+        .num-btn.big { background: linear-gradient(145deg, #00e676, #00c853); }
+
+        .num-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .manual-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .manual-controls button {
+            padding: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Results Display */
+        .results-container {
+            background: rgba(0,0,0,0.4);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .results-title {
+            font-size: 12px;
+            color: var(--accent-1);
+            margin-bottom: 12px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .results-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 90px 50px 60px 60px;
+            gap: 8px;
+            padding: 10px;
+            margin-bottom: 6px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-size: 11px;
+            align-items: center;
+            border-left: 3px solid transparent;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .result-row.green { border-left-color: #00e676; }
+        .result-row.red { border-left-color: #ff6b6b; }
+        .result-row.violet { border-left-color: #9c27b0; }
+
+        .result-row .period {
+            color: #888;
+            font-size: 9px;
+        }
+
+        .result-row .number {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .result-row .number.green { background: #00e676; color: #000; }
+        .result-row .number.red { background: #ff6b6b; color: #fff; }
+        .result-row .number.violet { background: #9c27b0; color: #fff; }
+
+        .result-row .size {
+            text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .result-row .size.big { background: rgba(0,230,118,0.2); color: #00e676; }
+        .result-row .size.small { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+
+        .result-row .color {
+            text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .result-row .color.green { background: rgba(0,230,118,0.2); color: #00e676; }
+        .result-row .color.red { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .result-row .color.violet { background: rgba(156,39,176,0.2); color: #9c27b0; }
+
+        /* Prediction Box */
+        .prediction-box {
+            background: linear-gradient(145deg, rgba(0,217,255,0.15), rgba(0,255,136,0.1));
+            border: 2px solid var(--accent-1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prediction-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .prediction-result {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 0 0 30px currentColor;
+            animation: predictionGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes predictionGlow {
+            0%, 100% { text-shadow: 0 0 20px currentColor; }
+            50% { text-shadow: 0 0 40px currentColor; }
+        }
+
+        .prediction-result.green { color: #00e676; }
+        .prediction-result.red { color: #ff6b6b; }
+        .prediction-result.violet { color: #9c27b0; }
+        .prediction-result.waiting { color: #ffd93d; font-size: 18px; }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .confidence-badge.high { background: linear-gradient(145deg, #00e676, #00c853); color: #000; }
+        .confidence-badge.medium { background: linear-gradient(145deg, #ffb300, #ff9800); color: #000; }
+        .confidence-badge.low { background: linear-gradient(145deg, #ff5252, #d32f2f); color: #fff; }
+
+        .suggested-numbers {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+
+        .suggested-numbers .title {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .number-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .number-chip {
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .number-chip.green { background: #00e676; color: #000; }
+        .number-chip.red { background: #ff6b6b; color: #fff; }
+        .number-chip.violet { background: #9c27b0; color: #fff; }
+
+        /* Analysis */
+        .analysis-box {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .analysis-title {
+            font-size: 12px;
+            color: var(--accent-1);
+            margin-bottom: 12px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 12px;
+        }
+
+        .analysis-item .key {
+            color: #888;
+        }
+
+        .analysis-item .val {
+            font-weight: bold;
+            color: var(--accent-2);
+        }
+
+        /* Log Console */
+        .log-console {
+            background: rgba(0,0,0,0.6);
+            border-radius: 10px;
+            padding: 12px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 9px;
+            font-family: 'Courier New', monospace;
+            color: #0f0;
+            margin-top: 15px;
+            border: 1px solid rgba(0,255,0,0.2);
+        }
+
+        .log-console .log-item {
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(0,255,0,0.05);
+        }
+
+        .log-console .log-item.error { color: #ff4444; }
+        .log-console .log-item.success { color: #00ff88; }
+        .log-console .log-item.info { color: #00d9ff; }
+        .log-console .log-item.warning { color: #ffaa00; }
+
+        /* Scrollbar */
+        .analyzer-panel::-webkit-scrollbar,
+        .log-console::-webkit-scrollbar,
+        .results-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .analyzer-panel::-webkit-scrollbar-track,
+        .log-console::-webkit-scrollbar-track,
+        .results-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+
+        .analyzer-panel::-webkit-scrollbar-thumb,
+        .log-console::-webkit-scrollbar-thumb,
+        .results-list::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 3px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.95);
+            border-radius: 30px;
+            color: #fff;
+            font-size: 14px;
+            z-index: 9999999;
+            opacity: 0;
+            transition: all 0.4s;
+            border: 2px solid var(--accent-1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 50vh 50vh;
+            }
+
+            .analyzer-panel {
+                border-left: none;
+                border-top: 2px solid var(--accent-1);
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
-<header>
-  <div class="clock" id="clock">IST --:--:--</div>
-  <div id="date">-- --- ----</div>
-</header>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Website Frame -->
+        <div class="website-container">
+            <div class="website-header">
+                <h3>🎮 WinGo 1 Min Game</h3>
+                <div class="website-controls">
+                    <div class="cycle-timer">
+                        <span class="label">Next Cycle:</span>
+                        <span class="time" id="headerTimer">60s</span>
+                    </div>
+                    <button onclick="refreshWebsite()">🔄</button>
+                    <button onclick="openInNew()">🔗</button>
+                </div>
+            </div>
 
-<div class="wrap">
-<div class="grid">
-
-  <!-- ULTIMATE ANIMATED RAINBOW VED BOX -->
-  <div class="card brand">
-    <div class="geo-circle geo-circle-1"></div>
-    <div class="geo-circle geo-circle-2"></div>
-    <div class="geo-circle geo-circle-3"></div>
-    <div class="geo-line geo-line-1"></div>
-    <div class="geo-line geo-line-2"></div>
-    <div class="geo-line geo-line-3"></div>
-    <div class="geo-line geo-line-4"></div>
-    <div class="geo-triangle geo-tri-1"></div>
-    <div class="geo-triangle geo-tri-2"></div>
-    <div class="particles"></div>
-    <div class="particles particles-2"></div>
-    <span class="ved-text">VED</span>
-  </div>
-
-  <div class="card">
-    <h3>1 Minute Timer</h3>
-    <div class="timer" id="timer">60</div>
-    <div class="info" id="nextCallInfo">API calls in 60s</div>
-  </div>
-
-  <div class="card">
-    <h3>Live Signal with Rating</h3>
-
-    <div class="signal skip">
-      <span id="signal">WAIT</span>
-      <div id="ratingBadgeWrap" style="display:none">
-        <div class="ratingBadge" id="ratingBadge" style="color:#22c55e">
-          <span class="ratingNum" id="ratingNum">0</span>
-          <span class="ratingMax">/10</span>
+            <iframe 
+                id="wingoFrame" 
+                src="https://4yaarwin.com/#/saasLottery/WinGo?gameCode=WinGo_1Min&lottery=WinGo"
+                allow="clipboard-write; payment"
+            ></iframe>
         </div>
-        <div class="gradeStrip" id="gradeStrip">—</div>
-      </div>
-    </div>
 
-    <div class="strengthBar">
-      <div class="strengthFill" id="strengthFill"></div>
-    </div>
+        <!-- Analyzer Panel -->
+        <div class="analyzer-panel">
+            <div class="analyzer-header">
+                <h2>🎯 AUTO-CYCLE SCANNER</h2>
+                <p>1 Minute Auto-Scanning System</p>
+            </div>
 
-    <div class="info" id="strengthInfo">Waiting for signal...</div>
-  </div>
+            <!-- Auto-Cycle Status -->
+            <div class="auto-cycle-status">
+                <div class="cycle-status-label">⏱️ CYCLE STATUS</div>
+                <div class="cycle-status-main" id="cycleStatus">WAITING TO START</div>
+                <div class="cycle-countdown" id="cycleCountdown">--</div>
+                <div class="cycle-progress-bar">
+                    <div class="cycle-progress-fill" id="cycleProgress" style="width: 0%"></div>
+                </div>
+            </div>
 
-  <div class="card" style="grid-column:1/-1">
-    <h3>Trend Flow</h3>
-    <svg viewBox="0 0 300 120">
-      <line x1="0" y1="20" x2="300" y2="20" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-      <line x1="0" y1="55" x2="300" y2="55" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-      <line x1="0" y1="75" x2="300" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-      <line x1="0" y1="100" x2="300" y2="100" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-      <path id="bigLine" stroke="#22c55e"/>
-      <path id="smallLine" stroke="#ef4444"/>
-      <path id="skipLine" stroke="#facc15"/>
-      <text x="5" y="15" fill="#22c55e" font-size="10" font-weight="bold">BIG</text>
-      <text x="5" y="70" fill="#facc15" font-size="10" font-weight="bold">SKIP</text>
-      <text x="5" y="115" fill="#ef4444" font-size="10" font-weight="bold">SMALL</text>
-    </svg>
-  </div>
+            <!-- Controls -->
+            <div class="controls">
+                <button class="ctrl-btn" id="startBtn" onclick="startAutoCycle()">
+                    <span class="icon">▶️</span>
+                    <span>START AUTO</span>
+                </button>
+                
+                <button class="ctrl-btn" id="stopBtn" onclick="stopAutoCycle()" style="display: none;">
+                    <span class="icon">⏸️</span>
+                    <span>STOP AUTO</span>
+                </button>
+                
+                <button class="ctrl-btn" id="voiceBtn" onclick="toggleVoice()">
+                    <span class="icon">🎤</span>
+                    <span>VOICE</span>
+                </button>
+                
+                <button class="ctrl-btn" id="resetBtn" onclick="resetAll()">
+                    <span class="icon">🔃</span>
+                    <span>RESET</span>
+                </button>
+            </div>
 
-</div><!-- /grid -->
+            <!-- Manual Input -->
+            <div class="manual-input">
+                <h4>🎯 Manual Backup Entry</h4>
+                <div class="number-grid">
+                    <button class="num-btn small" onclick="manualAdd(0)">0</button>
+                    <button class="num-btn small" onclick="manualAdd(1)">1</button>
+                    <button class="num-btn small" onclick="manualAdd(2)">2</button>
+                    <button class="num-btn small" onclick="manualAdd(3)">3</button>
+                    <button class="num-btn small" onclick="manualAdd(4)">4</button>
+                    <button class="num-btn big" onclick="manualAdd(5)">5</button>
+                    <button class="num-btn big" onclick="manualAdd(6)">6</button>
+                    <button class="num-btn big" onclick="manualAdd(7)">7</button>
+                    <button class="num-btn big" onclick="manualAdd(8)">8</button>
+                    <button class="num-btn big" onclick="manualAdd(9)">9</button>
+                </div>
+                <div class="manual-controls">
+                    <button onclick="undoManual()">↩️ Undo</button>
+                    <button onclick="clearManual()">🗑️ Clear</button>
+                </div>
+            </div>
 
-<div class="footerGrid">
+            <!-- Results -->
+            <div class="results-container">
+                <div class="results-title">📜 LAST 10 RESULTS</div>
+                <div class="results-list" id="resultsList">
+                    <div style="text-align: center; color: #888; padding: 20px; font-size: 12px;">
+                        Waiting for auto-scan...
+                    </div>
+                </div>
+            </div>
 
-  <div class="card">
-    <h3>API Health</h3>
-    <div id="apiHealth" style="font-size:34px;font-weight:900;margin-top:14px;color:#facc15">WAITING</div>
-    <div class="lastCall" id="lastCallTime">Waiting for first call...</div>
-  </div>
+            <!-- Prediction -->
+            <div class="prediction-box">
+                <div class="prediction-label">🎯 NEXT PREDICTION</div>
+                <div class="prediction-result waiting" id="predictionResult">
+                    START AUTO CYCLE
+                </div>
+                <div class="confidence-badge" id="confidenceBadge" style="display: none;">
+                    0%
+                </div>
+                
+                <div class="suggested-numbers" id="suggestedNumbers" style="display: none;">
+                    <div class="title">💡 Best Numbers:</div>
+                    <div class="number-chips" id="numberChips"></div>
+                </div>
+            </div>
 
-  <div class="card">
-    <h3>API Calls Today</h3>
-    <div class="apiUsage" id="apiUsageCount">0</div>
-    <div class="subtitle">Since 00:00 AM (Local Storage)</div>
-    <div class="dateInfo" id="currentDateInfo">-- --- ----</div>
-    <div style="text-align:center">
-      <span class="updateBadge" id="updateBadge" style="display:none">✓ Updated</span>
-    </div>
-  </div>
+            <!-- Analysis -->
+            <div class="analysis-box">
+                <div class="analysis-title">📈 ANALYSIS</div>
+                <div class="analysis-item">
+                    <span class="key">🟢 Green:</span>
+                    <span class="val" id="greenCount">0</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="key">🔴 Red:</span>
+                    <span class="val" id="redCount">0</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="key">🟣 Violet:</span>
+                    <span class="val" id="violetCount">0</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="key">📊 Pattern:</span>
+                    <span class="val" id="patternType">-</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="key">🔥 Hot:</span>
+                    <span class="val" id="hotNumbers">-</span>
+                </div>
+            </div>
 
-  <div class="card">
-    <h3>Market Bias</h3>
-    <div class="bias" id="biasText" style="color:#facc15">WAIT</div>
-    <div class="barWrap">
-      <div class="bar" id="biasBar"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Assets Monitor</h3>
-    <div class="asset" id="dogeBox">
-      <div>DOGE/USD : WAIT</div>
-      <div class="assetChange" id="dogeChange"></div>
-    </div>
-    <div class="asset" id="xrpBox">
-      <div>XRP/USD : WAIT</div>
-      <div class="assetChange" id="xrpChange"></div>
-    </div>
-<!-- SIGNAL HISTORY -->
-<div class="wrap" style="padding-top:0">
-  <div class="card historyCard">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h3>📜 Signal History</h3>
-      <button class="clearBtn" onclick="clearHistory()">🗑️ Clear History</button>
-    </div>
-    <div class="historyContainer" id="historyContainer">
-      <div class="historyEmpty">No signals yet. Waiting for first signal...</div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /wrap -->
-
-<script>
-
-/* ═══════════════════════════════════════════════════
-   VED ULTIMATE TRADING ENGINE — Crypto Edition
-   Rating Scale: 0-10 (11 levels, full spectrum)
-═══════════════════════════════════════════════════ */
-
-const TWELVE_KEY = "246618a38ee84e1abdb9511a378c46d4";
-
-let directions   = {};
-let priceChanges = {};
-let apiCalled    = false;
-let signalHistory = [];
-
-/* ─── IMPROVED RATING SYSTEM (0–10) ────────────────────────────
-  
-  BIG (Bullish) Ratings  → 6 to 10
-  ┌──────────┬──────────────────────────────────────────────────┐
-  │ Rating 6 │ Weak Bullish      — avg change < 0.30%           │
-  │ Rating 7 │ Moderate Bullish  — avg change ≥ 0.30%           │
-  │ Rating 8 │ Strong Bullish    — avg change ≥ 0.60%           │
-  │ Rating 9 │ Very Strong       — avg change ≥ 1.00%           │
-  │ Rating10 │ Ultra Bullish 🔥  — avg change ≥ 1.50%           │
-  └──────────┴──────────────────────────────────────────────────┘
-
-  SMALL (Bearish) Ratings → 4 to 0
-  ┌──────────┬──────────────────────────────────────────────────┐
-  │ Rating 4 │ Weak Bearish      — avg change < 0.30%           │
-  │ Rating 3 │ Moderate Bearish  — avg change ≥ 0.30%           │
-  │ Rating 2 │ Strong Bearish    — avg change ≥ 0.60%           │
-  │ Rating 1 │ Very Strong Bearish — avg change ≥ 1.00%         │
-  │ Rating 0 │ Ultra Bearish 💀  — avg change ≥ 1.50%           │
-  └──────────┴──────────────────────────────────────────────────┘
-
-  SKIP → Rating 5  (Neutral / Mixed)
-  
-  Strength % shown in bar = distance from neutral (5)
-  BIG:   bar% = ((rating-5)/5)*100
-  SMALL: bar% = ((5-rating)/5)*100
-  SKIP:  bar% = 50%
-─────────────────────────────────────────────────────────────── */
-
-const BULL_GRADES = {
-  10: { label:"Ultra Bullish 🔥", thresholdPct:1.50 },
-  9:  { label:"Very Strong Bullish", thresholdPct:1.00 },
-  8:  { label:"Strong Bullish",    thresholdPct:0.60 },
-  7:  { label:"Moderate Bullish",  thresholdPct:0.30 },
-  6:  { label:"Weak Bullish",      thresholdPct:0.00 },
-};
-
-const BEAR_GRADES = {
-  0:  { label:"Ultra Bearish 💀",  thresholdPct:1.50 },
-  1:  { label:"Very Strong Bearish", thresholdPct:1.00 },
-  2:  { label:"Strong Bearish",    thresholdPct:0.60 },
-  3:  { label:"Moderate Bearish",  thresholdPct:0.30 },
-  4:  { label:"Weak Bearish",      thresholdPct:0.00 },
-};
-
-function calculateRating(signalType, avgChange) {
-  if (signalType === 'BIG') {
-    if (avgChange >= 1.50) return 10;
-    if (avgChange >= 1.00) return 9;
-    if (avgChange >= 0.60) return 8;
-    if (avgChange >= 0.30) return 7;
-    return 6;
-  }
-  if (signalType === 'SMALL') {
-    if (avgChange >= 1.50) return 0;
-    if (avgChange >= 1.00) return 1;
-    if (avgChange >= 0.60) return 2;
-    if (avgChange >= 0.30) return 3;
-    return 4;
-  }
-  return 5; // SKIP = neutral centre
-}
-
-function getGradeLabel(signalType, rating) {
-  if (signalType === 'BIG')   return BULL_GRADES[rating]?.label || "Bullish";
-  if (signalType === 'SMALL') return BEAR_GRADES[rating]?.label || "Bearish";
-  return "Mixed Market — No Clear Trend";
-}
-
-function getStrengthPct(signalType, rating) {
-  if (signalType === 'BIG')   return ((rating - 5) / 5) * 100;
-  if (signalType === 'SMALL') return ((5 - rating) / 5) * 100;
-  return 50;
-}
-
-/* ─── HISTORY ─────────────────────────────────────────────── */
-
-function loadHistory() {
-  try {
-    const stored = localStorage.getItem('ved_signal_history');
-    if (stored) { signalHistory = JSON.parse(stored); displayHistory(); }
-  } catch(e) { signalHistory = []; }
-}
-
-function saveHistory() {
-  try { localStorage.setItem('ved_signal_history', JSON.stringify(signalHistory)); }
-  catch(e) {}
-}
-
-function addToHistory(signal, rating, gradeLabel, avgChange) {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('en-US',{ hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
-
-  signalHistory.unshift({ signal, rating, gradeLabel, avgChange, time:timeStr, timestamp:now.getTime() });
-  if (signalHistory.length > 50) signalHistory = signalHistory.slice(0, 50);
-  saveHistory();
-  displayHistory();
-}
-
-function displayHistory() {
-  const container = document.getElementById('historyContainer');
-  if (signalHistory.length === 0) {
-    container.innerHTML = '<div class="historyEmpty">No signals yet. Waiting for first signal...</div>';
-    return;
-  }
-
-  let html = '';
-  signalHistory.forEach(item => {
-    const cls   = item.signal.toLowerCase();
-    const color = item.signal === 'BIG' ? '#22c55e' : item.signal === 'SMALL' ? '#ef4444' : '#facc15';
-    const ratingDisplay = item.rating !== null && item.rating !== undefined ? item.rating : 5;
-
-    const badgeHtml = item.signal !== 'SKIP'
-      ? `<div class="historyRatingBadge" style="color:${color}">
-           <span class="historyRatingNum">${ratingDisplay}</span>
-           <span class="historyRatingLabel">/10</span>
-         </div>`
-      : `<div class="historyRatingBadge" style="color:${color}">
-           <span class="historyRatingNum" style="font-size:13px">SKIP</span>
-         </div>`;
-
-    const gradeHtml = item.gradeLabel
-      ? `<div class="historyGrade" style="color:${color}">${item.gradeLabel}</div>`
-      : '';
-
-    const changeHtml = item.avgChange != null
-      ? `<div class="historyStrength">Avg: ${item.avgChange.toFixed(3)}%</div>`
-      : '';
-
-    html += `
-      <div class="historyItem ${cls}">
-        <div class="historySignal">
-          <div class="historySignalText" style="color:${color}">${item.signal}</div>
-          ${badgeHtml}
+            <!-- Log Console -->
+            <div class="log-console" id="logConsole">
+                <div class="log-item info">[INFO] Auto-cycle scanner ready...</div>
+            </div>
         </div>
-        <div style="text-align:right">
-          <div class="historyTime">${item.time}</div>
-          ${gradeHtml}
-          ${changeHtml}
-        </div>
-      </div>`;
-  });
-  container.innerHTML = html;
-}
-
-function clearHistory() {
-  if (confirm('Are you sure you want to clear all signal history?')) {
-    signalHistory = [];
-    saveHistory();
-    displayHistory();
-  }
-}
-
-loadHistory();
-
-/* ─── API COUNT ───────────────────────────────────────────── */
-
-function getCurrentDateKey() {
-  return new Date().toLocaleDateString('en-GB',{ day:'numeric', month:'short', year:'numeric' });
-}
-function getTodayKey() { return new Date().toDateString(); }
-
-function loadTodayApiCount() {
-  try {
-    const stored = localStorage.getItem('ved_api_tracking');
-    if (stored) {
-      const data = JSON.parse(stored);
-      if (data.date === getTodayKey()) return data.count;
-      saveApiCount(0); return 0;
-    }
-    saveApiCount(0); return 0;
-  } catch(e) { return 0; }
-}
-
-function saveApiCount(count) {
-  try {
-    localStorage.setItem('ved_api_tracking', JSON.stringify({
-      date: getTodayKey(), count, dateFormatted: getCurrentDateKey(), lastUpdate: new Date().toISOString()
-    }));
-  } catch(e) {}
-}
-
-function incrementApiCount() {
-  const n = loadTodayApiCount() + 3;
-  saveApiCount(n);
-  updateApiCountUI(n);
-  showUpdateBadge();
-  return n;
-}
-
-function updateApiCountUI(count) {
-  document.getElementById('apiUsageCount').textContent = count;
-  document.getElementById('currentDateInfo').textContent = getCurrentDateKey();
-}
-
-function showUpdateBadge() {
-  const b = document.getElementById('updateBadge');
-  b.style.display = 'inline-block';
-  setTimeout(() => { b.style.display = 'none'; }, 2000);
-}
-
-function checkDateChange() {
-  try {
-    const stored = localStorage.getItem('ved_api_tracking');
-    if (stored) {
-      const data = JSON.parse(stored);
-      if (data.date !== getTodayKey()) { saveApiCount(0); updateApiCountUI(0); }
-    }
-  } catch(e) {}
-}
-
-updateApiCountUI(loadTodayApiCount());
-
-/* ─── CLOCK ───────────────────────────────────────────────── */
-
-setInterval(() => {
-  const d = new Date(new Date().toLocaleString("en-US",{ timeZone:"Asia/Kolkata" }));
-  document.getElementById('clock').textContent = "IST " + d.toTimeString().slice(0,8);
-  document.getElementById('date').textContent  = d.toDateString();
-  checkDateChange();
-}, 1000);
-
-/* ─── TREND FLOW CHART ────────────────────────────────────── */
-
-const MAX_POINTS = 60;
-let bigPts = [], smallPts = [], skipPts = [];
-let bigY = 55, smallY = 80, skipY = 65;
-
-function nextY(y, d, min, max) {
-  y += (Math.random() - 0.5) * d;
-  return Math.max(min, Math.min(max, y));
-}
-
-function buildPath(a) {
-  if (!a.length) return '';
-  return "M " + a.map((p,i)=>`${i*5},${p}`).join(" L ");
-}
-
-/* ─── API FETCH ───────────────────────────────────────────── */
-
-async function getDirection(symbol) {
-  const r = await fetch(
-    `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1min&outputsize=2&apikey=${TWELVE_KEY}`
-  );
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const j = await r.json();
-  if (j.status === 'error' || j.code) throw new Error(j.message || 'API Error');
-  if (!j.values || j.values.length < 2) throw new Error("Invalid response");
-
-  const prev = parseFloat(j.values[1].close);
-  const curr = parseFloat(j.values[0].close);
-  if (isNaN(prev) || isNaN(curr)) throw new Error("Invalid price data");
-
-  const changePct = ((curr - prev) / prev) * 100;
-  return { direction: curr >= prev ? "UP" : "DOWN", changePercent: Math.abs(changePct), prev, curr };
-}
-
-/* ─── SYNC & UI UPDATE ────────────────────────────────────── */
-
-async function syncAssets() {
-  try {
-    const apiHealth = document.getElementById('apiHealth');
-    apiHealth.textContent = "WAITING";
-    apiHealth.style.color = "#facc15";
-
-    const istDate = new Date(new Date().toLocaleString("en-US",{ timeZone:"Asia/Kolkata" }));
-    const [dogeData, xrpData] = await Promise.all([
-      getDirection("DOGE/USD"),
-      getDirection("XRP/USD")
-    ]);
-
-    directions   = { doge: dogeData.direction, xrp: xrpData.direction };
-    priceChanges = { doge: dogeData.changePercent, xrp: xrpData.changePercent };
-
-    incrementApiCount();
-    document.getElementById('lastCallTime').textContent = "Last: " + istDate.toLocaleTimeString();
-    apiHealth.textContent = "CONNECTED";
-    apiHealth.style.color = "#22c55e";
-
-    updateUI();
-  } catch(error) {
-    console.error("❌ API Error:", error);
-    const apiHealth = document.getElementById('apiHealth');
-    apiHealth.textContent = "ERROR";
-    apiHealth.style.color = "#ef4444";
-    const istDate = new Date(new Date().toLocaleString("en-US",{ timeZone:"Asia/Kolkata" }));
-    document.getElementById('lastCallTime').textContent = "Error at " + istDate.toLocaleTimeString();
-  }
-}
-
-function updateUI() {
-  // Build pair list and sort by strength descending
-  const pairList = [
-    { boxId:"dogeBox", changeId:"dogeChange", name:"DOGE/USD", dir:directions.doge, changePct:priceChanges.doge },
-    { boxId:"xrpBox",  changeId:"xrpChange",  name:"XRP/USD",  dir:directions.xrp,  changePct:priceChanges.xrp  },
-  ];
-  pairList.sort((a, b) => b.changePct - a.changePct);
-
-  // Get the assets container and reorder DOM + render
-  const assetsCard = document.getElementById('dogeBox').parentElement;
-  pairList.forEach((p, idx) => {
-    setBox(p.boxId, p.changeId, p.name, p.dir, p.changePct, idx + 1);
-    // Move DOM element to sorted position
-    assetsCard.appendChild(document.getElementById(p.boxId));
-  });
-
-  const vals    = Object.values(directions);
-  const allUp   = vals.every(v => v === "UP");
-  const allDown = vals.every(v => v === "DOWN");
-  const avgChange = (priceChanges.doge + priceChanges.xrp) / 2;
-
-  const signalEl     = document.getElementById('signal');
-  const badgeWrap    = document.getElementById('ratingBadgeWrap');
-  const badge        = document.getElementById('ratingBadge');
-  const ratingNumEl  = document.getElementById('ratingNum');
-  const gradeStripEl = document.getElementById('gradeStrip');
-  const strengthFill = document.getElementById('strengthFill');
-  const strengthInfo = document.getElementById('strengthInfo');
-  const biasText     = document.getElementById('biasText');
-  const biasBar      = document.getElementById('biasBar');
-
-  if (allUp) {
-    const rating = calculateRating('BIG', avgChange);
-    const label  = getGradeLabel('BIG', rating);
-    const pct    = getStrengthPct('BIG', rating);
-
-    signalEl.textContent          = "BIG";
-    signalEl.parentElement.className = "signal big";
-
-    ratingNumEl.textContent       = rating;
-    badge.style.color             = "#22c55e";
-    gradeStripEl.textContent      = label;
-    gradeStripEl.style.color      = "#22c55e";
-    badgeWrap.style.display       = "block";
-
-    biasText.textContent          = "FULL BULLISH";
-    biasText.style.color          = "#22c55e";
-    biasBar.style.width           = "100%";
-    biasBar.style.backgroundColor = "#22c55e";
-
-    strengthFill.style.width           = pct + "%";
-    strengthFill.style.backgroundColor = "#22c55e";
-    strengthInfo.textContent           = `${label} • Avg Δ: ${avgChange.toFixed(3)}%`;
-
-    addToHistory('BIG', rating, label, avgChange);
-
-  } else if (allDown) {
-    const rating = calculateRating('SMALL', avgChange);
-    const label  = getGradeLabel('SMALL', rating);
-    const pct    = getStrengthPct('SMALL', rating);
-
-    signalEl.textContent          = "SMALL";
-    signalEl.parentElement.className = "signal small";
-
-    ratingNumEl.textContent       = rating;
-    badge.style.color             = "#ef4444";
-    gradeStripEl.textContent      = label;
-    gradeStripEl.style.color      = "#ef4444";
-    badgeWrap.style.display       = "block";
-
-    biasText.textContent          = "FULL BEARISH";
-    biasText.style.color          = "#ef4444";
-    biasBar.style.width           = "100%";
-    biasBar.style.backgroundColor = "#ef4444";
-
-    strengthFill.style.width           = pct + "%";
-    strengthFill.style.backgroundColor = "#ef4444";
-    strengthInfo.textContent           = `${label} • Avg Δ: ${avgChange.toFixed(3)}%`;
-
-    addToHistory('SMALL', rating, label, avgChange);
-
-  } else {
-    signalEl.textContent          = "SKIP";
-    signalEl.parentElement.className = "signal skip";
-    badgeWrap.style.display       = "none";
-
-    biasText.textContent          = "MIXED";
-    biasText.style.color          = "#facc15";
-    biasBar.style.width           = "60%";
-    biasBar.style.backgroundColor = "#facc15";
-
-    strengthFill.style.width           = "50%";
-    strengthFill.style.backgroundColor = "#facc15";
-    strengthInfo.textContent           = `Mixed Market — No Clear Trend`;
-
-    addToHistory('SKIP', 5, 'Mixed Market', avgChange);
-  }
-}
-
-function setBox(boxId, changeId, name, dir, changePct, rank) {
-  const box      = document.getElementById(boxId);
-  const changeEl = document.getElementById(changeId);
-  const first    = box.querySelector('div:first-child');
-
-  // Rank badge HTML
-  const rankBadge = rank === 1
-    ? `<span class="rankBadge rank1">🥇 #1 STRONGEST</span>`
-    : `<span class="rankBadge rank2">#${rank}</span>`;
-
-  if (first) first.innerHTML = `${name} : ${dir} ${rankBadge}`;
-
-  box.className = rank === 1 ? "asset topRank" : "asset";
-
-  if (dir === "UP") {
-    box.classList.add("up");
-    changeEl.textContent   = `▲ +${changePct.toFixed(3)}%`;
-    changeEl.style.color   = "#22c55e";
-  } else if (dir === "DOWN") {
-    box.classList.add("down");
-    changeEl.textContent   = `▼ -${changePct.toFixed(3)}%`;
-    changeEl.style.color   = "#ef4444";
-  }
-}
-
-/* ─── RESET ───────────────────────────────────────────────── */
-
-function resetCycle() {
-  apiCalled = false;
-
-  const signalEl  = document.getElementById('signal');
-  const badgeWrap = document.getElementById('ratingBadgeWrap');
-  signalEl.textContent = "WAIT";
-  signalEl.parentElement.className = "signal skip";
-  badgeWrap.style.display = "none";
-
-  document.getElementById('biasText').textContent   = "WAIT";
-  document.getElementById('biasText').style.color   = "#facc15";
-  document.getElementById('biasBar').style.width    = "0%";
-
-  // Restore original DOM order and clear content
-  const assetsCard = document.getElementById('dogeBox').parentElement;
-  ['dogeBox','xrpBox'].forEach((id, i) => {
-    const names = ['DOGE/USD','XRP/USD'];
-    const ids   = ['dogeChange','xrpChange'];
-    const box   = document.getElementById(id);
-    box.querySelector('div:first-child').innerHTML = `${names[i]} : WAIT`;
-    box.className = "asset";
-    document.getElementById(ids[i]).textContent = "";
-  });
-  // Restore original order in DOM
-  assetsCard.appendChild(document.getElementById('dogeBox'));
-  assetsCard.appendChild(document.getElementById('xrpBox'));
-
-  document.getElementById('apiHealth').textContent   = "WAITING";
-  document.getElementById('apiHealth').style.color   = "#facc15";
-  document.getElementById('strengthFill').style.width = "0%";
-  document.getElementById('strengthInfo').textContent = "Waiting for signal...";
-
-  directions = {}; priceChanges = {};
-}
-
-/* ─── MAIN TICK ───────────────────────────────────────────── */
-
-setInterval(() => {
-  const d   = new Date(new Date().toLocaleString("en-US",{ timeZone:"Asia/Kolkata" }));
-  const sec = d.getSeconds();
-  const rem = 60 - sec;
-
-  document.getElementById('timer').textContent = rem;
-  document.getElementById('nextCallInfo').textContent =
-    rem > 20 ? `API calls in ${rem - 20}s` : "Showing results...";
-
-  if (sec === 0) resetCycle();
-  if (rem === 20 && !apiCalled) { apiCalled = true; syncAssets(); }
-
-  bigY  = nextY(bigY,  6, 20, 55);
-  smallY= nextY(smallY,6, 65,100);
-  skipY = nextY(skipY, 3, 55, 75);
-
-  bigPts.push(bigY);   smallPts.push(smallY);   skipPts.push(skipY);
-  if (bigPts.length > MAX_POINTS) { bigPts.shift(); smallPts.shift(); skipPts.shift(); }
-
-  document.getElementById('bigLine').setAttribute("d",   buildPath(bigPts));
-  document.getElementById('smallLine').setAttribute("d", buildPath(smallPts));
-  document.getElementById('skipLine').setAttribute("d",  buildPath(skipPts));
-
-}, 1000);
-
-console.log('══════════════════════════════════════════════════════');
-console.log('   🌈 VED ULTIMATE ENGINE — Crypto Edition 🌈          ');
-console.log('══════════════════════════════════════════════════════');
-console.log('✅ DOGE/USD, XRP/USD');
-console.log('✅ Rating Scale: 0–10 (11 levels)');
-console.log('✅ BIG  → 6 (Weak) to 10 (Ultra Bullish 🔥)');
-console.log('✅ SMALL→ 4 (Weak) to  0 (Ultra Bearish 💀)');
-console.log('✅ SKIP → 5 (Neutral)');
-console.log('══════════════════════════════════════════════════════');
-
-</script>
+    </div>
+
+    <script>
+        // ========== GLOBAL VARIABLES ==========
+        let autoCycleActive = false;
+        let voiceEnabled = false;
+        let scannedResults = [];
+        let manualResults = [];
+        
+        let cycleInterval = null;
+        let scanTimeout = null;
+        let resultTimeout = null;
+        let countdownInterval = null;
+        
+        let secondsRemaining = 60;
+        let currentCyclePhase = 'IDLE'; // IDLE, SCANNING, ANALYZING, SHOWING_RESULT
+
+        // Pattern database
+        const patterns = {
+            'GGG': { next: 'RED', conf: 72, nums: [2,4,6,8] },
+            'RRR': { next: 'GREEN', conf: 75, nums: [1,3,7,9] },
+            'VVV': { next: 'GREEN', conf: 68, nums: [1,3,7,9] },
+            'GGR': { next: 'GREEN', conf: 65, nums: [1,3,7] },
+            'RRG': { next: 'RED', conf: 67, nums: [2,4,8] },
+            'GRG': { next: 'RED', conf: 70, nums: [2,6,8] },
+            'RGR': { next: 'GREEN', conf: 69, nums: [1,7,9] },
+            'GRR': { next: 'GREEN', conf: 66, nums: [3,7,9] },
+            'RGG': { next: 'RED', conf: 68, nums: [2,4,6] },
+            'VGR': { next: 'VIOLET', conf: 64, nums: [0,5] },
+            'VRG': { next: 'GREEN', conf: 63, nums: [1,3] },
+            'GVR': { next: 'RED', conf: 65, nums: [2,8] },
+            'RVG': { next: 'VIOLET', conf: 66, nums: [0,5] },
+            'VVG': { next: 'RED', conf: 67, nums: [4,6] },
+            'VVR': { next: 'GREEN', conf: 68, nums: [7,9] }
+        };
+
+        // ========== UTILITY FUNCTIONS ==========
+        function log(msg, type = 'info') {
+            const console = document.getElementById('logConsole');
+            const time = new Date().toLocaleTimeString();
+            const item = document.createElement('div');
+            item.className = `log-item ${type}`;
+            item.innerHTML = `<strong>[${time}]</strong> ${msg}`;
+            console.appendChild(item);
+            console.scrollTop = console.scrollHeight;
+            
+            while (console.children.length > 100) {
+                console.removeChild(console.firstChild);
+            }
+        }
+
+        function showToast(msg, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        function speak(text) {
+            if (voiceEnabled && 'speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.1;
+                utterance.lang = 'en-US';
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function getColor(num) {
+            if ([1,3,7,9].includes(num)) return 'green';
+            if ([2,4,6,8].includes(num)) return 'red';
+            if ([0,5].includes(num)) return 'violet';
+            return 'green';
+        }
+
+        function isBig(num) {
+            return num >= 5;
+        }
+
+        function getColorInitial(num) {
+            return getColor(num)[0].toUpperCase();
+        }
+
+        // ========== WEBSITE CONTROLS ==========
+        function refreshWebsite() {
+            const frame = document.getElementById('wingoFrame');
+            frame.src = frame.src;
+            log('Website refreshed', 'info');
+        }
+
+        function openInNew() {
+            window.open('https://4yaarwin.com/#/saasLottery/WinGo?gameCode=WinGo_1Min&lottery=WinGo', '_blank');
+        }
+
+        // ========== AUTO CYCLE SYSTEM ==========
+        function startAutoCycle() {
+            if (autoCycleActive) return;
+            
+            autoCycleActive = true;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'flex';
+            document.getElementById('stopBtn').classList.add('active');
+            
+            log('🚀 AUTO-CYCLE STARTED', 'success');
+            showToast('🚀 Auto-Cycle Started!', 2000);
+            speak('Auto cycle started');
+            
+            // Start first cycle immediately
+            runCycle();
+            
+            // Then repeat every 60 seconds
+            cycleInterval = setInterval(runCycle, 60000);
+        }
+
+        function stopAutoCycle() {
+            autoCycleActive = false;
+            currentCyclePhase = 'IDLE';
+            
+            document.getElementById('startBtn').style.display = 'flex';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('stopBtn').classList.remove('active');
+            
+            // Clear all timers
+            if (cycleInterval) clearInterval(cycleInterval);
+            if (scanTimeout) clearTimeout(scanTimeout);
+            if (resultTimeout) clearTimeout(resultTimeout);
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            updateCycleStatus('STOPPED', '--');
+            document.getElementById('cycleProgress').style.width = '0%';
+            
+            log('⏸️ AUTO-CYCLE STOPPED', 'warning');
+            showToast('⏸️ Auto-Cycle Stopped');
+            speak('Auto cycle stopped');
+        }
+
+        function runCycle() {
+            if (!autoCycleActive) return;
+            
+            log('━━━━━━━━━━ NEW CYCLE STARTED ━━━━━━━━━━', 'info');
+            
+            // Phase 1: SCANNING (0-5 seconds)
+            currentCyclePhase = 'SCANNING';
+            updateCycleStatus('SCANNING WEBSITE', '5s');
+            secondsRemaining = 60;
+            startCountdown();
+            
+            performScan();
+            
+            // Phase 2: After 5 seconds, analyze
+            scanTimeout = setTimeout(() => {
+                if (!autoCycleActive) return;
+                
+                currentCyclePhase = 'ANALYZING';
+                updateCycleStatus('ANALYZING DATA', '2s');
+                log('🔍 Analysis started...', 'info');
+                
+                analyzeAndPredict();
+                
+            }, 5000);
+            
+            // Phase 3: After 7 seconds (5+2), show result
+            resultTimeout = setTimeout(() => {
+                if (!autoCycleActive) return;
+                
+                currentCyclePhase = 'SHOWING_RESULT';
+                updateCycleStatus('PREDICTION READY', `${secondsRemaining}s`);
+                log('✅ Prediction displayed', 'success');
+                
+                if (voiceEnabled) {
+                    const pred = document.getElementById('predictionResult').textContent;
+                    speak(`Prediction ready: ${pred}`);
+                }
+                
+            }, 7000);
+        }
+
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                if (!autoCycleActive) {
+                    clearInterval(countdownInterval);
+                    return;
+                }
+                
+                secondsRemaining--;
+                
+                if (secondsRemaining <= 0) {
+                    secondsRemaining = 60;
+                }
+                
+                // Update header timer
+                document.getElementById('headerTimer').textContent = `${secondsRemaining}s`;
+                
+                // Update countdown display
+                if (currentCyclePhase === 'SHOWING_RESULT' || currentCyclePhase === 'IDLE') {
+                    document.getElementById('cycleCountdown').textContent = `${secondsRemaining}s`;
+                }
+                
+                // Update progress bar
+                const progress = ((60 - secondsRemaining) / 60) * 100;
+                document.getElementById('cycleProgress').style.width = `${progress}%`;
+                
+            }, 1000);
+        }
+
+        function updateCycleStatus(status, time) {
+            document.getElementById('cycleStatus').textContent = status;
+            if (time !== '--') {
+                document.getElementById('cycleCountdown').textContent = time;
+            }
+        }
+
+        // ========== SCANNING ==========
+        function performScan() {
+            log('📡 Scanning iframe for results...', 'info');
+            
+            try {
+                const frame = document.getElementById('wingoFrame');
+                let frameDoc;
+                
+                try {
+                    frameDoc = frame.contentDocument || frame.contentWindow.document;
+                } catch(e) {
+                    log('⚠️ CORS blocked. Using manual entry.', 'warning');
+                    showToast('⚠️ Use Manual Entry', 3000);
+                    return;
+                }
+
+                const results = extractResults(frameDoc);
+                
+                if (results && results.length >= 10) {
+                    scannedResults = results;
+                    displayResults(results);
+                    log(`✅ Scanned ${results.length} results!`, 'success');
+                } else {
+                    log('⚠️ No results found in page', 'warning');
+                    
+                    // Use manual results if available
+                    if (manualResults.length >= 10) {
+                        scannedResults = manualResults.slice(0, 10);
+                        displayResults(scannedResults);
+                        log('📝 Using manual results', 'info');
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ Scan error: ${error.message}`, 'error');
+            }
+        }
+
+        function extractResults(doc) {
+            const results = [];
+            
+            // Multiple selector strategies
+            const selectors = [
+                '.MyGameRecord .item',
+                '.gameRecord .record',
+                '.van-list .van-list-item',
+                '[class*="MyGameRecordList"] [class*="item"]',
+                '[class*="record"]',
+                '.history-item',
+                '.result-item'
+            ];
+
+            for (const selector of selectors) {
+                try {
+                    const elements = doc.querySelectorAll(selector);
+                    
+                    if (elements.length > 0) {
+                        log(`  → Found ${elements.length} with: ${selector}`, 'info');
+                        
+                        elements.forEach((el) => {
+                            if (results.length >= 10) return;
+                            
+                            const text = el.textContent || el.innerText || '';
+                            
+                            // Extract single digit number
+                            const match = text.match(/\b([0-9])\b/);
+                            if (match) {
+                                const num = parseInt(match[1]);
+                                if (num >= 0 && num <= 9) {
+                                    results.push(num);
+                                }
+                            }
+                        });
+                        
+                        if (results.length >= 10) break;
+                    }
+                } catch (e) {}
+            }
+
+            return results.length >= 10 ? results.slice(0, 10) : null;
+        }
+
+        // ========== MANUAL ENTRY ==========
+        function manualAdd(num) {
+            manualResults.unshift(num);
+            if (manualResults.length > 10) {
+                manualResults = manualResults.slice(0, 10);
+            }
+            
+            scannedResults = [...manualResults];
+            displayResults(scannedResults);
+            analyzeAndPredict();
+            
+            log(`➕ Added: ${num}`, 'info');
+            showToast(`Added: ${num}`);
+        }
+
+        function undoManual() {
+            if (manualResults.length > 0) {
+                const removed = manualResults.shift();
+                scannedResults = [...manualResults];
+                displayResults(scannedResults);
+                analyzeAndPredict();
+                log(`↩️ Removed: ${removed}`, 'warning');
+            }
+        }
+
+        function clearManual() {
+            manualResults = [];
+            scannedResults = [];
+            displayResults([]);
+            log('🗑️ Cleared', 'warning');
+        }
+
+        // ========== DISPLAY ==========
+        function displayResults(results) {
+            const container = document.getElementById('resultsList');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px; font-size: 12px;">No results</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            results.forEach((num, index) => {
+                const row = document.createElement('div');
+                const color = getColor(num);
+                const size = isBig(num) ? 'big' : 'small';
+                
+                row.className = `result-row ${color}`;
+                row.innerHTML = `
+                    <div class="period">#${1000 - index}</div>
+                    <div class="number ${color}">${num}</div>
+                    <div class="size ${size}">${size.toUpperCase()}</div>
+                    <div class="color ${color}">${color.toUpperCase()}</div>
+                `;
+                
+                container.appendChild(row);
+            });
+
+            updateStats(results);
+        }
+
+        function updateStats(results) {
+            let green = 0, red = 0, violet = 0;
+            
+            results.forEach(num => {
+                const color = getColor(num);
+                if (color === 'green') green++;
+                else if (color === 'red') red++;
+                else violet++;
+            });
+
+            document.getElementById('greenCount').textContent = green;
+            document.getElementById('redCount').textContent = red;
+            document.getElementById('violetCount').textContent = violet;
+
+            const freq = {};
+            results.forEach(n => freq[n] = (freq[n] || 0) + 1);
+            const hot = Object.entries(freq)
+                .sort((a,b) => b[1] - a[1])
+                .slice(0, 3)
+                .map(x => x[0])
+                .join(', ');
+            
+            document.getElementById('hotNumbers').textContent = hot || '-';
+        }
+
+        // ========== PREDICTION ==========
+        function analyzeAndPredict() {
+            if (scannedResults.length < 3) {
+                log('Need 3+ results', 'warning');
+                return;
+            }
+
+            const last3 = scannedResults.slice(0, 3);
+            const colorPattern = last3.map(n => getColorInitial(n)).join('');
+            
+            let pred = patterns[colorPattern] || { next: 'GREEN', conf: 60, nums: [1,3,7,9] };
+
+            const last5 = scannedResults.slice(0, 5);
+            const gCount = last5.filter(n => getColor(n) === 'green').length;
+            const rCount = last5.filter(n => getColor(n) === 'red').length;
+            const vCount = last5.filter(n => getColor(n) === 'violet').length;
+
+            if (gCount >= 4) pred = { next: 'RED', conf: 76, nums: [2,4,6,8] };
+            else if (rCount >= 4) pred = { next: 'GREEN', conf: 77, nums: [1,3,7,9] };
+            else if (vCount === 0 && last5.length >= 5) pred = { next: 'VIOLET', conf: 73, nums: [0,5] };
+
+            displayPrediction(pred);
+
+            let pType = 'Balanced';
+            if (gCount > rCount + vCount) pType = '🟢 Green Wave';
+            else if (rCount > gCount + vCount) pType = '🔴 Red Wave';
+            else if (vCount >= 2) pType = '🟣 Violet Active';
+
+            document.getElementById('patternType').textContent = pType;
+
+            log(`🎯 ${colorPattern} → ${pred.next} (${pred.conf}%)`, 'success');
+        }
+
+        function displayPrediction(pred) {
+            const resultEl = document.getElementById('predictionResult');
+            const badgeEl = document.getElementById('confidenceBadge');
+            const sugBox = document.getElementById('suggestedNumbers');
+            const chips = document.getElementById('numberChips');
+
+            resultEl.textContent = pred.next;
+            resultEl.className = `prediction-result ${pred.next.toLowerCase()}`;
+
+            badgeEl.textContent = `${pred.conf}% Confidence`;
+            badgeEl.style.display = 'inline-block';
+            badgeEl.className = `confidence-badge ${pred.conf >= 73 ? 'high' : pred.conf >= 67 ? 'medium' : 'low'}`;
+
+            sugBox.style.display = 'block';
+            chips.innerHTML = '';
+            pred.nums.forEach(num => {
+                const chip = document.createElement('div');
+                chip.className = `number-chip ${getColor(num)}`;
+                chip.textContent = num;
+                chips.appendChild(chip);
+            });
+        }
+
+        // ========== VOICE ==========
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const btn = document.getElementById('voiceBtn');
+
+            if (voiceEnabled) {
+                btn.classList.add('active');
+                speak('Voice enabled');
+                log('🎤 Voice ON', 'success');
+                showToast('🎤 Voice ON');
+            } else {
+                speechSynthesis.cancel();
+                btn.classList.remove('active');
+                log('🔇 Voice OFF', 'info');
+                showToast('🔇 Voice OFF');
+            }
+        }
+
+        // ========== RESET ==========
+        function resetAll() {
+            if (confirm('Reset everything?')) {
+                stopAutoCycle();
+                scannedResults = [];
+                manualResults = [];
+                
+                displayResults([]);
+                document.getElementById('predictionResult').textContent = 'START AUTO CYCLE';
+                document.getElementById('predictionResult').className = 'prediction-result waiting';
+                document.getElementById('confidenceBadge').style.display = 'none';
+                document.getElementById('suggestedNumbers').style.display = 'none';
+                
+                document.getElementById('greenCount').textContent = '0';
+                document.getElementById('redCount').textContent = '0';
+                document.getElementById('violetCount').textContent = '0';
+                document.getElementById('patternType').textContent = '-';
+                document.getElementById('hotNumbers').textContent = '-';
+                
+                log('🔃 RESET COMPLETE', 'success');
+                showToast('🔃 Reset!');
+            }
+        }
+
+        // ========== INIT ==========
+        window.addEventListener('load', function() {
+            log('✅ Auto-Cycle Scanner Loaded', 'success');
+            log('📱 Click START AUTO to begin', 'info');
+            showToast('🎯 Ready! Click START AUTO', 5000);
+            
+            // Initialize header timer
+            document.getElementById('headerTimer').textContent = '60s';
+        });
+    </script>
 </body>
 </html>
