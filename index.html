@@ -1000,6 +1000,8 @@ setInterval(()=>{
   document.getElementById('timerSub').textContent=rem>API_TRIGGER_SEC?`API CALL IN ${rem-API_TRIGGER_SEC}s`:rem===API_TRIGGER_SEC?'⚡ FETCHING NOW...':'SIGNAL READY — NEXT IN '+rem+'s';
   // Full reset at cycle start
   if(pos===0)fullReset();
+  // ★ AUTO RELOAD at 22s remaining
+  if(rem===22&&!apiCalled){location.reload();}
   // API fires at 17s remaining
   if(rem===API_TRIGGER_SEC&&!apiCalled){apiCalled=true;syncData();}
   bY=nY(bY,2,15,40);sY=nY(sY,2,55,75);
