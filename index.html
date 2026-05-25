@@ -1,1243 +1,1035 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 WinGo Auto-Cycle Scanner</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --bg-primary: #0a0a1a;
-            --bg-secondary: #1a1a3e;
-            --accent-1: #00d9ff;
-            --accent-2: #00ff88;
-            --small-color: #ff6b6b;
-            --big-color: #00e676;
-            --card-bg: rgba(255,255,255,0.05);
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            min-height: 100vh;
-            color: #fff;
-            overflow: hidden;
-        }
-
-        /* Main Container */
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 450px;
-            height: 100vh;
-            gap: 0;
-        }
-
-        /* Website Frame Container */
-        .website-container {
-            position: relative;
-            background: #000;
-            border-right: 2px solid var(--accent-1);
-            overflow: hidden;
-        }
-
-        .website-header {
-            background: linear-gradient(145deg, rgba(0,217,255,0.2), rgba(0,255,136,0.1));
-            padding: 15px 20px;
-            border-bottom: 2px solid var(--accent-1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .website-header h3 {
-            font-size: 16px;
-            color: var(--accent-1);
-        }
-
-        .website-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .website-controls button {
-            padding: 8px 15px;
-            font-size: 12px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 8px;
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .website-controls button:hover {
-            background: var(--accent-1);
-            color: #000;
-        }
-
-        /* Cycle Timer Display */
-        .cycle-timer {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 15px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 10px;
-            border: 1px solid var(--accent-1);
-        }
-
-        .cycle-timer .label {
-            font-size: 11px;
-            color: #888;
-        }
-
-        .cycle-timer .time {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--accent-2);
-            font-family: 'Courier New', monospace;
-        }
-
-        #wingoFrame {
-            width: 100%;
-            height: calc(100vh - 60px);
-            border: none;
-            background: #fff;
-        }
-
-        /* Analyzer Panel */
-        .analyzer-panel {
-            background: linear-gradient(145deg, rgba(26,42,74,0.98), rgba(15,26,46,0.98));
-            padding: 20px;
-            overflow-y: auto;
-            border-left: 2px solid var(--accent-1);
-            position: relative;
-        }
-
-        .analyzer-header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(0,217,255,0.3);
-        }
-
-        .analyzer-header h2 {
-            font-size: 20px;
-            background: linear-gradient(45deg, #00d9ff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .analyzer-header p {
-            font-size: 11px;
-            color: #888;
-        }
-
-        /* Auto-Cycle Status */
-        .auto-cycle-status {
-            background: linear-gradient(145deg, rgba(0,217,255,0.15), rgba(0,255,136,0.1));
-            border: 2px solid var(--accent-1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .auto-cycle-status::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: scanLine 2s infinite;
-        }
-
-        @keyframes scanLine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .cycle-status-label {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .cycle-status-main {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent-2);
-            margin: 10px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .cycle-countdown {
-            font-size: 48px;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            color: var(--accent-1);
-            margin: 15px 0;
-            text-shadow: 0 0 20px var(--accent-1);
-            position: relative;
-            z-index: 1;
-        }
-
-        .cycle-progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 15px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .cycle-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-            border-radius: 4px;
-            transition: width 0.1s linear;
-            box-shadow: 0 0 10px var(--accent-1);
-        }
-
-        /* Control Buttons */
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .ctrl-btn {
-            padding: 15px;
-            font-size: 13px;
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            background: var(--card-bg);
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .ctrl-btn .icon {
-            font-size: 24px;
-        }
-
-        .ctrl-btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-1);
-            box-shadow: 0 5px 20px rgba(0,217,255,0.3);
-        }
-
-        .ctrl-btn.active {
-            background: linear-gradient(145deg, var(--accent-1), var(--accent-2));
-            color: #000;
-            border-color: transparent;
-            animation: btnPulse 2s infinite;
-        }
-
-        @keyframes btnPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(0,217,255,0.7); }
-            50% { box-shadow: 0 0 0 20px rgba(0,217,255,0); }
-        }
-
-        /* Manual Input */
-        .manual-input {
-            background: rgba(0,0,0,0.4);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .manual-input h4 {
-            color: var(--accent-1);
-            font-size: 11px;
-            margin-bottom: 12px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .number-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-
-        .num-btn {
-            padding: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #fff;
-        }
-
-        .num-btn.small { background: linear-gradient(145deg, #ff6b6b, #ee5a5a); }
-        .num-btn.big { background: linear-gradient(145deg, #00e676, #00c853); }
-
-        .num-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .manual-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-
-        .manual-controls button {
-            padding: 8px;
-            font-size: 11px;
-            font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            cursor: pointer;
-        }
-
-        /* Results Display */
-        .results-container {
-            background: rgba(0,0,0,0.4);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .results-title {
-            font-size: 12px;
-            color: var(--accent-1);
-            margin-bottom: 12px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .results-list {
-            max-height: 280px;
-            overflow-y: auto;
-        }
-
-        .result-row {
-            display: grid;
-            grid-template-columns: 90px 50px 60px 60px;
-            gap: 8px;
-            padding: 10px;
-            margin-bottom: 6px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            font-size: 11px;
-            align-items: center;
-            border-left: 3px solid transparent;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .result-row.green { border-left-color: #00e676; }
-        .result-row.red { border-left-color: #ff6b6b; }
-        .result-row.violet { border-left-color: #9c27b0; }
-
-        .result-row .period {
-            color: #888;
-            font-size: 9px;
-        }
-
-        .result-row .number {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            padding: 6px;
-            border-radius: 6px;
-        }
-
-        .result-row .number.green { background: #00e676; color: #000; }
-        .result-row .number.red { background: #ff6b6b; color: #fff; }
-        .result-row .number.violet { background: #9c27b0; color: #fff; }
-
-        .result-row .size {
-            text-align: center;
-            padding: 4px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .result-row .size.big { background: rgba(0,230,118,0.2); color: #00e676; }
-        .result-row .size.small { background: rgba(255,107,107,0.2); color: #ff6b6b; }
-
-        .result-row .color {
-            text-align: center;
-            padding: 4px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .result-row .color.green { background: rgba(0,230,118,0.2); color: #00e676; }
-        .result-row .color.red { background: rgba(255,107,107,0.2); color: #ff6b6b; }
-        .result-row .color.violet { background: rgba(156,39,176,0.2); color: #9c27b0; }
-
-        /* Prediction Box */
-        .prediction-box {
-            background: linear-gradient(145deg, rgba(0,217,255,0.15), rgba(0,255,136,0.1));
-            border: 2px solid var(--accent-1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .prediction-label {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .prediction-result {
-            font-size: 42px;
-            font-weight: bold;
-            margin: 15px 0;
-            text-shadow: 0 0 30px currentColor;
-            animation: predictionGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes predictionGlow {
-            0%, 100% { text-shadow: 0 0 20px currentColor; }
-            50% { text-shadow: 0 0 40px currentColor; }
-        }
-
-        .prediction-result.green { color: #00e676; }
-        .prediction-result.red { color: #ff6b6b; }
-        .prediction-result.violet { color: #9c27b0; }
-        .prediction-result.waiting { color: #ffd93d; font-size: 18px; }
-
-        .confidence-badge {
-            display: inline-block;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 13px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .confidence-badge.high { background: linear-gradient(145deg, #00e676, #00c853); color: #000; }
-        .confidence-badge.medium { background: linear-gradient(145deg, #ffb300, #ff9800); color: #000; }
-        .confidence-badge.low { background: linear-gradient(145deg, #ff5252, #d32f2f); color: #fff; }
-
-        .suggested-numbers {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-        }
-
-        .suggested-numbers .title {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 10px;
-        }
-
-        .number-chips {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .number-chip {
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-        }
-
-        .number-chip.green { background: #00e676; color: #000; }
-        .number-chip.red { background: #ff6b6b; color: #fff; }
-        .number-chip.violet { background: #9c27b0; color: #fff; }
-
-        /* Analysis */
-        .analysis-box {
-            background: rgba(0,0,0,0.4);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .analysis-title {
-            font-size: 12px;
-            color: var(--accent-1);
-            margin-bottom: 12px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .analysis-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 12px;
-        }
-
-        .analysis-item .key {
-            color: #888;
-        }
-
-        .analysis-item .val {
-            font-weight: bold;
-            color: var(--accent-2);
-        }
-
-        /* Log Console */
-        .log-console {
-            background: rgba(0,0,0,0.6);
-            border-radius: 10px;
-            padding: 12px;
-            max-height: 120px;
-            overflow-y: auto;
-            font-size: 9px;
-            font-family: 'Courier New', monospace;
-            color: #0f0;
-            margin-top: 15px;
-            border: 1px solid rgba(0,255,0,0.2);
-        }
-
-        .log-console .log-item {
-            padding: 2px 0;
-            border-bottom: 1px solid rgba(0,255,0,0.05);
-        }
-
-        .log-console .log-item.error { color: #ff4444; }
-        .log-console .log-item.success { color: #00ff88; }
-        .log-console .log-item.info { color: #00d9ff; }
-        .log-console .log-item.warning { color: #ffaa00; }
-
-        /* Scrollbar */
-        .analyzer-panel::-webkit-scrollbar,
-        .log-console::-webkit-scrollbar,
-        .results-list::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .analyzer-panel::-webkit-scrollbar-track,
-        .log-console::-webkit-scrollbar-track,
-        .results-list::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.2);
-        }
-
-        .analyzer-panel::-webkit-scrollbar-thumb,
-        .log-console::-webkit-scrollbar-thumb,
-        .results-list::-webkit-scrollbar-thumb {
-            background: var(--accent-1);
-            border-radius: 3px;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            padding: 15px 30px;
-            background: rgba(0,0,0,0.95);
-            border-radius: 30px;
-            color: #fff;
-            font-size: 14px;
-            z-index: 9999999;
-            opacity: 0;
-            transition: all 0.4s;
-            border: 2px solid var(--accent-1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 50vh 50vh;
-            }
-
-            .analyzer-panel {
-                border-left: none;
-                border-top: 2px solid var(--accent-1);
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VED v5 — Smart Signal Engine</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;800;900&display=swap');
+:root {
+  --g:#16a34a;--gr:#dcfce7;--r:#dc2626;--rr:#fee2e2;--y:#ca8a04;--yr:#fef9c3;
+  --c:#0891b2;--cr:#cffafe;--p:#7c3aed;--pr:#ede9fe;--o:#ea580c;--or:#ffedd5;
+  --bg:#080c14;--bg2:#0d1424;--card:#0f1929;--border:rgba(255,255,255,0.07);
+  --txt:#e2e8f0;--txt2:#94a3b8;
+  --font-head:'Orbitron',sans-serif;--font-mono:'Space Mono',monospace;--font-body:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
+
+/* ── HORN FLASH OVERLAY ── */
+#hornFlash{position:fixed;inset:0;z-index:99999;pointer-events:none;opacity:0;transition:opacity 0.1s;}
+#hornFlash.flash-green{background:radial-gradient(ellipse at center,rgba(22,163,74,0.45) 0%,rgba(22,163,74,0.1) 60%,transparent 100%);}
+#hornFlash.flash-red{background:radial-gradient(ellipse at center,rgba(220,38,38,0.45) 0%,rgba(220,38,38,0.1) 60%,transparent 100%);}
+#hornFlash.visible{opacity:1;}
+
+/* ── SOUND UNLOCK BANNER ── */
+#soundBanner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:linear-gradient(90deg,rgba(234,88,12,0.25),rgba(124,58,237,0.25));border-bottom:1px solid rgba(234,88,12,0.4);cursor:pointer;}
+#soundBanner.unlocked{background:linear-gradient(90deg,rgba(22,163,74,0.2),rgba(6,182,212,0.2));border-bottom-color:rgba(22,163,74,0.4);}
+.sb-txt{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:1px;color:#fbbf24;}
+#soundBanner.unlocked .sb-txt{color:#4ade80;}
+.sb-btn{font-family:var(--font-mono);font-size:11px;font-weight:900;letter-spacing:2px;padding:6px 16px;border-radius:20px;border:2px solid #ea580c;background:rgba(234,88,12,0.2);color:#fb923c;cursor:pointer;transition:all 0.2s;}
+.sb-btn:hover{background:rgba(234,88,12,0.4);}
+#soundBanner.unlocked .sb-btn{border-color:#16a34a;background:rgba(22,163,74,0.2);color:#4ade80;}
+
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,0.6);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--font-head);font-size:22px;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,#06b6d4,#a855f7,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.badge{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.4);color:#4ade80;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:1.5px;font-family:var(--font-mono);}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.clock-wrap{font-family:var(--font-mono);font-size:13px;color:#7dd3fc;background:rgba(6,182,212,0.08);padding:5px 12px;border-radius:8px;border:1px solid rgba(6,182,212,0.2);}
+.wrap{padding:14px 16px;max-width:1400px;margin:0 auto;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--txt2);text-transform:uppercase;margin-bottom:12px;font-family:var(--font-mono);}
+.decision-mega{padding:20px;border-radius:20px;border:2px solid;position:relative;overflow:hidden;transition:all 0.4s ease;margin-bottom:14px;}
+.decision-mega::before{content:'';position:absolute;inset:0;opacity:0.06;background:currentColor;}
+.decision-mega.trade-yes{border-color:#16a34a;color:#16a34a;}
+.decision-mega.trade-no{border-color:#dc2626;color:#dc2626;}
+.decision-mega.trade-wait{border-color:#ca8a04;color:#ca8a04;}
+.dec-top{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.dec-icon{font-size:52px;animation:dec-pop 0.4s cubic-bezier(.4,0,.2,1);}
+@keyframes dec-pop{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
+.dec-main{flex:1;}
+.dec-action{font-family:var(--font-head);font-size:32px;font-weight:900;letter-spacing:2px;line-height:1.1;}
+.dec-signal-name{font-size:18px;font-weight:800;margin-top:4px;opacity:0.85;}
+.dec-reason{font-size:13px;margin-top:8px;line-height:1.7;color:var(--txt2);font-weight:500;}
+.dec-reason strong{color:inherit;font-weight:800;}
+.dec-conf-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:900;letter-spacing:2px;padding:5px 14px;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid currentColor;margin-top:10px;font-family:var(--font-mono);}
+.dec-rsi-info{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.dec-rsi-val{font-family:var(--font-head);font-size:40px;font-weight:900;line-height:1;}
+.dec-rsi-label{font-size:10px;font-weight:700;letter-spacing:2px;opacity:0.6;text-align:right;}
+.dec-pattern-tag{font-size:11px;font-weight:800;padding:4px 12px;border-radius:8px;background:rgba(255,255,255,0.1);text-align:right;letter-spacing:1px;}
+.pulse-ring{animation:pRing 2s ease-in-out infinite;}
+@keyframes pRing{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.1);}50%{box-shadow:0 0 0 12px rgba(255,255,255,0);}}
+
+/* TRADE SIGNAL PULSE — strong glow when trade */
+.trade-yes.active-trade{animation:tradePulse 1s ease-in-out infinite!important;}
+@keyframes tradePulse{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,0.4),0 0 30px rgba(22,163,74,0.3);}50%{box-shadow:0 0 0 20px rgba(22,163,74,0),0 0 60px rgba(22,163,74,0.5);}}
+
+.rsi-bar-outer{height:20px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8 0%,#3b82f6 15%,#16a34a 25%,#0891b2 38%,#64748b 50%,#ea580c 62%,#dc2626 75%,#7f1d1d 100%);position:relative;margin:8px 0;box-shadow:inset 0 0 10px rgba(0,0,0,0.5);}
+.rsi-needle{position:absolute;top:-7px;width:5px;height:34px;background:#fff;border-radius:3px;transform:translateX(-50%);transition:left 0.8s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(255,255,255,0.9);}
+.rsi-zone-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-top:3px;font-family:var(--font-mono);}
+.rsi-big-val{font-family:var(--font-head);font-size:56px;font-weight:900;text-align:center;line-height:1;margin-top:10px;}
+.rsi-dir-badge{text-align:center;font-size:12px;font-weight:800;letter-spacing:3px;margin-top:4px;padding:4px 0;font-family:var(--font-mono);}
+.thresh-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.thresh-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);transition:all 0.3s;}
+.thresh-row.active-thresh{border-color:currentColor;background:rgba(255,255,255,0.08);}
+.thresh-name{font-size:10px;font-weight:800;letter-spacing:0.5px;}
+.thresh-val{font-size:11px;font-weight:900;font-family:var(--font-mono);}
+.thresh-action{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,0.1);}
+.next-pattern-box{margin-top:10px;padding:12px;border-radius:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);}
+.npb-title{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--txt2);margin-bottom:8px;}
+.npb-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.npb-item:last-child{border-bottom:none;}
+.npb-name{font-size:11px;font-weight:800;}
+.npb-dist{font-family:var(--font-mono);font-size:13px;font-weight:900;}
+.dist-bar-bg{height:4px;background:rgba(255,255,255,0.08);border-radius:4px;margin-top:3px;overflow:hidden;}
+.dist-bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease;}
+.signal-wrap{text-align:center;padding:12px 0;}
+.signal-emoji{font-size:60px;line-height:1;animation:floatEmoji 2s ease-in-out infinite;}
+@keyframes floatEmoji{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.signal-txt{font-family:var(--font-head);font-size:36px;font-weight:900;letter-spacing:4px;margin-top:4px;}
+.rating-circle{width:64px;height:64px;border-radius:50%;border:3px solid currentColor;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:8px auto;animation:pRing 2s ease-in-out infinite;}
+.r-num{font-family:var(--font-head);font-size:24px;font-weight:900;line-height:1;}
+.r-denom{font-size:9px;opacity:0.5;}
+.grade-badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:3px 12px;border-radius:20px;background:rgba(255,255,255,0.08);margin-top:4px;}
+.str-bar{height:7px;background:rgba(255,255,255,0.08);border-radius:6px;margin-top:10px;overflow:hidden;}
+.str-fill{height:100%;border-radius:6px;transition:width 0.6s ease,background-color 0.4s;}
+.timer-num{font-family:var(--font-head);font-size:72px;font-weight:900;text-align:center;color:#7dd3fc;line-height:1;}
+.timer-sub{text-align:center;font-size:10px;letter-spacing:2px;color:var(--txt2);margin-top:5px;font-family:var(--font-mono);}
+.timer-progress{height:5px;background:rgba(255,255,255,0.08);border-radius:5px;margin-top:12px;overflow:hidden;}
+.timer-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#06b6d4,#a855f7);transition:width 0.9s linear;}
+.dual-pred-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.pred-card{border-radius:14px;padding:12px;background:rgba(0,0,0,0.35);border:2px solid rgba(255,255,255,0.1);text-align:center;position:relative;transition:all 0.4s;}
+.pred-card.rank1{border-width:2px;}
+.pred-card.rank2{opacity:0.85;}
+.pred-rank-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:900;padding:2px 10px;border-radius:10px;letter-spacing:1.5px;white-space:nowrap;}
+.pred-circle{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;margin:10px auto 6px;animation:numPop 0.5s cubic-bezier(.4,0,.2,1) both,circleGlow 2s ease-in-out infinite;}
+@keyframes numPop{0%{transform:scale(0) rotate(-180deg);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+@keyframes circleGlow{0%,100%{box-shadow:0 0 20px 4px var(--glow,#22c55e44);}50%{box-shadow:0 0 40px 12px var(--glow,#22c55e66);}}
+.pred-score-bar-bg{height:5px;background:rgba(255,255,255,0.08);border-radius:5px;margin:6px 0;overflow:hidden;}
+.pred-score-bar{height:100%;border-radius:5px;transition:width 0.6s;}
+.pred-pct{font-family:var(--font-mono);font-size:18px;font-weight:900;}
+.pred-tags-mini{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:5px;}
+.pred-tag-mini{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;letter-spacing:0.5px;}
+.score-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
+.score-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:10px 6px;text-align:center;transition:all 0.4s;}
+.score-box.winner{border-color:currentColor;background:rgba(255,255,255,0.09);transform:translateY(-3px);}
+.sc-emoji{font-size:16px;}
+.sc-bar-bg{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;margin:5px 0;overflow:hidden;}
+.sc-bar-fill{height:100%;border-radius:4px;transition:width 0.6s;}
+.sc-val{font-size:16px;font-weight:900;font-family:var(--font-mono);}
+.sc-label{font-size:9px;color:var(--txt2);margin-top:2px;font-weight:700;letter-spacing:1px;}
+.pattern-main{padding:14px;border-radius:14px;border:2px solid rgba(255,255,255,0.08);transition:all 0.4s;}
+.pat-name{font-size:20px;font-weight:900;letter-spacing:1px;}
+.pat-desc{font-size:12px;color:var(--txt2);margin-top:6px;line-height:1.7;}
+.pat-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.pat-tag{font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;letter-spacing:0.5px;}
+.pat-ref-table{width:100%;border-collapse:collapse;margin-top:10px;}
+.pat-ref-table th{font-size:9px;font-weight:900;letter-spacing:2px;color:var(--txt2);padding:6px 8px;border-bottom:1px solid var(--border);text-align:left;font-family:var(--font-mono);}
+.pat-ref-table td{padding:8px 8px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;font-weight:600;vertical-align:middle;}
+.pat-ref-table tr:hover td{background:rgba(255,255,255,0.03);}
+.trade-pill{display:inline-block;font-size:10px;font-weight:900;padding:3px 10px;border-radius:20px;letter-spacing:1px;}
+.trade-pill.yes{background:rgba(22,163,74,0.2);border:1px solid #16a34a;color:#4ade80;}
+.trade-pill.no{background:rgba(220,38,38,0.2);border:1px solid #dc2626;color:#f87171;}
+.trade-pill.wait{background:rgba(202,138,4,0.2);border:1px solid #ca8a04;color:#fde047;}
+.digit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.digit-cell{padding:8px 5px;border-radius:10px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);cursor:default;transition:all 0.2s;}
+.digit-cell:hover{transform:translateY(-2px);}
+.digit-ball{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;margin:0 auto 4px;font-family:var(--font-head);}
+.digit-name{font-size:8px;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;}
+.digit-emoji{font-size:12px;margin-top:2px;}
+.hist-scroll{max-height:260px;overflow-y:auto;padding-right:4px;}
+.hist-scroll::-webkit-scrollbar{width:4px;}
+.hist-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px;}
+.hist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:6px;border-radius:10px;border-left:3px solid;background:rgba(255,255,255,0.03);animation:slideIn 0.3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+.hist-balls{display:flex;gap:4px;flex-shrink:0;}
+.hist-ball{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;font-family:var(--font-head);}
+.hist-ball.rank2{width:26px;height:26px;font-size:11px;opacity:0.7;}
+.hist-signal{font-size:16px;font-weight:900;font-family:var(--font-head);}
+.hist-sub{font-size:10px;color:var(--txt2);margin-top:2px;}
+.hist-trade-badge{display:inline-block;font-size:9px;font-weight:900;padding:2px 7px;border-radius:5px;margin-top:3px;letter-spacing:1px;}
+.hist-time{margin-left:auto;font-size:11px;color:var(--txt2);font-family:var(--font-mono);}
+.asset-box{padding:12px;border-radius:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);}
+.asset-name{font-size:13px;font-weight:800;letter-spacing:1px;}
+.asset-price{font-family:var(--font-mono);font-size:22px;font-weight:900;margin-top:4px;}
+.asset-change{font-size:12px;font-weight:700;margin-top:3px;}
+.bias-big{font-family:var(--font-head);font-size:28px;font-weight:900;text-align:center;margin-top:8px;}
+.bias-bar-bg{height:14px;background:rgba(255,255,255,0.08);border-radius:8px;margin-top:10px;overflow:hidden;}
+.bias-fill{height:100%;border-radius:8px;transition:width 0.6s,background-color 0.4s;}
+.api-count{font-family:var(--font-head);font-size:44px;font-weight:900;color:var(--c);text-align:center;margin:12px 0;}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.4);color:#7dd3fc;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:5px 12px;border-radius:10px;cursor:pointer;font-family:var(--font-mono);transition:all 0.2s;}
+.copy-btn:hover{background:rgba(6,182,212,0.2);color:#fff;}
+.copy-btn.done{border-color:#16a34a;color:#4ade80;}
+.clear-btn{background:rgba(220,38,38,0.2);border:1px solid rgba(220,38,38,0.4);color:#f87171;font-size:11px;font-weight:800;padding:6px 14px;border-radius:8px;cursor:pointer;font-family:var(--font-mono);}
+.trend-chart{width:100%;height:80px;}
+.violet-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.5);color:#c084fc;font-size:11px;font-weight:900;padding:4px 12px;border-radius:20px;animation:vPulse 2s ease-in-out infinite;}
+@keyframes vPulse{0%,100%{box-shadow:0 0 10px rgba(124,58,237,0.4);}50%{box-shadow:0 0 24px rgba(124,58,237,0.8);}}
+
+/* HORN indicator */
+.horn-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(234,88,12,0.2);border:1px solid rgba(234,88,12,0.5);color:#fb923c;font-size:10px;font-weight:900;padding:3px 10px;border-radius:20px;letter-spacing:1px;font-family:var(--font-mono);margin-left:8px;}
+.horn-tag.sounding{animation:hornBlink 0.3s ease-in-out 6 alternate;}
+@keyframes hornBlink{from{background:rgba(234,88,12,0.1);}to{background:rgba(234,88,12,0.8);color:#fff;}}
+
+@media(max-width:900px){.grid3{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}.grid4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.grid4{grid-template-columns:1fr 1fr;}.score-grid{grid-template-columns:1fr 1fr;}.dec-action{font-size:24px;}.dec-icon{font-size:40px;}.rsi-big-val{font-size:44px;}.digit-grid{grid-template-columns:repeat(5,1fr);gap:4px;}.dual-pred-wrap{grid-template-columns:1fr 1fr;}}
+</style>
 </head>
 <body>
-    <!-- Toast -->
-    <div id="toast" class="toast"></div>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Website Frame -->
-        <div class="website-container">
-            <div class="website-header">
-                <h3>🎮 WinGo 1 Min Game</h3>
-                <div class="website-controls">
-                    <div class="cycle-timer">
-                        <span class="label">Next Cycle:</span>
-                        <span class="time" id="headerTimer">60s</span>
-                    </div>
-                    <button onclick="refreshWebsite()">🔄</button>
-                    <button onclick="openInNew()">🔗</button>
-                </div>
-            </div>
+<!-- Horn Flash Overlay -->
+<div id="hornFlash"></div>
 
-            <iframe 
-                id="wingoFrame" 
-                src="https://4yaarwin.com/#/saasLottery/WinGo?gameCode=WinGo_1Min&lottery=WinGo"
-                allow="clipboard-write; payment"
-            ></iframe>
-        </div>
+<!-- Sound Unlock Banner -->
+<div id="soundBanner" onclick="unlockSound()">
+  <div class="sb-txt" id="sbTxt">🔇 SOUND LOCKED — CLICK HERE TO UNLOCK HORN ALERT 🔊</div>
+  <button class="sb-btn" id="sbBtn">🔊 TAP TO UNLOCK</button>
+</div>
 
-        <!-- Analyzer Panel -->
-        <div class="analyzer-panel">
-            <div class="analyzer-header">
-                <h2>🎯 AUTO-CYCLE SCANNER</h2>
-                <p>1 Minute Auto-Scanning System</p>
-            </div>
+<header>
+  <div class="logo">VED</div>
+  <div class="hdr-right">
+    <div class="badge"><div class="dot"></div>BINANCE · WIF · 30s</div>
+    <span class="horn-tag" id="hornTag">📢 HORN READY</span>
+    <div class="clock-wrap" id="clock">IST --:--:--</div>
+  </div>
+</header>
 
-            <!-- Auto-Cycle Status -->
-            <div class="auto-cycle-status">
-                <div class="cycle-status-label">⏱️ CYCLE STATUS</div>
-                <div class="cycle-status-main" id="cycleStatus">WAITING TO START</div>
-                <div class="cycle-countdown" id="cycleCountdown">--</div>
-                <div class="cycle-progress-bar">
-                    <div class="cycle-progress-fill" id="cycleProgress" style="width: 0%"></div>
-                </div>
-            </div>
+<div class="wrap">
 
-            <!-- Controls -->
-            <div class="controls">
-                <button class="ctrl-btn" id="startBtn" onclick="startAutoCycle()">
-                    <span class="icon">▶️</span>
-                    <span>START AUTO</span>
-                </button>
-                
-                <button class="ctrl-btn" id="stopBtn" onclick="stopAutoCycle()" style="display: none;">
-                    <span class="icon">⏸️</span>
-                    <span>STOP AUTO</span>
-                </button>
-                
-                <button class="ctrl-btn" id="voiceBtn" onclick="toggleVoice()">
-                    <span class="icon">🎤</span>
-                    <span>VOICE</span>
-                </button>
-                
-                <button class="ctrl-btn" id="resetBtn" onclick="resetAll()">
-                    <span class="icon">🔃</span>
-                    <span>RESET</span>
-                </button>
-            </div>
-
-            <!-- Manual Input -->
-            <div class="manual-input">
-                <h4>🎯 Manual Backup Entry</h4>
-                <div class="number-grid">
-                    <button class="num-btn small" onclick="manualAdd(0)">0</button>
-                    <button class="num-btn small" onclick="manualAdd(1)">1</button>
-                    <button class="num-btn small" onclick="manualAdd(2)">2</button>
-                    <button class="num-btn small" onclick="manualAdd(3)">3</button>
-                    <button class="num-btn small" onclick="manualAdd(4)">4</button>
-                    <button class="num-btn big" onclick="manualAdd(5)">5</button>
-                    <button class="num-btn big" onclick="manualAdd(6)">6</button>
-                    <button class="num-btn big" onclick="manualAdd(7)">7</button>
-                    <button class="num-btn big" onclick="manualAdd(8)">8</button>
-                    <button class="num-btn big" onclick="manualAdd(9)">9</button>
-                </div>
-                <div class="manual-controls">
-                    <button onclick="undoManual()">↩️ Undo</button>
-                    <button onclick="clearManual()">🗑️ Clear</button>
-                </div>
-            </div>
-
-            <!-- Results -->
-            <div class="results-container">
-                <div class="results-title">📜 LAST 10 RESULTS</div>
-                <div class="results-list" id="resultsList">
-                    <div style="text-align: center; color: #888; padding: 20px; font-size: 12px;">
-                        Waiting for auto-scan...
-                    </div>
-                </div>
-            </div>
-
-            <!-- Prediction -->
-            <div class="prediction-box">
-                <div class="prediction-label">🎯 NEXT PREDICTION</div>
-                <div class="prediction-result waiting" id="predictionResult">
-                    START AUTO CYCLE
-                </div>
-                <div class="confidence-badge" id="confidenceBadge" style="display: none;">
-                    0%
-                </div>
-                
-                <div class="suggested-numbers" id="suggestedNumbers" style="display: none;">
-                    <div class="title">💡 Best Numbers:</div>
-                    <div class="number-chips" id="numberChips"></div>
-                </div>
-            </div>
-
-            <!-- Analysis -->
-            <div class="analysis-box">
-                <div class="analysis-title">📈 ANALYSIS</div>
-                <div class="analysis-item">
-                    <span class="key">🟢 Green:</span>
-                    <span class="val" id="greenCount">0</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="key">🔴 Red:</span>
-                    <span class="val" id="redCount">0</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="key">🟣 Violet:</span>
-                    <span class="val" id="violetCount">0</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="key">📊 Pattern:</span>
-                    <span class="val" id="patternType">-</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="key">🔥 Hot:</span>
-                    <span class="val" id="hotNumbers">-</span>
-                </div>
-            </div>
-
-            <!-- Log Console -->
-            <div class="log-console" id="logConsole">
-                <div class="log-item info">[INFO] Auto-cycle scanner ready...</div>
-            </div>
-        </div>
+<!-- TRADE DECISION -->
+<div class="decision-mega trade-wait pulse-ring" id="decisionBox">
+  <div class="dec-top">
+    <div class="dec-icon" id="decIcon">⏳</div>
+    <div class="dec-main">
+      <div class="dec-action" id="decAction">WAITING...</div>
+      <div class="dec-signal-name" id="decSignalName">Signal pending</div>
+      <div class="dec-reason" id="decReason">Data fetch ho raha hai. RSI calculate hoga fir decision milega.</div>
+      <div class="dec-conf-pill" id="decConf"><div class="dot"></div>PENDING</div>
     </div>
+    <div class="dec-rsi-info">
+      <div class="dec-rsi-label">LIVE RSI</div>
+      <div class="dec-rsi-val" id="decRsiVal" style="color:#7dd3fc;">--.-</div>
+      <div class="dec-pattern-tag" id="decPatTag">⏳ WAITING</div>
+    </div>
+  </div>
+</div>
 
-    <script>
-        // ========== GLOBAL VARIABLES ==========
-        let autoCycleActive = false;
-        let voiceEnabled = false;
-        let scannedResults = [];
-        let manualResults = [];
-        
-        let cycleInterval = null;
-        let scanTimeout = null;
-        let resultTimeout = null;
-        let countdownInterval = null;
-        
-        let secondsRemaining = 60;
-        let currentCyclePhase = 'IDLE'; // IDLE, SCANNING, ANALYZING, SHOWING_RESULT
+<!-- ROW 1 -->
+<div class="grid3">
+  <!-- RSI GAUGE -->
+  <div class="card">
+    <div class="sec-title">📊 RSI LIVE GAUGE</div>
+    <div class="rsi-bar-outer">
+      <div class="rsi-needle" id="rsiNeedle" style="left:50%"></div>
+    </div>
+    <div class="rsi-zone-labels">
+      <span style="color:#3b82f6">0</span>
+      <span>17</span><span>22</span>
+      <span style="color:#64748b">50</span>
+      <span>68</span><span>83</span>
+      <span style="color:#dc2626">100</span>
+    </div>
+    <div class="rsi-big-val" id="rsiBigVal" style="color:#7dd3fc;">--.-</div>
+    <div class="rsi-dir-badge" id="rsiDirBadge" style="color:#64748b;">● WAITING</div>
+    <div class="next-pattern-box" id="nextPatBox">
+      <div class="npb-title">DISTANCE TO KEY PATTERNS</div>
+      <div id="npbItems"><div style="text-align:center;font-size:11px;color:var(--txt2);padding:8px 0;">Waiting for RSI...</div></div>
+    </div>
+  </div>
 
-        // Pattern database
-        const patterns = {
-            'GGG': { next: 'RED', conf: 72, nums: [2,4,6,8] },
-            'RRR': { next: 'GREEN', conf: 75, nums: [1,3,7,9] },
-            'VVV': { next: 'GREEN', conf: 68, nums: [1,3,7,9] },
-            'GGR': { next: 'GREEN', conf: 65, nums: [1,3,7] },
-            'RRG': { next: 'RED', conf: 67, nums: [2,4,8] },
-            'GRG': { next: 'RED', conf: 70, nums: [2,6,8] },
-            'RGR': { next: 'GREEN', conf: 69, nums: [1,7,9] },
-            'GRR': { next: 'GREEN', conf: 66, nums: [3,7,9] },
-            'RGG': { next: 'RED', conf: 68, nums: [2,4,6] },
-            'VGR': { next: 'VIOLET', conf: 64, nums: [0,5] },
-            'VRG': { next: 'GREEN', conf: 63, nums: [1,3] },
-            'GVR': { next: 'RED', conf: 65, nums: [2,8] },
-            'RVG': { next: 'VIOLET', conf: 66, nums: [0,5] },
-            'VVG': { next: 'RED', conf: 67, nums: [4,6] },
-            'VVR': { next: 'GREEN', conf: 68, nums: [7,9] }
-        };
+  <!-- LIVE SIGNAL -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <div class="sec-title" style="margin-bottom:0">⚡ LIVE SIGNAL</div>
+      <button class="copy-btn" id="copyBtn" onclick="copySignal()"><span>📋 COPY</span></button>
+    </div>
+    <div class="signal-wrap">
+      <div class="signal-emoji" id="sigEmoji">⌛</div>
+      <div class="signal-txt" id="sigTxt" style="color:#ca8a04;">WAIT</div>
+      <div class="rating-circle" id="ratingCircle" style="color:#ca8a04;display:none;">
+        <span class="r-num" id="rNum">0</span>
+        <span class="r-denom">/10</span>
+      </div>
+      <div class="grade-badge" id="gradeBadge" style="display:none;color:#ca8a04;">—</div>
+    </div>
+    <div class="str-bar"><div class="str-fill" id="strFill" style="width:0%;background:#ca8a04;"></div></div>
+    <div style="text-align:center;font-size:11px;color:var(--txt2);margin-top:6px;" id="strInfo">Waiting for signal...</div>
+    <div class="score-grid" style="margin-top:12px;">
+      <div class="score-box" id="sb_G" style="color:#16a34a;"><div class="sc-emoji">🟢</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_G" style="background:#16a34a;width:0%"></div></div><div class="sc-val" id="sv_G">—</div><div class="sc-label">GREEN</div></div>
+      <div class="score-box" id="sb_R" style="color:#dc2626;"><div class="sc-emoji">🔴</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_R" style="background:#dc2626;width:0%"></div></div><div class="sc-val" id="sv_R">—</div><div class="sc-label">RED</div></div>
+      <div class="score-box" id="sb_B" style="color:#0891b2;"><div class="sc-emoji">🔵</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_B" style="background:#0891b2;width:0%"></div></div><div class="sc-val" id="sv_B">—</div><div class="sc-label">BIG</div></div>
+      <div class="score-box" id="sb_S" style="color:#7c3aed;"><div class="sc-emoji">🟣</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_S" style="background:#7c3aed;width:0%"></div></div><div class="sc-val" id="sv_S">—</div><div class="sc-label">SMALL</div></div>
+    </div>
+  </div>
 
-        // ========== UTILITY FUNCTIONS ==========
-        function log(msg, type = 'info') {
-            const console = document.getElementById('logConsole');
-            const time = new Date().toLocaleTimeString();
-            const item = document.createElement('div');
-            item.className = `log-item ${type}`;
-            item.innerHTML = `<strong>[${time}]</strong> ${msg}`;
-            console.appendChild(item);
-            console.scrollTop = console.scrollHeight;
-            
-            while (console.children.length > 100) {
-                console.removeChild(console.firstChild);
-            }
-        }
+  <!-- TIMER + PREDICTED DIGITS -->
+  <div class="card">
+    <div class="sec-title">⏱ 30-SEC CYCLE</div>
+    <div class="timer-num" id="timerNum">30</div>
+    <div class="timer-sub" id="timerSub">WAITING FOR API</div>
+    <div class="timer-progress"><div class="timer-fill" id="timerFill" style="width:100%"></div></div>
+    <div style="margin-top:14px;" id="predBox">
+      <div class="sec-title">🔢 TOP 2 PREDICTED DIGITS</div>
+      <div id="predWait" style="text-align:center;font-size:12px;color:var(--txt2);padding:16px 0;">Waiting for data...</div>
+      <div id="predContent" style="display:none;">
+        <div class="dual-pred-wrap" id="dualPredWrap"></div>
+        <div id="violetWrap" style="display:none;margin-top:8px;text-align:center;"><div class="violet-badge">⚡ VIOLET BONUS DIGIT</div></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function showToast(msg, duration = 3000) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), duration);
-        }
+<!-- ROW 2 -->
+<div class="grid2">
+  <div class="card">
+    <div class="sec-title">🐉 RSI PATTERN ENGINE — LIVE</div>
+    <div class="pattern-main" id="patternMain" style="border-color:rgba(255,255,255,0.1);">
+      <div class="pat-name" id="patName" style="color:#64748b;">⏳ WAITING FOR DATA</div>
+      <div class="pat-desc" id="patDesc" style="color:var(--txt2);">RSI calculate ho raha hai...</div>
+      <div class="pat-tags" id="patTags"></div>
+    </div>
+    <div id="whyBox" style="margin-top:10px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--txt2);margin-bottom:6px;">WHY TRADE / WHY SKIP?</div>
+      <div id="whyText" style="font-size:12px;line-height:1.8;color:var(--txt2);">Signal aane ka wait karo...</div>
+    </div>
+    <div style="margin-top:10px;">
+      <div class="sec-title">📊 MARKET BIAS</div>
+      <div class="bias-big" id="biasTxt" style="color:#ca8a04;">WAIT</div>
+      <div class="bias-bar-bg"><div class="bias-fill" id="biasBar" style="width:0%;background:#ca8a04;"></div></div>
+    </div>
+    <div class="asset-box" style="margin-top:10px;">
+      <div class="asset-name" id="assetName">WIF/USDT</div>
+      <div class="asset-price" id="assetPrice" style="color:#7dd3fc;">-- -- --</div>
+      <div class="asset-change" id="assetChange" style="color:#64748b;">Loading...</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title">📖 RSI PATTERN GUIDE — KAB TRADE KARO</div>
+    <table class="pat-ref-table" id="patRefTable">
+      <thead>
+        <tr><th>PATTERN</th><th>RSI RANGE</th><th>TRADE?</th><th>SIGNAL</th></tr>
+      </thead>
+      <tbody id="patRefBody"></tbody>
+    </table>
+  </div>
+</div>
 
-        function speak(text) {
-            if (voiceEnabled && 'speechSynthesis' in window) {
-                speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1.1;
-                utterance.lang = 'en-US';
-                speechSynthesis.speak(utterance);
-            }
-        }
+<!-- ROW 3 -->
+<div class="grid3">
+  <div class="card" style="grid-column:span 2;">
+    <div class="sec-title">📈 TREND FLOW</div>
+    <svg class="trend-chart" viewBox="0 0 400 80">
+      <line x1="0" y1="20" x2="400" y2="20" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <line x1="0" y1="40" x2="400" y2="40" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <line x1="0" y1="60" x2="400" y2="60" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <path id="trendBig" stroke="#16a34a" fill="none" stroke-width="2" stroke-linecap="round"/>
+      <path id="trendSmall" stroke="#dc2626" fill="none" stroke-width="2" stroke-linecap="round"/>
+      <path id="trendRsi" stroke="#0891b2" fill="none" stroke-width="1.5" stroke-dasharray="3,2" stroke-linecap="round"/>
+      <text x="5" y="14" fill="#16a34a" font-size="8" font-weight="bold" font-family="monospace">BIG</text>
+      <text x="5" y="78" fill="#dc2626" font-size="8" font-weight="bold" font-family="monospace">SMALL</text>
+      <text x="340" y="14" fill="#0891b2" font-size="8" font-weight="bold" font-family="monospace">RSI</text>
+    </svg>
+  </div>
+  <div class="card">
+    <div class="sec-title">🔌 API HEALTH</div>
+    <div id="apiStatus" style="font-size:24px;font-weight:900;margin-top:6px;color:#ca8a04;">WAITING</div>
+    <div id="apiLastCall" style="font-size:11px;color:var(--txt2);margin-top:4px;">First call pending...</div>
+    <div style="margin-top:10px;" class="badge"><div class="dot"></div>BINANCE PUBLIC</div>
+    <div class="api-count" id="apiCount">0</div>
+    <div style="text-align:center;font-size:10px;color:var(--txt2);">API calls today</div>
+    <div style="text-align:center;font-size:11px;color:var(--txt2);margin-top:4px;" id="todayDate">—</div>
+  </div>
+</div>
 
-        function getColor(num) {
-            if ([1,3,7,9].includes(num)) return 'green';
-            if ([2,4,6,8].includes(num)) return 'red';
-            if ([0,5].includes(num)) return 'violet';
-            return 'green';
-        }
+<!-- ROW 4 -->
+<div class="card" style="margin-bottom:14px;">
+  <div class="sec-title">🔢 DIGIT REFERENCE — BDG WIN GO</div>
+  <div class="digit-grid" id="digitGrid"></div>
+</div>
 
-        function isBig(num) {
-            return num >= 5;
-        }
+<!-- ROW 5 -->
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div class="sec-title" style="margin-bottom:0;">📜 SIGNAL HISTORY <span style="font-weight:400;opacity:0.5;">(with trade decisions)</span></div>
+    <button class="clear-btn" onclick="clearHistory()">🗑 CLEAR</button>
+  </div>
+  <div class="hist-scroll" id="histList">
+    <div style="text-align:center;color:var(--txt2);padding:20px;font-size:12px;">No signals yet...</div>
+  </div>
+</div>
 
-        function getColorInitial(num) {
-            return getColor(num)[0].toUpperCase();
-        }
+</div><!-- /wrap -->
 
-        // ========== WEBSITE CONTROLS ==========
-        function refreshWebsite() {
-            const frame = document.getElementById('wingoFrame');
-            frame.src = frame.src;
-            log('Website refreshed', 'info');
-        }
+<script>
+// ══════════════════════════════════════════════════════════════
+//  VED v5  —  24/7 GitHub Pages Edition
+//  Changes: Horn sound + Service Worker + Full cycle reset
+// ══════════════════════════════════════════════════════════════
 
-        function openInNew() {
-            window.open('https://4yaarwin.com/#/saasLottery/WinGo?gameCode=WinGo_1Min&lottery=WinGo', '_blank');
-        }
+const SYMBOL='WIFUSDT';
+const BINANCE='https://api.binance.com/api/v3';
+const CYCLE=30;
+const API_TRIGGER_SEC=17;
 
-        // ========== AUTO CYCLE SYSTEM ==========
-        function startAutoCycle() {
-            if (autoCycleActive) return;
-            
-            autoCycleActive = true;
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('stopBtn').style.display = 'flex';
-            document.getElementById('stopBtn').classList.add('active');
-            
-            log('🚀 AUTO-CYCLE STARTED', 'success');
-            showToast('🚀 Auto-Cycle Started!', 2000);
-            speak('Auto cycle started');
-            
-            // Start first cycle immediately
-            runCycle();
-            
-            // Then repeat every 60 seconds
-            cycleInterval = setInterval(runCycle, 60000);
-        }
+let prevRsi=50, apiCalled=false, signalHistory=[];
+let soundUnlocked=false;
+let audioCtx=null;
 
-        function stopAutoCycle() {
-            autoCycleActive = false;
-            currentCyclePhase = 'IDLE';
-            
-            document.getElementById('startBtn').style.display = 'flex';
-            document.getElementById('stopBtn').style.display = 'none';
-            document.getElementById('stopBtn').classList.remove('active');
-            
-            // Clear all timers
-            if (cycleInterval) clearInterval(cycleInterval);
-            if (scanTimeout) clearTimeout(scanTimeout);
-            if (resultTimeout) clearTimeout(resultTimeout);
-            if (countdownInterval) clearInterval(countdownInterval);
-            
-            updateCycleStatus('STOPPED', '--');
-            document.getElementById('cycleProgress').style.width = '0%';
-            
-            log('⏸️ AUTO-CYCLE STOPPED', 'warning');
-            showToast('⏸️ Auto-Cycle Stopped');
-            speak('Auto cycle stopped');
-        }
+// ══ SERVICE WORKER REGISTRATION (24/7 background) ══
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(reg=>{
+    console.log('[VED] SW registered, scope:', reg.scope);
+  }).catch(err=>{
+    console.warn('[VED] SW registration failed:', err);
+  });
+}
 
-        function runCycle() {
-            if (!autoCycleActive) return;
-            
-            log('━━━━━━━━━━ NEW CYCLE STARTED ━━━━━━━━━━', 'info');
-            
-            // Phase 1: SCANNING (0-5 seconds)
-            currentCyclePhase = 'SCANNING';
-            updateCycleStatus('SCANNING WEBSITE', '5s');
-            secondsRemaining = 60;
-            startCountdown();
-            
-            performScan();
-            
-            // Phase 2: After 5 seconds, analyze
-            scanTimeout = setTimeout(() => {
-                if (!autoCycleActive) return;
-                
-                currentCyclePhase = 'ANALYZING';
-                updateCycleStatus('ANALYZING DATA', '2s');
-                log('🔍 Analysis started...', 'info');
-                
-                analyzeAndPredict();
-                
-            }, 5000);
-            
-            // Phase 3: After 7 seconds (5+2), show result
-            resultTimeout = setTimeout(() => {
-                if (!autoCycleActive) return;
-                
-                currentCyclePhase = 'SHOWING_RESULT';
-                updateCycleStatus('PREDICTION READY', `${secondsRemaining}s`);
-                log('✅ Prediction displayed', 'success');
-                
-                if (voiceEnabled) {
-                    const pred = document.getElementById('predictionResult').textContent;
-                    speak(`Prediction ready: ${pred}`);
-                }
-                
-            }, 7000);
-        }
+// Keep-alive ping to SW every 25s so background tab stays alive
+setInterval(()=>{
+  if(navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage('KEEP_ALIVE');
+  }
+},25000);
 
-        function startCountdown() {
-            if (countdownInterval) clearInterval(countdownInterval);
-            
-            countdownInterval = setInterval(() => {
-                if (!autoCycleActive) {
-                    clearInterval(countdownInterval);
-                    return;
-                }
-                
-                secondsRemaining--;
-                
-                if (secondsRemaining <= 0) {
-                    secondsRemaining = 60;
-                }
-                
-                // Update header timer
-                document.getElementById('headerTimer').textContent = `${secondsRemaining}s`;
-                
-                // Update countdown display
-                if (currentCyclePhase === 'SHOWING_RESULT' || currentCyclePhase === 'IDLE') {
-                    document.getElementById('cycleCountdown').textContent = `${secondsRemaining}s`;
-                }
-                
-                // Update progress bar
-                const progress = ((60 - secondsRemaining) / 60) * 100;
-                document.getElementById('cycleProgress').style.width = `${progress}%`;
-                
-            }, 1000);
-        }
+// ══════════════════════════════════════════════════════════════
+//  🔊 HORN / AIR HORN SOUND ENGINE (Web Audio API)
+// ══════════════════════════════════════════════════════════════
+function unlockSound(){
+  if(soundUnlocked)return;
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  // Resume context on user gesture
+  audioCtx.resume().then(()=>{
+    soundUnlocked=true;
+    const banner=document.getElementById('soundBanner');
+    banner.classList.add('unlocked');
+    document.getElementById('sbTxt').textContent='🔊 SOUND UNLOCKED — Horn will blast on TRADE signal!';
+    document.getElementById('sbBtn').textContent='✅ ACTIVE';
+    document.getElementById('hornTag').textContent='🔊 HORN ON';
+    // Play a short test beep
+    playBeep(880,0.15,0.3,'sine',0.2);
+  });
+}
 
-        function updateCycleStatus(status, time) {
-            document.getElementById('cycleStatus').textContent = status;
-            if (time !== '--') {
-                document.getElementById('cycleCountdown').textContent = time;
-            }
-        }
+// Generic beep helper
+function playBeep(freq,vol,dur,type='sine',delay=0){
+  if(!audioCtx)return;
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+  osc.connect(gain);gain.connect(audioCtx.destination);
+  osc.type=type;osc.frequency.value=freq;
+  const t=audioCtx.currentTime+delay;
+  gain.gain.setValueAtTime(0,t);
+  gain.gain.linearRampToValueAtTime(vol,t+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  osc.start(t);osc.stop(t+dur+0.05);
+}
 
-        // ========== SCANNING ==========
-        function performScan() {
-            log('📡 Scanning iframe for results...', 'info');
-            
-            try {
-                const frame = document.getElementById('wingoFrame');
-                let frameDoc;
-                
-                try {
-                    frameDoc = frame.contentDocument || frame.contentWindow.document;
-                } catch(e) {
-                    log('⚠️ CORS blocked. Using manual entry.', 'warning');
-                    showToast('⚠️ Use Manual Entry', 3000);
-                    return;
-                }
+// Full air-horn blast: layered sawtooth waves (trucks horn style)
+function playAirHorn(color){
+  if(!soundUnlocked||!audioCtx)return;
+  audioCtx.resume(); // ensure context active
 
-                const results = extractResults(frameDoc);
-                
-                if (results && results.length >= 10) {
-                    scannedResults = results;
-                    displayResults(results);
-                    log(`✅ Scanned ${results.length} results!`, 'success');
-                } else {
-                    log('⚠️ No results found in page', 'warning');
-                    
-                    // Use manual results if available
-                    if (manualResults.length >= 10) {
-                        scannedResults = manualResults.slice(0, 10);
-                        displayResults(scannedResults);
-                        log('📝 Using manual results', 'info');
-                    }
-                }
-                
-            } catch (error) {
-                log(`❌ Scan error: ${error.message}`, 'error');
-            }
-        }
+  const isGreen=(color==='GREEN'||color==='BIG');
+  // Air horn frequencies — low, mid, high chord
+  const freqs=isGreen?[233,311,466]:[174,220,349];
+  const now=audioCtx.currentTime;
 
-        function extractResults(doc) {
-            const results = [];
-            
-            // Multiple selector strategies
-            const selectors = [
-                '.MyGameRecord .item',
-                '.gameRecord .record',
-                '.van-list .van-list-item',
-                '[class*="MyGameRecordList"] [class*="item"]',
-                '[class*="record"]',
-                '.history-item',
-                '.result-item'
-            ];
+  freqs.forEach((freq,i)=>{
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    // Distortion for harsh horn character
+    const wave=audioCtx.createWaveShaper();
+    wave.curve=makeDistortionCurve(200);
+    osc.connect(wave);wave.connect(gain);gain.connect(audioCtx.destination);
+    osc.type='sawtooth';
+    osc.frequency.value=freq;
+    const vol=i===1?0.55:0.35;
+    gain.gain.setValueAtTime(0,now);
+    gain.gain.linearRampToValueAtTime(vol,now+0.04);
+    // Hold for 0.9s then fade
+    gain.gain.setValueAtTime(vol,now+0.9);
+    gain.gain.exponentialRampToValueAtTime(0.001,now+1.5);
+    osc.start(now);osc.stop(now+1.6);
+  });
 
-            for (const selector of selectors) {
-                try {
-                    const elements = doc.querySelectorAll(selector);
-                    
-                    if (elements.length > 0) {
-                        log(`  → Found ${elements.length} with: ${selector}`, 'info');
-                        
-                        elements.forEach((el) => {
-                            if (results.length >= 10) return;
-                            
-                            const text = el.textContent || el.innerText || '';
-                            
-                            // Extract single digit number
-                            const match = text.match(/\b([0-9])\b/);
-                            if (match) {
-                                const num = parseInt(match[1]);
-                                if (num >= 0 && num <= 9) {
-                                    results.push(num);
-                                }
-                            }
-                        });
-                        
-                        if (results.length >= 10) break;
-                    }
-                } catch (e) {}
-            }
+  // Sub thump
+  const sub=audioCtx.createOscillator();
+  const subG=audioCtx.createGain();
+  sub.connect(subG);subG.connect(audioCtx.destination);
+  sub.type='sine';sub.frequency.value=isGreen?110:80;
+  subG.gain.setValueAtTime(0,now);
+  subG.gain.linearRampToValueAtTime(0.7,now+0.05);
+  subG.gain.exponentialRampToValueAtTime(0.001,now+0.5);
+  sub.start(now);sub.stop(now+0.6);
+}
 
-            return results.length >= 10 ? results.slice(0, 10) : null;
-        }
+// 2nd horn after 1.8s gap — double blast
+function playDoubleHorn(color){
+  if(!soundUnlocked)return;
+  playAirHorn(color);
+  setTimeout(()=>playAirHorn(color),1800);
+}
 
-        // ========== MANUAL ENTRY ==========
-        function manualAdd(num) {
-            manualResults.unshift(num);
-            if (manualResults.length > 10) {
-                manualResults = manualResults.slice(0, 10);
-            }
-            
-            scannedResults = [...manualResults];
-            displayResults(scannedResults);
-            analyzeAndPredict();
-            
-            log(`➕ Added: ${num}`, 'info');
-            showToast(`Added: ${num}`);
-        }
+function makeDistortionCurve(amount){
+  const n=256,curve=new Float32Array(n);
+  const deg=Math.PI/180;
+  for(let i=0;i<n;i++){
+    const x=(i*2)/n-1;
+    curve[i]=(3+amount)*x*20*deg/(Math.PI+amount*Math.abs(x));
+  }
+  return curve;
+}
 
-        function undoManual() {
-            if (manualResults.length > 0) {
-                const removed = manualResults.shift();
-                scannedResults = [...manualResults];
-                displayResults(scannedResults);
-                analyzeAndPredict();
-                log(`↩️ Removed: ${removed}`, 'warning');
-            }
-        }
+// Flash overlay
+function flashScreen(color){
+  const el=document.getElementById('hornFlash');
+  el.className=`flash-${color==='GREEN'||color==='BIG'?'green':'red'}`;
+  el.classList.add('visible');
+  setTimeout(()=>el.classList.remove('visible'),600);
+  setTimeout(()=>{el.classList.add('visible');setTimeout(()=>el.classList.remove('visible'),400);},700);
+}
 
-        function clearManual() {
-            manualResults = [];
-            scannedResults = [];
-            displayResults([]);
-            log('🗑️ Cleared', 'warning');
-        }
+// Horn tag animation
+function animateHornTag(){
+  const t=document.getElementById('hornTag');
+  t.textContent='📢 BLASTING!';
+  t.classList.add('sounding');
+  setTimeout(()=>{t.classList.remove('sounding');t.textContent='🔊 HORN ON';},2500);
+}
 
-        // ========== DISPLAY ==========
-        function displayResults(results) {
-            const container = document.getElementById('resultsList');
-            
-            if (results.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px; font-size: 12px;">No results</div>';
-                return;
-            }
+// ══ DIGIT DATA ══
+const DIGITS={
+  0:{name:"Dump/Reset",desc:"Sudden reversal trap. Market resets hard.",emoji:"💀",color:"#dc2626"},
+  1:{name:"Small Start",desc:"Low momentum, slow hesitant entry.",emoji:"🌱",color:"#16a34a"},
+  2:{name:"Small Stable",desc:"Steady sideways, no surprises.",emoji:"➡️",color:"#dc2626"},
+  3:{name:"Small Active",desc:"Growing energy, momentum building.",emoji:"⚡",color:"#16a34a"},
+  4:{name:"Red Pressure",desc:"Bearish squeeze in small range.",emoji:"🔴",color:"#dc2626"},
+  5:{name:"Confusion/Swing",desc:"Max volatility, can go either way!",emoji:"🌀",color:"#7c3aed"},
+  6:{name:"Big Stable",desc:"Strong consistent momentum.",emoji:"💪",color:"#0891b2"},
+  7:{name:"Running Market",desc:"Fast bullish move, momentum alive.",emoji:"🏃",color:"#16a34a"},
+  8:{name:"Heavy Strong",desc:"High conviction big movement.",emoji:"🏋️",color:"#ea580c"},
+  9:{name:"Extreme/Max",desc:"Maximum trend energy, strongest.",emoji:"🚀",color:"#ca8a04"},
+};
 
-            container.innerHTML = '';
-            
-            results.forEach((num, index) => {
-                const row = document.createElement('div');
-                const color = getColor(num);
-                const size = isBig(num) ? 'big' : 'small';
-                
-                row.className = `result-row ${color}`;
-                row.innerHTML = `
-                    <div class="period">#${1000 - index}</div>
-                    <div class="number ${color}">${num}</div>
-                    <div class="size ${size}">${size.toUpperCase()}</div>
-                    <div class="color ${color}">${color.toUpperCase()}</div>
-                `;
-                
-                container.appendChild(row);
-            });
+function getBdg(n){
+  const isViolet=(n===0||n===5);
+  const isGreen=(n%2!==0);
+  const isBig=(n>=5);
+  let primaryColor=isViolet?'#7c3aed':isGreen?'#16a34a':'#dc2626';
+  return{isViolet,isGreen,isBig,primaryColor};
+}
 
-            updateStats(results);
-        }
+// ══ RSI CALC ══
+function calcRSI(closes,period=14){
+  if(closes.length<period+1)return 50;
+  let g=0,l=0;
+  for(let i=1;i<=period;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l+=Math.abs(d);}
+  let ag=g/period,al=l/period;
+  for(let i=period+1;i<closes.length;i++){
+    const d=closes[i]-closes[i-1];
+    ag=(ag*(period-1)+(d>0?d:0))/period;
+    al=(al*(period-1)+(d<0?Math.abs(d):0))/period;
+  }
+  if(al===0)return 100;
+  return parseFloat((100-(100/(1+ag/al))).toFixed(2));
+}
 
-        function updateStats(results) {
-            let green = 0, red = 0, violet = 0;
-            
-            results.forEach(num => {
-                const color = getColor(num);
-                if (color === 'green') green++;
-                else if (color === 'red') red++;
-                else violet++;
-            });
+// ══ RSI PATTERNS ══
+const RSI_PATTERNS=[
+  {id:'rev-up',name:'🔄 Reversal UP Soon',short:'OV-REVERSAL',min:0,max:17,rising:null,color:'#3b82f6',tradeOn:'WAIT → then GREEN',shouldTrade:false,desc:'RSI <17 = Extreme oversold. Market bahut neeche gir chuka hai. Abhi trade MAT karo. Wait karo jab tak RSI upar aaye aur GREEN signal mile.',whySkip:'Market itna oversold hai ki bounce aane wala hai. Agar abhi RED trade karoge toh reversal mein phas jaoge. Patience rakho.',confidence:'EXTREME',level:5},
+  {id:'crash',name:'💥 Crash Zone',short:'CRASH',min:17,max:22,rising:null,color:'#dc2626',tradeOn:'RED / SMALL',shouldTrade:true,desc:'RSI 17–22 = Extreme bearish selling pressure. Market crash ho raha hai. RED ya SMALL trade karo — strong confidence.',whyTrade:'Yeh zone mein market ki selling bahut aggressive hoti hai. Signal confirm hone par trade karo.',confidence:'HIGH',level:4},
+  {id:'bear-drag',name:'🐻 Bear Drag',short:'BEAR-DRAG',min:22,max:35,rising:false,color:'#ef4444',tradeOn:'RED / SMALL',shouldTrade:true,desc:'RSI 22–35 falling = Bear drag pattern. Downtrend strong hai. RED ya SMALL trade karo confidently.',whyTrade:'RSI gir raha hai aur bear drag confirm ho gaya. Trend aapke sath hai.',confidence:'GOOD',level:3},
+  {id:'mild-bear',name:'📉 Mild Bearish',short:'MILD-BEAR',min:35,max:42,rising:null,color:'#a855f7',tradeOn:'SKIP',shouldTrade:false,desc:'RSI 35–42 = Mild bearish zone. Direction clear nahi hai. Signal strong nahi hoga. Skip karo.',whySkip:'Yeh "trap zone" hai — naa pura bearish, naa bullish. Aadha-adhura zone mein trade karna loss deta hai.',confidence:'LOW',level:2},
+  {id:'dead',name:'💀 Dead Zone',short:'DEAD-ZONE',min:42,max:58,rising:null,color:'#64748b',tradeOn:'SKIP ALWAYS',shouldTrade:false,desc:'RSI 42–58 = Dead Zone. Koi clear direction nahi. YEH ZONE MEIN KABHI TRADE MAT KARO. Sabse zyada loss yahan hota hai.',whySkip:'Dead zone mein market sideway chalta hai. Green bhi aa sakta hai, Red bhi. Koi prediction possible nahi. ALWAYS SKIP.',confidence:'NONE',level:1},
+  {id:'mild-bull',name:'📈 Mild Bullish',short:'MILD-BULL',min:58,max:65,rising:null,color:'#0891b2',tradeOn:'SKIP',shouldTrade:false,desc:'RSI 58–65 = Mild bullish. Signal weak hai. Puri confidence ke sath trade karne layak nahi.',whySkip:'Bullish momentum hai but weak. Ye zone signal deta hai par follow-through nahi hota. Skip karo.',confidence:'LOW',level:2},
+  {id:'bull-mom',name:'⬆️ Bull Momentum',short:'BULL-MOM',min:65,max:68,rising:null,color:'#16a34a',tradeOn:'GREEN',shouldTrade:true,desc:'RSI 65–68 = Solid bullish zone. GREEN trade karo jab signal aaye.',whyTrade:'Bullish momentum strong hai. Green signals yahan reliable hote hain.',confidence:'GOOD',level:3},
+  {id:'dragon',name:'🐉 Dragon Pattern',short:'DRAGON',min:68,max:83,rising:true,color:'#ea580c',tradeOn:'BIG / GREEN',shouldTrade:true,desc:'RSI 68–83 rising = DRAGON pattern active! Yeh sabse powerful bullish pattern hai. BIG ya GREEN confidently trade karo.',whyTrade:'Dragon pattern = strongest uptrend signal. RSI upar ja raha hai 68-83 zone mein. Market rocket ki tarah chal raha hai.',confidence:'HIGH',level:4},
+  {id:'rocket',name:'🚀 Rocket Peak',short:'ROCKET',min:83,max:86,rising:null,color:'#ca8a04',tradeOn:'WAIT (reversal coming)',shouldTrade:false,desc:'RSI 83–86 = Market peak par hai. Reversal aane wala hai. Trade MAT karo. Wait karo drop ke liye.',whySkip:'Market bahut zyada upar aa gaya hai. Peak par buy karna trap hai. Reversal se pehle exit karo.',confidence:'DANGER',level:4},
+  {id:'rev-down',name:'🔄 Reversal DOWN',short:'OB-REVERSAL',min:86,max:100,rising:null,color:'#ef4444',tradeOn:'WAIT → then RED',shouldTrade:false,desc:'RSI >86 = Extreme overbought. Reversal DOWN incoming. Abhi trade mat karo. Wait karo RED signal ke liye, fir trade karo.',whySkip:'Market itna overbought hai ki crash inevitable hai. Agar abhi GREEN trade karoge toh reversal mein phas jaoge.',confidence:'EXTREME',level:5},
+];
 
-            document.getElementById('greenCount').textContent = green;
-            document.getElementById('redCount').textContent = red;
-            document.getElementById('violetCount').textContent = violet;
+function getRsiPattern(rsi,prevRsiVal){
+  const rising=rsi>prevRsiVal+0.3;
+  const falling=rsi<prevRsiVal-0.3;
+  const rsiDir=rising?'RISING':falling?'FALLING':'FLAT';
+  const crossUp=prevRsiVal<50&&rsi>=50;
+  const crossDown=prevRsiVal>50&&rsi<=50;
+  if(crossUp)return{id:'bcross',name:'⚡ Bull Cross 50!',short:'BULL-CROSS',color:'#16a34a',tradeOn:'GREEN',shouldTrade:true,desc:'RSI ne 50 cross kiya UPAR ki taraf! Bullish breakout confirm! GREEN trade karo strong confidence ke sath.',whyTrade:'50 cross = market bearish se bullish zone mein shift ho gaya. Yeh sabse reliable signal hai.',confidence:'HIGH',level:4,rsiDir};
+  if(crossDown)return{id:'brcross',name:'⚡ Bear Cross 50!',short:'BEAR-CROSS',color:'#ef4444',tradeOn:'RED',shouldTrade:true,desc:'RSI ne 50 cross kiya NEECHE ki taraf! Bearish breakdown confirm! RED ya SMALL trade karo.',whyTrade:'50 cross down = market bullish se bearish mein shift ho gaya. Strong reversal signal.',confidence:'HIGH',level:4,rsiDir};
+  for(const p of RSI_PATTERNS){
+    const inRange=rsi>=p.min&&rsi<p.max;
+    if(!inRange)continue;
+    if(p.rising===true&&!rising)continue;
+    if(p.rising===false&&!falling)continue;
+    return{...p,rsiDir};
+  }
+  return{id:'none',name:'⏸ No Pattern',short:'WAIT',color:'#64748b',tradeOn:'SKIP',shouldTrade:false,desc:'RSI zone identify nahi hua. Skip karo.',whySkip:'No clear pattern.',confidence:'NONE',level:1,rsiDir};
+}
 
-            const freq = {};
-            results.forEach(n => freq[n] = (freq[n] || 0) + 1);
-            const hot = Object.entries(freq)
-                .sort((a,b) => b[1] - a[1])
-                .slice(0, 3)
-                .map(x => x[0])
-                .join(', ');
-            
-            document.getElementById('hotNumbers').textContent = hot || '-';
-        }
+// ══ TRADE DECISION ══
+function getTradeDecision(signal,pattern,rating){
+  if(!pattern.shouldTrade){
+    return{action:'❌ SKIP — TRADE MAT KARO',signalName:`Signal: ${signal} (${rating}/10)`,reason:`<strong>RSI Pattern: ${pattern.name}</strong><br>${pattern.whySkip||pattern.desc}`,conf:`⚠️ ${pattern.confidence} ZONE — ${pattern.tradeOn}`,color:'#dc2626',cls:'trade-no',icon:'🚫',shouldTrade:false};
+  }
+  if(rating>=7&&pattern.shouldTrade){
+    const c={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[signal]||'#16a34a';
+    return{action:`✅ TRADE KARO — ${signal}`,signalName:`Signal: ${signal} | Rating: ${rating}/10`,reason:`<strong>Pattern: ${pattern.name}</strong> + Strong signal (${rating}/10) confirmed.<br>${pattern.whyTrade||pattern.desc}`,conf:`🔥 ${rating>=9?'VERY HIGH':'HIGH'} CONFIDENCE — Trade ${pattern.tradeOn}`,color:c,cls:'trade-yes',icon:'💰',shouldTrade:true};
+  }
+  if(rating>=5&&pattern.shouldTrade){
+    const c={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[signal]||'#16a34a';
+    return{action:`⚠️ CAREFUL — ${signal} (SMALL AMOUNT)`,signalName:`Signal: ${signal} | Rating: ${rating}/10`,reason:`<strong>Pattern: ${pattern.name}</strong> + Moderate signal (${rating}/10).<br>Pattern theek hai par signal weak hai. Bahut CHHOTA amount lagao.`,conf:'⚡ MEDIUM CONFIDENCE — Risk kam rakho',color:'#ca8a04',cls:'trade-wait',icon:'⚠️',shouldTrade:true};
+  }
+  return{action:'❌ SKIP — Signal Too Weak',signalName:`Signal: ${signal} | Rating: ${rating}/10`,reason:`Signal rating sirf ${rating}/10 hai. Pattern tradeable hai par signal bahut weak hai.<br>Acha setup milne ka wait karo.`,conf:'🚫 LOW CONFIDENCE — Skip karo',color:'#64748b',cls:'trade-no',icon:'❌',shouldTrade:false};
+}
 
-        // ========== PREDICTION ==========
-        function analyzeAndPredict() {
-            if (scannedResults.length < 3) {
-                log('Need 3+ results', 'warning');
-                return;
-            }
+// ══ DISTANCES ══
+function getDistances(rsi){
+  const thresholds=[
+    {name:'🔄 Rev UP',val:17,color:'#3b82f6'},
+    {name:'💥 Crash',val:22,color:'#dc2626'},
+    {name:'🐻 Bear',val:35,color:'#ef4444'},
+    {name:'⚡ Bull×50',val:50,color:'#16a34a'},
+    {name:'🐉 Dragon',val:68,color:'#ea580c'},
+    {name:'🚀 Rocket',val:83,color:'#ca8a04'},
+    {name:'🔄 Rev DN',val:86,color:'#ef4444'},
+  ];
+  return thresholds.map(t=>{
+    let dist=parseFloat((t.val-rsi).toFixed(1));
+    let pct=Math.max(0,Math.min(100,100-Math.abs(dist)/30*100));
+    let label=dist>0?`+${dist} to reach`:`${dist} (PAST)`;
+    return{...t,dist,pct,label};
+  }).sort((a,b)=>Math.abs(a.dist)-Math.abs(b.dist)).slice(0,4);
+}
 
-            const last3 = scannedResults.slice(0, 3);
-            const colorPattern = last3.map(n => getColorInitial(n)).join('');
-            
-            let pred = patterns[colorPattern] || { next: 'GREEN', conf: 60, nums: [1,3,7,9] };
+// ══ DIGIT SCORES ══
+function calcAllDigitScores(scores){
+  const digitScores=[];
+  for(let n=0;n<=9;n++){
+    const isOdd=n%2!==0;
+    const isBig=n>=5;
+    const isViolet=(n===0||n===5);
+    const colorScore=isOdd?scores.GREEN:scores.RED;
+    const sizeScore=isBig?scores.BIG:scores.SMALL;
+    let combined=(colorScore*0.55+sizeScore*0.45);
+    if(isViolet)combined=Math.min(100,combined*1.06);
+    digitScores.push({n,combined,colorScore,sizeScore,isOdd,isBig,isViolet,bdg:getBdg(n)});
+  }
+  digitScores.sort((a,b)=>b.combined-a.combined);
+  return digitScores;
+}
 
-            const last5 = scannedResults.slice(0, 5);
-            const gCount = last5.filter(n => getColor(n) === 'green').length;
-            const rCount = last5.filter(n => getColor(n) === 'red').length;
-            const vCount = last5.filter(n => getColor(n) === 'violet').length;
+// ══ PATTERN REF TABLE ══
+function buildPatternRef(){
+  const tbody=document.getElementById('patRefBody');
+  const rows=[
+    {name:'🔄 Reversal UP',range:'RSI < 17',trade:false,signal:'WAIT',color:'#3b82f6'},
+    {name:'💥 Crash Zone',range:'RSI 17–22',trade:true,signal:'RED/SMALL',color:'#dc2626'},
+    {name:'🐻 Bear Drag',range:'RSI 22–35 ↓',trade:true,signal:'RED/SMALL',color:'#ef4444'},
+    {name:'📉 Mild Bear',range:'RSI 35–42',trade:false,signal:'SKIP',color:'#a855f7'},
+    {name:'💀 Dead Zone',range:'RSI 42–58',trade:false,signal:'ALWAYS SKIP',color:'#64748b'},
+    {name:'⚡ Cross 50↑/↓',range:'RSI crosses 50',trade:true,signal:'Direction ke sath',color:'#16a34a'},
+    {name:'📈 Mild Bull',range:'RSI 58–65',trade:false,signal:'SKIP',color:'#0891b2'},
+    {name:'⬆️ Bull Mom',range:'RSI 65–68',trade:true,signal:'GREEN',color:'#16a34a'},
+    {name:'🐉 Dragon',range:'RSI 68–83 ↑',trade:true,signal:'BIG / GREEN',color:'#ea580c'},
+    {name:'🚀 Rocket',range:'RSI 83–86',trade:false,signal:'WAIT',color:'#ca8a04'},
+    {name:'🔄 Reversal DN',range:'RSI > 86',trade:false,signal:'WAIT → RED',color:'#ef4444'},
+  ];
+  tbody.innerHTML=rows.map((r,i)=>`
+    <tr id="pref_${i}">
+      <td style="color:${r.color};font-weight:800;">${r.name}</td>
+      <td style="font-family:var(--font-mono);color:var(--txt2);">${r.range}</td>
+      <td><span class="trade-pill ${r.trade?'yes':'no'}">${r.trade?'✅ TRADE':'❌ SKIP'}</span></td>
+      <td style="color:${r.trade?'#4ade80':'#f87171'};font-weight:800;font-size:11px;">${r.signal}</td>
+    </tr>`).join('');
+}
+buildPatternRef();
 
-            if (gCount >= 4) pred = { next: 'RED', conf: 76, nums: [2,4,6,8] };
-            else if (rCount >= 4) pred = { next: 'GREEN', conf: 77, nums: [1,3,7,9] };
-            else if (vCount === 0 && last5.length >= 5) pred = { next: 'VIOLET', conf: 73, nums: [0,5] };
+// ══ DIGIT GRID ══
+function buildDigitGrid(){
+  const g=document.getElementById('digitGrid');
+  let h='';
+  for(let n=0;n<=9;n++){
+    const d=DIGITS[n];const b=getBdg(n);
+    let bg=b.isViolet&&n===0?`linear-gradient(135deg,#dc2626 50%,#7c3aed 50%)`:b.isViolet&&n===5?`linear-gradient(135deg,#16a34a 50%,#7c3aed 50%)`:b.primaryColor;
+    let textC=b.isViolet?'#fff':'#000';
+    h+=`<div class="digit-cell" style="border-color:${d.color}20;" title="${d.desc}">
+      <div class="digit-ball" style="background:${bg};color:${textC};">${n}</div>
+      <div class="digit-name" style="color:${d.color}">${d.name.split('/')[0]}</div>
+      <div class="digit-emoji">${d.emoji}</div>
+    </div>`;
+  }
+  g.innerHTML=h;
+}
+buildDigitGrid();
 
-            displayPrediction(pred);
+// ══ DUAL DIGIT PREDICTION RENDER ══
+function renderDualPred(digitScores){
+  document.getElementById('predWait').style.display='none';
+  document.getElementById('predContent').style.display='block';
+  const top2=digitScores.slice(0,2);
+  const maxScore=top2[0].combined;
+  let hasViolet=top2.some(d=>d.isViolet);
+  document.getElementById('violetWrap').style.display=hasViolet?'block':'none';
+  const wrap=document.getElementById('dualPredWrap');
+  wrap.innerHTML=top2.map((d,idx)=>{
+    const dm=DIGITS[d.n];
+    const bdg=d.bdg;
+    const cCol=d.isOdd?'#16a34a':'#dc2626';
+    const sCol=d.isBig?'#0891b2':'#7c3aed';
+    const isV=d.isViolet;
+    let bg=isV&&d.n===0?`linear-gradient(135deg,#dc2626 50%,#7c3aed 50%)`:isV&&d.n===5?`linear-gradient(135deg,#16a34a 50%,#7c3aed 50%)`:bdg.primaryColor;
+    let glowC=isV?'rgba(124,58,237,0.4)':d.isOdd?'rgba(22,163,74,0.4)':'rgba(220,38,38,0.4)';
+    const pct=Math.round((d.combined/maxScore)*100);
+    const rankLabel=idx===0?'#1 STRONGEST':'#2 SECOND';
+    const rankColor=idx===0?'#fbbf24':'#94a3b8';
+    const borderC=idx===0?(isV?'#7c3aed':d.isOdd?'#16a34a':'#dc2626'):'rgba(255,255,255,0.12)';
+    return`<div class="pred-card rank${idx+1}" style="border-color:${borderC};">
+      <div class="pred-rank-badge" style="background:${rankColor}22;border:1px solid ${rankColor};color:${rankColor};">${rankLabel}</div>
+      <div class="pred-circle" style="background:${bg};color:${isV?'#fff':'#000'};--glow:${glowC};font-family:'Orbitron',sans-serif;">${d.n}</div>
+      <div class="pred-pct" style="color:${bdg.primaryColor};">${d.combined.toFixed(0)}<span style="font-size:11px;opacity:0.6;">pts</span></div>
+      <div class="pred-score-bar-bg"><div class="pred-score-bar" style="width:${pct}%;background:${bdg.primaryColor};"></div></div>
+      <div style="font-size:11px;font-weight:800;margin-top:4px;color:${dm.color}">${dm.emoji} ${dm.name}</div>
+      <div class="pred-tags-mini">
+        <span class="pred-tag-mini" style="color:${cCol};background:${cCol}22;border:1px solid ${cCol}44">${d.isOdd?'🟢 GREEN':'🔴 RED'}</span>
+        <span class="pred-tag-mini" style="color:${sCol};background:${sCol}22;border:1px solid ${sCol}44">${d.isBig?'🔵 BIG':'🟣 SMALL'}</span>
+        ${isV?`<span class="pred-tag-mini" style="color:#c084fc;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4)">⚡ VIOLET</span>`:''}
+      </div>
+      <div style="font-size:9px;color:var(--txt2);margin-top:4px;">${dm.desc}</div>
+    </div>`;
+  }).join('');
+}
 
-            let pType = 'Balanced';
-            if (gCount > rCount + vCount) pType = '🟢 Green Wave';
-            else if (rCount > gCount + vCount) pType = '🔴 Red Wave';
-            else if (vCount >= 2) pType = '🟣 Violet Active';
+// ══ RSI UI ══
+function updateRsiUI(rsi,pattern){
+  document.getElementById('rsiNeedle').style.left=rsi+'%';
+  const col=rsi<17?'#3b82f6':rsi<22?'#dc2626':rsi<35?'#ef4444':rsi<42?'#a855f7':rsi<58?'#64748b':rsi<65?'#0891b2':rsi<68?'#16a34a':rsi<83?'#ea580c':rsi<86?'#ca8a04':'#ef4444';
+  const bv=document.getElementById('rsiBigVal');
+  bv.textContent=rsi.toFixed(1);bv.style.color=col;
+  const dd=document.getElementById('rsiDirBadge');
+  dd.textContent=pattern.rsiDir==='RISING'?'▲ RISING':pattern.rsiDir==='FALLING'?'▼ FALLING':'● FLAT';
+  dd.style.color=pattern.rsiDir==='RISING'?'#4ade80':pattern.rsiDir==='FALLING'?'#f87171':'#64748b';
+  const dists=getDistances(rsi);
+  document.getElementById('npbItems').innerHTML=dists.map(d=>`
+    <div class="npb-item">
+      <div>
+        <div class="npb-name" style="color:${d.color}">${d.name}</div>
+        <div class="dist-bar-bg"><div class="dist-bar-fill" style="width:${d.dist<0?100:d.pct}%;background:${d.color}"></div></div>
+      </div>
+      <div class="npb-dist" style="color:${d.dist<0?'#64748b':d.color}">${d.label}</div>
+    </div>`).join('');
+}
 
-            document.getElementById('patternType').textContent = pType;
+function updatePatternUI(pattern){
+  const pm=document.getElementById('patternMain');
+  document.getElementById('patName').textContent=pattern.name;
+  document.getElementById('patName').style.color=pattern.color;
+  document.getElementById('patDesc').textContent=pattern.desc;
+  pm.style.borderColor=pattern.color+'55';
+  document.getElementById('patTags').innerHTML=`
+    <span class="pat-tag" style="color:${pattern.color};background:${pattern.color}15;border:1px solid ${pattern.color}33">${pattern.rsiDir||'—'}</span>
+    <span class="pat-tag" style="color:${pattern.shouldTrade?'#4ade80':'#f87171'};background:${pattern.shouldTrade?'#16a34a22':'#dc262622'};border:1px solid ${pattern.shouldTrade?'#16a34a44':'#dc262644'}">${pattern.shouldTrade?'✅ TRADEABLE':'❌ SKIP'}</span>
+    <span class="pat-tag" style="color:#fde047;background:rgba(202,138,4,0.15);border:1px solid rgba(202,138,4,0.3)">Trade: ${pattern.tradeOn}</span>
+    <span class="pat-tag" style="color:${pattern.color};background:${pattern.color}12;border:1px solid ${pattern.color}22">Conf: ${pattern.confidence}</span>`;
+  document.getElementById('whyText').innerHTML=pattern.shouldTrade?
+    `<span style="color:#4ade80;font-weight:800;">WHY TRADE?</span><br>${pattern.whyTrade||pattern.desc}`:
+    `<span style="color:#f87171;font-weight:800;">WHY SKIP?</span><br>${pattern.whySkip||pattern.desc}`;
+}
 
-            log(`🎯 ${colorPattern} → ${pred.next} (${pred.conf}%)`, 'success');
-        }
+function updateDecisionUI(td,rsi,pattern){
+  const box=document.getElementById('decisionBox');
+  box.className=`decision-mega ${td.cls} pulse-ring${td.cls==='trade-yes'?' active-trade':''}`;
+  document.getElementById('decIcon').textContent=td.icon;
+  document.getElementById('decAction').textContent=td.action;
+  document.getElementById('decAction').style.color=td.color;
+  document.getElementById('decSignalName').textContent=td.signalName;
+  document.getElementById('decSignalName').style.color=td.color;
+  document.getElementById('decReason').innerHTML=td.reason;
+  document.getElementById('decConf').innerHTML=`<div class="dot" style="background:${td.color}"></div>${td.conf}`;
+  document.getElementById('decConf').style.color=td.color;
+  document.getElementById('decRsiVal').textContent=rsi.toFixed(1);
+  document.getElementById('decRsiVal').style.color=td.color;
+  document.getElementById('decPatTag').textContent=pattern.name;
+  document.getElementById('decPatTag').style.color=td.color;
+}
 
-        function displayPrediction(pred) {
-            const resultEl = document.getElementById('predictionResult');
-            const badgeEl = document.getElementById('confidenceBadge');
-            const sugBox = document.getElementById('suggestedNumbers');
-            const chips = document.getElementById('numberChips');
+// ══ HISTORY ══
+function loadHistory(){try{const s=localStorage.getItem('ved_v5_hist');if(s)signalHistory=JSON.parse(s);}catch(e){signalHistory=[];}renderHistory();}
+function saveHistory(){try{localStorage.setItem('ved_v5_hist',JSON.stringify(signalHistory));}catch(e){}}
+function addToHistory(sig,rating,top2digits,pattern,td){
+  const now=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  signalHistory.unshift({sig,rating,top2digits,pattern:{name:pattern.name,color:pattern.color},td:{action:td.action,color:td.color},time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true})});
+  if(signalHistory.length>50)signalHistory=signalHistory.slice(0,50);
+  saveHistory();renderHistory();
+}
+function renderHistory(){
+  const c=document.getElementById('histList');
+  if(!signalHistory.length){c.innerHTML='<div style="text-align:center;color:var(--txt2);padding:20px;font-size:12px;">No signals yet...</div>';return;}
+  const cmap={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'};
+  c.innerHTML=signalHistory.map(item=>{
+    const col=cmap[item.sig]||'#ca8a04';
+    const tc=item.td||{};
+    const digits=item.top2digits||[];
+    let ballsHtml='';
+    if(digits.length>0){
+      ballsHtml='<div class="hist-balls">';
+      digits.forEach((d,idx)=>{
+        const bdg=getBdg(d.n);
+        let bg=bdg.isViolet&&d.n===0?`linear-gradient(135deg,#dc2626 50%,#7c3aed 50%)`:bdg.isViolet&&d.n===5?`linear-gradient(135deg,#16a34a 50%,#7c3aed 50%)`:bdg.primaryColor;
+        ballsHtml+=`<div class="hist-ball ${idx===1?'rank2':''}" style="background:${bg};color:${bdg.isViolet?'#fff':'#000'};">${d.n}</div>`;
+      });
+      ballsHtml+='</div>';
+    } else if(item.pred){
+      const pr=item.pred;const pn=pr.num!=null?pr.num:'?';
+      const bdg=pr.bdg||getBdg(typeof pn==='number'?pn:0);
+      let bg=bdg.isViolet&&pn===0?`linear-gradient(135deg,#dc2626 50%,#7c3aed 50%)`:bdg.isViolet&&pn===5?`linear-gradient(135deg,#16a34a 50%,#7c3aed 50%)`:bdg.primaryColor;
+      ballsHtml=`<div class="hist-balls"><div class="hist-ball" style="background:${bg};color:${bdg.isViolet?'#fff':'#000'};">${pn}</div></div>`;
+    }
+    return`<div class="hist-item" style="border-left-color:${col};background:${col}08;">
+      ${ballsHtml}
+      <div>
+        <div class="hist-signal" style="color:${col}">${item.sig}</div>
+        <div class="hist-sub">${item.pattern?.name||'—'} | ${item.rating}/10</div>
+        <div class="hist-trade-badge" style="color:${tc.color||'#fff'};background:${(tc.color||'#fff')}15;border:1px solid ${(tc.color||'#fff')}33">${tc.action||'—'}</div>
+      </div>
+      <div class="hist-time">${item.time}</div>
+    </div>`;
+  }).join('');
+}
+function clearHistory(){if(confirm('Clear all history?')){signalHistory=[];saveHistory();renderHistory();}}
+loadHistory();
 
-            resultEl.textContent = pred.next;
-            resultEl.className = `prediction-result ${pred.next.toLowerCase()}`;
+// ══ API COUNT ══
+function getTodayKey(){return new Date().toDateString();}
+function loadCount(){try{const s=localStorage.getItem('ved_v5_api');if(s){const d=JSON.parse(s);return d.date===getTodayKey()?d.count:0;}return 0;}catch(e){return 0;}}
+function saveCount(n){try{localStorage.setItem('ved_v5_api',JSON.stringify({date:getTodayKey(),count:n}));}catch(e){}}
+function incCount(){const n=loadCount()+1;saveCount(n);document.getElementById('apiCount').textContent=n;}
+document.getElementById('apiCount').textContent=loadCount();
+document.getElementById('todayDate').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 
-            badgeEl.textContent = `${pred.conf}% Confidence`;
-            badgeEl.style.display = 'inline-block';
-            badgeEl.className = `confidence-badge ${pred.conf >= 73 ? 'high' : pred.conf >= 67 ? 'medium' : 'low'}`;
+// ══ CLOCK ══
+setInterval(()=>{
+  const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  document.getElementById('clock').textContent='IST '+d.toTimeString().slice(0,8);
+},1000);
 
-            sugBox.style.display = 'block';
-            chips.innerHTML = '';
-            pred.nums.forEach(num => {
-                const chip = document.createElement('div');
-                chip.className = `number-chip ${getColor(num)}`;
-                chip.textContent = num;
-                chips.appendChild(chip);
-            });
-        }
+// ══ TREND CHART ══
+let MAX_PTS=80,bigPts=[],smPts=[],rsiPts=[];
+let bY=25,sY=60;
+function nY(y,d,mn,mx){y+=(Math.random()-0.5)*d;return Math.max(mn,Math.min(mx,y));}
+function mkPath(pts,maxX=400){if(!pts.length)return'';const step=maxX/MAX_PTS;return'M '+pts.map((p,i)=>`${i*step},${p}`).join(' L ');}
 
-        // ========== VOICE ==========
-        function toggleVoice() {
-            voiceEnabled = !voiceEnabled;
-            const btn = document.getElementById('voiceBtn');
+// ══ FETCH FROM BINANCE ══
+async function fetchData(){
+  const res=await fetch(`${BINANCE}/klines?symbol=${SYMBOL}&interval=1m&limit=25`);
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
+  const klines=await res.json();
+  if(!klines||klines.length<3)throw new Error('Not enough klines');
+  const closes=klines.map(k=>parseFloat(k[4]));
+  const curr=closes[closes.length-1];
+  const prev=closes[closes.length-2];
+  const changePct=((curr-prev)/prev)*100;
+  const rsi=calcRSI(closes);
+  return{dir:curr>=prev?'UP':'DOWN',changePct:Math.abs(changePct),rsi,curr};
+}
 
-            if (voiceEnabled) {
-                btn.classList.add('active');
-                speak('Voice enabled');
-                log('🎤 Voice ON', 'success');
-                showToast('🎤 Voice ON');
-            } else {
-                speechSynthesis.cancel();
-                btn.classList.remove('active');
-                log('🔇 Voice OFF', 'info');
-                showToast('🔇 Voice OFF');
-            }
-        }
+// ══ MAIN SYNC ══
+async function syncData(){
+  const apiSt=document.getElementById('apiStatus');
+  apiSt.textContent='LOADING';apiSt.style.color='#ca8a04';
+  try{
+    const data=await fetchData();
+    const{rsi,dir,changePct,curr}=data;
+    const ist=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+    apiSt.textContent='CONNECTED';apiSt.style.color='#4ade80';
+    document.getElementById('apiLastCall').textContent='Last: '+ist.toLocaleTimeString()+' ✓';
+    incCount();
 
-        // ========== RESET ==========
-        function resetAll() {
-            if (confirm('Reset everything?')) {
-                stopAutoCycle();
-                scannedResults = [];
-                manualResults = [];
-                
-                displayResults([]);
-                document.getElementById('predictionResult').textContent = 'START AUTO CYCLE';
-                document.getElementById('predictionResult').className = 'prediction-result waiting';
-                document.getElementById('confidenceBadge').style.display = 'none';
-                document.getElementById('suggestedNumbers').style.display = 'none';
-                
-                document.getElementById('greenCount').textContent = '0';
-                document.getElementById('redCount').textContent = '0';
-                document.getElementById('violetCount').textContent = '0';
-                document.getElementById('patternType').textContent = '-';
-                document.getElementById('hotNumbers').textContent = '-';
-                
-                log('🔃 RESET COMPLETE', 'success');
-                showToast('🔃 Reset!');
-            }
-        }
+    document.getElementById('assetName').textContent=`WIF/USDT — ${dir}`;
+    document.getElementById('assetPrice').textContent=curr.toFixed(4);
+    document.getElementById('assetPrice').style.color=dir==='UP'?'#4ade80':'#f87171';
+    document.getElementById('assetChange').textContent=dir==='UP'?`▲ +${changePct.toFixed(5)}%`:`▼ -${changePct.toFixed(5)}%`;
+    document.getElementById('assetChange').style.color=dir==='UP'?'#4ade80':'#f87171';
 
-        // ========== INIT ==========
-        window.addEventListener('load', function() {
-            log('✅ Auto-Cycle Scanner Loaded', 'success');
-            log('📱 Click START AUTO to begin', 'info');
-            showToast('🎯 Ready! Click START AUTO', 5000);
-            
-            // Initialize header timer
-            document.getElementById('headerTimer').textContent = '60s';
-        });
-    </script>
+    const pattern=getRsiPattern(rsi,prevRsi);
+    prevRsi=rsi;
+    updateRsiUI(rsi,pattern);
+    updatePatternUI(pattern);
+
+    // Signal scoring
+    const upCount=dir==='UP'?1:0,total=1,avgChange=changePct;
+    const rsiScores={
+      BIG:Math.max(0,100-(Math.abs(rsi-12.5)/25)*100),
+      SMALL:Math.max(0,100-(Math.abs(rsi-37.5)/25)*100),
+      GREEN:Math.max(0,100-(Math.abs(rsi-62.5)/25)*100),
+      RED:Math.max(0,100-(Math.abs(rsi-87.5)/25)*100)
+    };
+    const dirScores={GREEN:(upCount/total)*100,RED:((total-upCount)/total)*100,BIG:Math.min(changePct/1.5,1)*100,SMALL:(1-Math.min(changePct/0.3,1))*100};
+    const scores={
+      GREEN:rsiScores.GREEN*0.7+dirScores.GREEN*0.3,
+      RED:rsiScores.RED*0.7+dirScores.RED*0.3,
+      BIG:rsiScores.BIG*0.7+dirScores.BIG*0.3,
+      SMALL:rsiScores.SMALL*0.7+dirScores.SMALL*0.3
+    };
+    const winner=Object.entries(scores).reduce((a,b)=>b[1]>a[1]?b:a);
+    const ws=winner[0];const wv=winner[1];
+    const rating=Math.round(wv/10);
+    const gradeMap={10:"🔥 Ultra Strong",9:"💪 Very Strong",8:"⚡ Strong",7:"👍 Moderate",6:"😐 Decent",5:"😶 Neutral",4:"👎 Weak",3:"😞 Fading",2:"📉 Very Weak",1:"💤 Minimal",0:"😴 Flat"};
+    const grade=gradeMap[rating]||'—';
+    const sigCfg={GREEN:{color:'#16a34a',emoji:'🟢'},RED:{color:'#dc2626',emoji:'🔴'},BIG:{color:'#0891b2',emoji:'🔵'},SMALL:{color:'#7c3aed',emoji:'🟣'}};
+    const cfg=sigCfg[ws];
+
+    document.getElementById('sigEmoji').textContent=cfg.emoji;
+    document.getElementById('sigTxt').textContent=ws;
+    document.getElementById('sigTxt').style.color=cfg.color;
+    document.getElementById('ratingCircle').style.color=cfg.color;
+    document.getElementById('ratingCircle').style.display='flex';
+    document.getElementById('rNum').textContent=rating;
+    document.getElementById('gradeBadge').textContent=grade;
+    document.getElementById('gradeBadge').style.color=cfg.color;
+    document.getElementById('gradeBadge').style.display='inline-block';
+    document.getElementById('strFill').style.width=wv.toFixed(0)+'%';
+    document.getElementById('strFill').style.backgroundColor=cfg.color;
+    document.getElementById('strInfo').textContent=`${grade} • Score: ${wv.toFixed(1)} • RSI: ${rsi.toFixed(1)} • Δ: ${changePct.toFixed(5)}%`;
+
+    [['G','GREEN'],['R','RED'],['B','BIG'],['S','SMALL']].forEach(([k,s])=>{
+      document.getElementById(`sbf_${k}`).style.width=scores[s].toFixed(0)+'%';
+      document.getElementById(`sv_${k}`).textContent=scores[s].toFixed(0);
+      document.getElementById(`sb_${k}`).className=s===ws?'score-box winner':'score-box';
+    });
+
+    document.getElementById('biasTxt').textContent=ws==='GREEN'?'FULL BULLISH':ws==='RED'?'FULL BEARISH':ws==='BIG'?'HIGH MOMENTUM':'LOW MOMENTUM';
+    document.getElementById('biasTxt').style.color=cfg.color;
+    document.getElementById('biasBar').style.width=wv.toFixed(0)+'%';
+    document.getElementById('biasBar').style.backgroundColor=cfg.color;
+
+    const td=getTradeDecision(ws,pattern,rating);
+    updateDecisionUI(td,rsi,pattern);
+
+    // ══ 🔊 HORN BLAST on strong trade signal ══
+    if(td.shouldTrade && rating>=7){
+      playDoubleHorn(ws);
+      flashScreen(ws);
+      animateHornTag();
+    }
+
+    // TOP 2 DIGITS
+    const allDigitScores=calcAllDigitScores(scores);
+    renderDualPred(allDigitScores);
+    const top2=allDigitScores.slice(0,2);
+
+    addToHistory(ws,rating,top2,pattern,td);
+
+    // Trend
+    bY=nY(bY,4,15,40);sY=nY(sY,4,55,75);rsiPts.push(rsi*0.7);
+    bigPts.push(bY);smPts.push(sY);
+    if(bigPts.length>MAX_PTS){bigPts.shift();smPts.shift();rsiPts.shift();}
+    document.getElementById('trendBig').setAttribute('d',mkPath(bigPts));
+    document.getElementById('trendSmall').setAttribute('d',mkPath(smPts));
+    document.getElementById('trendRsi').setAttribute('d',mkPath(rsiPts));
+
+  }catch(err){
+    console.error('API Error:',err);
+    document.getElementById('apiStatus').textContent='ERROR';
+    document.getElementById('apiStatus').style.color='#f87171';
+    const ist=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+    document.getElementById('apiLastCall').textContent='Error: '+ist.toLocaleTimeString()+' — '+err.message;
+  }
+}
+
+// ══ 30-SEC CYCLE WITH FULL RESET ══
+function fullReset(){
+  apiCalled=false;
+
+  // Decision box → waiting state
+  const box=document.getElementById('decisionBox');
+  box.className='decision-mega trade-wait pulse-ring';
+  document.getElementById('decIcon').textContent='⏳';
+  document.getElementById('decAction').textContent='WAITING NEXT CYCLE...';
+  document.getElementById('decAction').style.color='#ca8a04';
+  document.getElementById('decSignalName').textContent='New cycle starting';
+  document.getElementById('decSignalName').style.color='#ca8a04';
+  document.getElementById('decReason').textContent='Next API call ho raha hai...';
+  document.getElementById('decConf').innerHTML='<div class="dot"></div>PENDING NEXT';
+  document.getElementById('decConf').style.color='#ca8a04';
+
+  // Signal panel reset
+  document.getElementById('sigEmoji').textContent='⌛';
+  document.getElementById('sigTxt').textContent='WAIT';
+  document.getElementById('sigTxt').style.color='#ca8a04';
+  document.getElementById('ratingCircle').style.display='none';
+  document.getElementById('gradeBadge').style.display='none';
+  document.getElementById('strFill').style.width='0%';
+  document.getElementById('strFill').style.backgroundColor='#ca8a04';
+  document.getElementById('strInfo').textContent='Waiting for next cycle...';
+
+  // Score boxes reset
+  [['G','GREEN'],['R','RED'],['B','BIG'],['S','SMALL']].forEach(([k])=>{
+    document.getElementById(`sbf_${k}`).style.width='0%';
+    document.getElementById(`sv_${k}`).textContent='—';
+    document.getElementById(`sb_${k}`).className='score-box';
+  });
+
+  // Prediction reset
+  document.getElementById('predWait').style.display='block';
+  document.getElementById('predContent').style.display='none';
+  document.getElementById('predWait').textContent='New cycle... fetching data';
+
+  // Bias reset
+  document.getElementById('biasTxt').textContent='WAIT';
+  document.getElementById('biasTxt').style.color='#ca8a04';
+  document.getElementById('biasBar').style.width='0%';
+
+  // Timer sub reset
+  document.getElementById('timerSub').textContent='NEW CYCLE STARTED';
+}
+
+setInterval(()=>{
+  const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  const sec=d.getSeconds();
+  const pos=sec%CYCLE;
+  const rem=CYCLE-pos;
+  document.getElementById('timerNum').textContent=rem;
+  document.getElementById('timerFill').style.width=(rem/CYCLE*100)+'%';
+  document.getElementById('timerSub').textContent=rem>API_TRIGGER_SEC?`API CALL IN ${rem-API_TRIGGER_SEC}s`:rem===API_TRIGGER_SEC?'⚡ FETCHING NOW...':'SIGNAL READY — NEXT IN '+rem+'s';
+  // Full reset at cycle start
+  if(pos===0)fullReset();
+  // API fires at 17s remaining
+  if(rem===API_TRIGGER_SEC&&!apiCalled){apiCalled=true;syncData();}
+  bY=nY(bY,2,15,40);sY=nY(sY,2,55,75);
+},1000);
+
+// ══ COPY SIGNAL ══
+function copySignal(){
+  const ist=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  const sig=document.getElementById('sigTxt')?.textContent||'WAIT';
+  const rn=document.getElementById('rNum')?.textContent||'?';
+  const gr=document.getElementById('gradeBadge')?.textContent||'—';
+  const act=document.getElementById('decAction')?.textContent||'—';
+  const rea=document.getElementById('decReason')?.innerText||'—';
+  const conf=document.getElementById('decConf')?.innerText||'—';
+  const rsiV=document.getElementById('rsiBigVal')?.textContent||'—';
+  const patN=document.getElementById('patName')?.textContent||'—';
+  const cards=document.querySelectorAll('#dualPredWrap .pred-circle');
+  const digitsStr=Array.from(cards).map(c=>c.textContent.trim()).join(' & ');
+  const txt=`🎯 VED Signal — ${ist.toLocaleTimeString()}
+Signal: ${sig} | Rating: ${rn}/10 | ${gr}
+RSI: ${rsiV} | Pattern: ${patN}
+Decision: ${act}
+${rea}
+Confidence: ${conf}
+Top 2 Predicted Digits: ${digitsStr}`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('copyBtn');btn.className='copy-btn done';btn.innerHTML='✅ COPIED!';
+    setTimeout(()=>{btn.className='copy-btn';btn.innerHTML='<span>📋 COPY</span>';},2000);
+  }).catch(()=>{});
+}
+</script>
 </body>
 </html>
