@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VED v9 — Ultimate Accuracy Engine</title>
+    <title>VED v9 — Live Digit Engine</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;800;900&display=swap');
         :root {
@@ -113,6 +113,51 @@
         .zoom-btn{width:36px;height:36px;border-radius:30px;background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.5);color:#7dd3fc;font-size:24px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
         .zoom-level{font-family:'Space Mono',monospace;font-size:12px;padding:0 10px;display:flex;align-items:center;color:#c084fc}
         @media(max-width:900px){.grid3,.grid2{grid-template-columns:1fr}.consensus-digit{margin-left:0;margin-top:8px}.timer-num{font-size:48px}}
+
+        .copy-final-btn {
+            background: rgba(251,191,36,0.15);
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .copy-final-btn:hover {
+            background: rgba(251,191,36,0.3);
+            box-shadow: 0 0 15px rgba(251,191,36,0.4);
+        }
+        .live-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;
+            animation: livePulse 1s infinite; display: inline-block; margin-right: 4px;
+        }
+        @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        .pairs-scroll { max-height: 420px; overflow-y: auto; }
+        .pairs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; }
+        .pair-cell { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 7px; text-align: center; transition: all 0.2s; }
+        .pair-cell.loading { opacity: 0.4; }
+        .pair-cell.error { border-color: #dc2626; background: rgba(220,38,38,0.1); }
+        .pair-sym { font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace; }
+        .pair-rsi { font-size: 14px; font-weight: 900; font-family: 'Orbitron', sans-serif; margin: 3px 0; }
+        .pair-sig { display: inline-block; font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 1px; }
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .filter-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); color: var(--txt2); font-family: 'Space Mono', monospace; font-size: 10px; padding: 5px 10px; border-radius: 14px; cursor: pointer; transition: all 0.2s; }
+        .filter-btn.active { background: rgba(6,182,212,0.15); border-color: #06b6d4; color: #7dd3fc; }
+        .fetch-progress { margin-bottom: 14px; }
+        .fp-top { display: flex; justify-content: space-between; }
+        .fp-title { font-size: 11px; font-weight: 700; color: var(--txt2); }
+        .fp-count { font-size: 11px; font-weight: 700; color: #7dd3fc; }
+        .fp-bar-bg { background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; margin: 6px 0; }
+        .fp-bar-fill { height: 100%; border-radius: 3px; background: #06b6d4; transition: width 0.3s; }
     </style>
 </head>
 <body>
@@ -144,6 +189,7 @@
         <span class="confidence-pct" id="confidencePct">0%</span>
       </div>
       <div class="trade-decision wait" id="tradeDecision" style="display:none;"><div class="td-main" id="tdMain">⏳ WAIT</div><div class="td-reason" id="tdReason">Signal analyze ho raha hai...</div></div>
+      <button class="copy-final-btn" id="copyFinalBtn" style="display:none;" onclick="copyFinalSignal()">📋 COPY FINAL</button>
     </div>
     <div class="con-stats">
       <div class="con-rsi-lbl">AVG RSI</div>
@@ -156,7 +202,7 @@
       </div>
     </div>
     <div class="consensus-digit" id="consensusDigitBox" style="display:none;">
-      <div class="consensus-digit-label">🔢 STRONGEST DIGIT</div>
+      <div class="consensus-digit-label"><span class="live-dot"></span> LIVE STRONGEST DIGIT</div>
       <div class="consensus-digit-number" id="consensusDigitNum">--</div>
       <div class="consensus-digit-reason" id="consensusDigitReason">calc...</div>
     </div>
@@ -186,7 +232,7 @@
 <div class="zoom-controls"><button class="zoom-btn" id="zoomOutBtn">−</button><div class="zoom-level" id="zoomLevel">100%</div><button class="zoom-btn" id="zoomInBtn">+</button></div>
 
 <script>
-// VED v9 — Ultimate Accuracy Engine
+// ========== VED v9 – LIVE DIGIT PREDICTION (Category‑Locked Mapping) ==========
 const BINANCE = 'https://api.binance.com/api/v3';
 const CYCLE = 30;
 const BATCH_SIZE = 12;
@@ -203,6 +249,11 @@ let btcMultiTF={rsi5m:50,rsi15m:50};
 let btcTrend={adx:0,emaTrend:'neutral'};
 let btcAdvanced={macdHist:0,stochK:50,stochD:50,volTrend:'neutral'};
 let signalHistory=[];
+let prevBtcRsi = 50;
+let currentConsensus = null;
+let btcLiveCandles = [];
+let ws = null;
+let lastTopDigit = -1;
 
 let zoom=1;
 document.getElementById('zoomInBtn').onclick=()=>{ zoom=Math.min(1.6,zoom+0.1); setZoom(); };
@@ -215,9 +266,97 @@ function calcEMA(data,period=50){ if(data.length<period) return data[data.length
 function calcADX(highs,lows,closes,period=14){ if(closes.length<period+1) return 0; let tr=[],pDM=[],mDM=[]; for(let i=1;i<closes.length;i++){ let h=highs[i],l=lows[i],pc=closes[i-1]; tr.push(Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc))); let up=h-highs[i-1],down=lows[i-1]-l; pDM.push(up>down&&up>0?up:0); mDM.push(down>up&&down>0?down:0); } let atr=tr.slice(0,period).reduce((a,b)=>a+b,0)/period; let pDI=pDM.slice(0,period).reduce((a,b)=>a+b,0)/period; let mDI=mDM.slice(0,period).reduce((a,b)=>a+b,0)/period; for(let i=period;i<tr.length;i++){ atr=(atr*(period-1)+tr[i])/period; pDI=(pDI*(period-1)+pDM[i])/period; mDI=(mDI*(period-1)+mDM[i])/period; } let dx=Math.abs(pDI-mDI)/(pDI+mDI)*100; return Math.min(100,dx); }
 function calcMACD(closes){ if(closes.length<26) return {macd:0,signal:0,hist:0}; let ema12=calcEMA(closes,12),ema26=calcEMA(closes,26); let macd=ema12-ema26; let signal=calcEMA([...Array(8).fill(0),macd],9); return {macd,signal,hist:macd-signal}; }
 function calcStochRSI(closes,period=14,kPeriod=3,dPeriod=3){ let rsiArr=[]; for(let i=period;i<closes.length;i++) rsiArr.push(calcRSI(closes.slice(0,i+1))); if(rsiArr.length<kPeriod) return {k:50,d:50}; let stochK=[]; for(let i=kPeriod-1;i<rsiArr.length;i++){ let slice=rsiArr.slice(i-kPeriod+1,i+1); let min=Math.min(...slice),max=Math.max(...slice); stochK.push(max===min?50:((rsiArr[i]-min)/(max-min))*100); } let k=stochK[stochK.length-1]; let d=stochK.slice(-dPeriod).reduce((a,b)=>a+b,0)/dPeriod; return {k,d}; }
-function processPairData(k){ let closes=k.map(c=>parseFloat(c[4])); let highs=k.map(c=>parseFloat(c[2])); let lows=k.map(c=>parseFloat(c[3])); let volumes=k.map(c=>parseFloat(c[5])); let rsi=calcRSI(closes); let price=closes[closes.length-1],prev=closes[closes.length-2]; let dir=price>=prev?'UP':'DOWN'; let change=Math.abs((price-prev)/prev*100); let ema50=calcEMA(closes); let emaTrend=price>ema50?'UP':'DOWN'; let adx=calcADX(highs,lows,closes); return {rsi,dir,change,price,emaTrend,adx,closes,highs,lows,volumes}; }
+
+function processBTCFromCandles(candles) {
+  if (candles.length < 14) return null;
+  let closes = candles.map(c => c.close);
+  let highs = candles.map(c => c.high);
+  let lows = candles.map(c => c.low);
+  let volumes = candles.map(c => c.volume);
+  let rsi = calcRSI(closes);
+  let price = closes[closes.length-1], prev = closes[closes.length-2];
+  let dir = price >= prev ? 'UP' : 'DOWN';
+  let change = Math.abs((price-prev)/prev*100);
+  let ema50 = calcEMA(closes);
+  let emaTrend = price > ema50 ? 'UP' : 'DOWN';
+  let adx = calcADX(highs, lows, closes);
+  let momentum = rsi - (calcRSI(closes.slice(0,-1)) || 50);
+  return {rsi, dir, change, price, emaTrend, adx, closes, highs, lows, volumes, momentum};
+}
+
+function updateBTCFromLive() {
+  if (btcLiveCandles.length < 14) return;
+  let data = processBTCFromCandles(btcLiveCandles);
+  if (!data) return;
+  let multi = { rsi5m: btcMultiTF.rsi5m, rsi15m: btcMultiTF.rsi15m, 
+                ema5m: 0, ema15m: 0, macd: btcAdvanced, stoch: {k: btcAdvanced.stochK, d: btcAdvanced.stochD}, 
+                volTrend: btcAdvanced.volTrend };
+  let macd = calcMACD(data.closes);
+  let stoch = calcStochRSI(data.closes);
+  multi.macd = macd; multi.stoch = stoch;
+  btcAdvanced.macdHist = macd.hist; btcAdvanced.stochK = stoch.k; btcAdvanced.stochD = stoch.d;
+  updateBTCUI(data, multi);
+  if (signalLocked && currentConsensus) {
+    updateConsensusDigitLive();
+  }
+}
+
+function updateConsensusDigitLive() {
+  if (!btcData.rsi || !currentConsensus) return;
+  let scores = calcScores(btcData.rsi, btcData.momentum || 0, btcData.changePct/5);
+  // force digit set to match the locked consensus signal
+  let topDigit = predictDigits(scores, btcData.rsi, btcData.momentum || 0, currentConsensus.consensusSignal)[0];
+  let digitBox = document.getElementById('consensusDigitBox');
+  digitBox.style.display = 'flex';
+  digitBox.classList.toggle('highlight', currentConsensus.isConfident);
+  document.getElementById('consensusDigitNum').innerHTML = topDigit.n;
+  document.getElementById('consensusDigitReason').innerHTML = `${DIGITS[topDigit.n].name} | ${topDigit.isGreen?'GREEN':'RED'} | ${topDigit.isBig?'BIG':'SMALL'}${topDigit.isViolet?' ⚡':''}`;
+  lastTopDigit = topDigit.n;
+}
+
+function connectWebSocket() {
+  if (ws) { ws.close(); ws = null; }
+  ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@kline_1m');
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    const k = msg.k;
+    if (!k) return;
+    const close = parseFloat(k.c);
+    if (btcLiveCandles.length === 0) return;
+    const last = btcLiveCandles[btcLiveCandles.length-1];
+    if (last && last.t === k.t) {
+      last.close = close;
+      last.high = parseFloat(k.h);
+      last.low = parseFloat(k.l);
+      last.volume = parseFloat(k.v);
+    } else {
+      btcLiveCandles.push({
+        t: k.t, open: parseFloat(k.o), high: parseFloat(k.h),
+        low: parseFloat(k.l), close: close, volume: parseFloat(k.v)
+      });
+      if (btcLiveCandles.length > 30) btcLiveCandles.shift();
+    }
+    updateBTCFromLive();
+  };
+  ws.onerror = () => {};
+  ws.onclose = () => { setTimeout(connectWebSocket, 3000); };
+}
 
 async function fetchPair(sym,interval='1m',limit=30){ try{ let res=await fetch(`${BINANCE}/klines?symbol=${sym}&interval=${interval}&limit=${limit}`); if(!res.ok) throw new Error(); return await res.json(); }catch(e){ return null; } }
+
+async function fetchInitialBTCCandles() {
+  const k = await fetchPair('BTCUSDT', '1m', 30);
+  if (k) {
+    btcLiveCandles = k.map(c => ({
+      t: c[0], open: parseFloat(c[1]), high: parseFloat(c[2]),
+      low: parseFloat(c[3]), close: parseFloat(c[4]), volume: parseFloat(c[5])
+    }));
+    return true;
+  }
+  return false;
+}
+
+function processPairData(k){ let closes=k.map(c=>parseFloat(c[4])); let highs=k.map(c=>parseFloat(c[2])); let lows=k.map(c=>parseFloat(c[3])); let volumes=k.map(c=>parseFloat(c[5])); let rsi=calcRSI(closes); let price=closes[closes.length-1],prev=closes[closes.length-2]; let dir=price>=prev?'UP':'DOWN'; let change=Math.abs((price-prev)/prev*100); let ema50=calcEMA(closes); let emaTrend=price>ema50?'UP':'DOWN'; let adx=calcADX(highs,lows,closes); return {rsi,dir,change,price,emaTrend,adx,closes,highs,lows,volumes}; }
 
 async function fetchBTCMultiTF(){
   let k1m=await fetchPair('BTCUSDT','1m',60);
@@ -235,14 +374,38 @@ async function fetchBTCMultiTF(){
   return {data1m,rsi5m,rsi15m,ema5m,ema15m,macd,stoch,volTrend};
 }
 
+function calcScores(rsi, momentum, volatility) {
+  let green=0, red=0, big=0, small=0;
+  if (rsi < 40) green = (40 - rsi) * 2.5 + (momentum > 0 ? momentum * 4 : 0);
+  else if (rsi < 50) green = (50 - rsi) * 1.5 + (momentum > 0 ? momentum * 3 : 0);
+  else green = (momentum > 0.5 ? momentum * 2 : 0);
+  if (rsi > 60) red = (rsi - 60) * 2.5 + (momentum < 0 ? -momentum * 4 : 0);
+  else if (rsi > 50) red = (rsi - 50) * 1.5 + (momentum < 0 ? -momentum * 3 : 0);
+  else red = (momentum < -0.5 ? -momentum * 2 : 0);
+  if (rsi > 52) big = (rsi - 52) * 2 + (momentum > 0 ? momentum * 3 : (momentum < -1 ? momentum * 3 : 0));
+  else big = (momentum > 1 ? momentum * 2 : 0);
+  if (rsi < 48) small = (48 - rsi) * 2 + (momentum < 0 ? -momentum * 3 : (momentum > 1 ? -momentum * 3 : 0));
+  else small = (momentum < -1 ? -momentum * 2 : 0);
+  let volFactor = Math.min(5, volatility * 1.5);
+  if (momentum > 1) { green += volFactor * 0.5; big += volFactor * 0.5; }
+  else if (momentum < -1) { red += volFactor * 0.5; small += volFactor * 0.5; }
+  return {
+    GREEN: Math.min(100, Math.round(green)),
+    RED: Math.min(100, Math.round(red)),
+    BIG: Math.min(100, Math.round(big)),
+    SMALL: Math.min(100, Math.round(small))
+  };
+}
+function getWinner(s){ return Object.entries(s).reduce((a,b)=>b[1]>a[1]?b:a); }
 function updateBTCUI(data, multi){
-  let {rsi,dir,change,price,emaTrend,adx}=data;
-  let momentum=btcData.rsi?rsi-btcData.rsi:0;
-  data.momentum=momentum;
+  let {rsi,dir,change,price,emaTrend,adx,momentum} = data;
+  prevBtcRsi = rsi;
+  let scores = calcScores(rsi, momentum, change/5);
+  let winner = getWinner(scores);
   document.getElementById('rsiNeedle').style.left=rsi+'%';
   document.getElementById('rsiBigVal').innerHTML=rsi.toFixed(1);
   document.getElementById('rsiBigVal').style.color=rsi>60?'#4ade80':rsi<40?'#f87171':'#7dd3fc';
-  document.getElementById('rsiDirBadge').innerHTML=dir==='UP'?'▲ RISING':'▼ FALLING';
+  document.getElementById('rsiDirBadge').innerHTML=momentum>0.3?'▲ RISING':momentum<-0.3?'▼ FALLING':'● STEADY';
   document.getElementById('multiTfRow').innerHTML=`<div class="multi-tf-badge" style="color:${multi.rsi5m<40?'#f87171':multi.rsi5m>60?'#4ade80':'#94a3b8'};">5m RSI ${multi.rsi5m.toFixed(1)}</div><div class="multi-tf-badge" style="color:${multi.rsi15m<40?'#f87171':multi.rsi15m>60?'#4ade80':'#94a3b8'};">15m RSI ${multi.rsi15m.toFixed(1)}</div>`;
   document.getElementById('adxStatus').innerHTML=`ADX: ${adx.toFixed(1)} | EMA Trend: ${emaTrend==='UP'?'▲ UP':'▼ DOWN'}`;
   document.getElementById('adxStatus').style.color=adx>25?'#4ade80':adx>20?'#fbbf24':'#94a3b8';
@@ -256,8 +419,6 @@ function updateBTCUI(data, multi){
   btcMultiTF={rsi5m:multi.rsi5m,rsi15m:multi.rsi15m};
   btcTrend={adx,emaTrend};
   btcAdvanced={macdHist:macd.hist,stochK:stoch.k,stochD:stoch.d,volTrend:multi.volTrend};
-  let scores=calcScores(rsi,dir,change/5,momentum);
-  let winner=getWinner(scores);
   document.getElementById('sigEmoji').innerHTML={GREEN:'🟢',RED:'🔴',BIG:'🔵',SMALL:'🟣'}[winner[0]];
   document.getElementById('sigTxt').innerHTML=winner[0];
   document.getElementById('sigTxt').style.color={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[winner[0]];
@@ -267,49 +428,79 @@ function updateBTCUI(data, multi){
   document.getElementById('rNum').innerHTML=rating;
   document.getElementById('strFill').style.width=winner[1]+'%';
   document.getElementById('strInfo').innerHTML=`${winner[0]}: ${winner[1]}% | RSI:${rsi.toFixed(1)}`;
-  ['GREEN','RED','BIG','SMALL'].forEach(s=>{ document.getElementById(`sv_${s[0]}`).innerHTML=scores[s]; document.getElementById(`sbf_${s[0]}`).style.width=scores[s]+'%'; });
+  ['GREEN','RED','BIG','SMALL'].forEach(s=>{
+    document.getElementById(`sv_${s[0]}`).innerHTML=scores[s];
+    document.getElementById(`sbf_${s[0]}`).style.width=scores[s]+'%';
+  });
   document.getElementById('biasTxt').innerHTML={GREEN:'BULLISH ▲',RED:'BEARISH ▼',BIG:'HIGH MOM',SMALL:'LOW MOM'}[winner[0]];
   document.getElementById('biasBar').style.width=winner[1]+'%';
-  let digits=predictDigits(scores,rsi,momentum);
+  // BTC‑only predictions (not category‑forced) for reference
+  let digits = predictDigits(scores, rsi, momentum);
   renderDigits(digits.slice(0,2));
   highlightPredictedDigits(digits.slice(0,3));
   document.getElementById('assetPrice').innerHTML=price.toLocaleString(undefined,{minimumFractionDigits:2});
   document.getElementById('assetChange').innerHTML=`${dir==='UP'?'▲ +':'▼ -'}${change.toFixed(4)}%`;
-  btcData=data;
+  btcData = data;
 }
 
-function calcScores(rsi,dir,vol,momentum){ let green=0,red=0,big=0,small=0; const absM=Math.abs(momentum); if(dir==='UP') green=Math.min(95,22+rsi/100*70+(rsi>60?8:0)+absM*3); else green=Math.min(50,12+(50-rsi)/50*35); if(dir==='DOWN') red=Math.min(95,22+(100-rsi)/100*70+(rsi<40?8:0)+absM*3); else red=Math.min(50,12+(rsi-50)/50*35); big=Math.min(95,(rsi>52?22+(rsi-52)/48*70:20-(52-rsi)/52*15)+(dir==='UP'?absM*2:0)); small=Math.min(95,(rsi<48?22+(48-rsi)/48*70:20-(rsi-48)/52*15)+(dir==='DOWN'?absM*2:0)); let vb=Math.min(14,vol*20); if(dir==='UP'){green+=vb*0.6;big+=vb*0.4}else{red+=vb*0.6;small+=vb*0.4} if(momentum>1.5&&dir==='UP'){green+=5;big+=3} if(momentum<-1.5&&dir==='DOWN'){red+=5;small+=3} return {GREEN:Math.min(100,Math.round(green)),RED:Math.min(100,Math.round(red)),BIG:Math.min(100,Math.round(big)),SMALL:Math.min(100,Math.round(small))}; }
-function getWinner(s){ return Object.entries(s).reduce((a,b)=>b[1]>a[1]?b:a); }
-
-function predictDigits(scores, rsi, momentum){
-  // Enhanced digit prediction using all indicators
-  let emaTrend=btcTrend.emaTrend;
-  let adx=btcTrend.adx;
-  let macdHist=btcAdvanced.macdHist;
-  let stochK=btcAdvanced.stochK;
-  // Determine ideal digit zone from RSI
-  let ideal;
-  if(rsi<20) ideal=0; else if(rsi<30) ideal=1; else if(rsi<40) ideal=2; else if(rsi<45) ideal=3; else if(rsi<52) ideal=4; else if(rsi<58) ideal=5; else if(rsi<65) ideal=6; else if(rsi<72) ideal=7; else if(rsi<82) ideal=8; else ideal=9;
-  // Adjust ideal based on trend and indicators
-  if(emaTrend==='UP' && adx>20) ideal = Math.min(9, ideal+1);
-  if(emaTrend==='DOWN' && adx>20) ideal = Math.max(0, ideal-1);
-  if(macdHist > 0.5) ideal = Math.min(9, ideal+1);
-  if(macdHist < -0.5) ideal = Math.max(0, ideal-1);
-  if(stochK < 20) ideal = Math.min(9, ideal+1); // oversold bounce
-  if(stochK > 80) ideal = Math.max(0, ideal-1); // overbought drop
-  let arr=[];
-  for(let n=0;n<=9;n++){
-    let d=DIGITS[n];
-    let base=0;
-    if(d.green) base+=scores.GREEN*0.5; else base+=scores.RED*0.5;
-    if(d.big) base+=scores.BIG*0.5; else base+=scores.SMALL*0.5;
-    let dist=Math.abs(n-ideal);
-    let zoneBonus=Math.max(0,(10-dist*2.5));
-    let violetBonus=d.violet&&(rsi<25||rsi>75||(rsi>45&&rsi<55))?5:0;
-    let momBonus=(momentum>1.5&&d.big?3:0)+(momentum<-1.5&&!d.big?3:0);
-    arr.push({n,score:Math.min(99,Math.round(base+zoneBonus+violetBonus+momBonus)),isGreen:d.green,isBig:d.big,isViolet:d.violet});
+// ========== NEW PREDICTION LOGIC WITH FORCED CATEGORY ==========
+function predictDigits(scores, rsi, momentum, forcedSignal = null) {
+  // Determine allowed digit set based on forced category (or free if null)
+  let allowed = [];
+  if (forcedSignal === 'GREEN') {
+    allowed = [1,3,5,7,9];
+  } else if (forcedSignal === 'RED') {
+    allowed = [0,2,4,6,8];
+  } else if (forcedSignal === 'BIG') {
+    allowed = [5,6,7,8,9];
+  } else if (forcedSignal === 'SMALL') {
+    allowed = [0,1,2,3,4];
+  } else {
+    // free mode – use BTC's own regime from scores (for the BTC signal card)
+    let greenStr = scores.GREEN > 60;
+    let redStr = scores.RED > 60;
+    let bigStr = scores.BIG > 60;
+    let smallStr = scores.SMALL > 60;
+    if (greenStr) {
+      allowed = [1,3,5,7,9];
+      if (bigStr) allowed = allowed.filter(d => d >= 5);
+      else if (smallStr) allowed = allowed.filter(d => d <= 4);
+    } else if (redStr) {
+      allowed = [0,2,4,6,8];
+      if (bigStr) allowed = allowed.filter(d => d >= 5);
+      else if (smallStr) allowed = allowed.filter(d => d <= 4);
+    } else {
+      allowed = [0,1,2,3,4,5,6,7,8,9];
+    }
   }
-  return arr.sort((a,b)=>b.score-a.score);
+
+  // Compute an "ideal" digit from market data
+  let ideal = Math.round((rsi / 100) * 9);
+  ideal += momentum * 2;
+  ideal += btcAdvanced.macdHist * 1.5;
+  if (btcAdvanced.stochK > 80) ideal -= 1;
+  if (btcAdvanced.stochK < 20) ideal += 1;
+  ideal = Math.max(0, Math.min(9, Math.round(ideal)));
+
+  // Score each allowed digit
+  let scored = allowed.map(n => {
+    let d = DIGITS[n];
+    let score = 0;
+    let dist = Math.abs(n - ideal);
+    score += Math.max(0, 20 - dist * 4); // up to 20 points for proximity
+    // momentum direction bonus
+    if (momentum > 0.5 && d.green) score += 6;
+    if (momentum < -0.5 && !d.green) score += 6;
+    // violet bonus
+    if (d.violet && (rsi < 25 || rsi > 75 || (rsi > 45 && rsi < 55))) score += 8;
+    // anti‑repeat penalty
+    if (n === lastTopDigit) score -= 5;
+    return { n, score: Math.max(0, Math.round(score)), isGreen: d.green, isBig: d.big, isViolet: d.violet };
+  });
+
+  scored.sort((a,b) => b.score - a.score);
+  if (scored.length > 0 && !forcedSignal) lastTopDigit = scored[0].n; // only free mode updates the global lastTopDigit
+  return scored;
 }
 
 function renderDigits(top2){
@@ -327,13 +518,13 @@ function highlightPredictedDigits(topDigits){
   topDigits.forEach(d=>{ document.querySelectorAll('.digit-cell').forEach(c=>{ let ball=c.querySelector('.digit-ball'); if(ball&&parseInt(ball.textContent)===d.n) c.classList.add('predicted-digit'); }); });
 }
 
+// ========== CONSENSUS & LOCK ==========
 function buildConsensus(){
   let valid=Object.entries(pairResults).filter(([,r])=>r&&!r.error);
   if(!valid.length) return null;
   let votes={GREEN:0,RED:0,BIG:0,SMALL:0}, totalW=0, totalRsi=0;
   valid.forEach(([sym,r])=>{
     let w=PAIR_WEIGHTS[sym]||1;
-    // Apply strict filter based on BTC trend and indicators
     if(btcTrend.emaTrend==='DOWN' && r.signal==='GREEN') w*=0.3;
     if(btcTrend.emaTrend==='UP' && r.signal==='RED') w*=0.3;
     if(btcTrend.adx<18) w*=0.5;
@@ -366,19 +557,16 @@ function updateConsensusUI(c,isFinal){
   document.getElementById('confidenceMeter').style.display='flex';
   document.getElementById('confidenceBarFill').style.width=c.agreement+'%';
   document.getElementById('confidencePct').innerHTML=c.agreement.toFixed(0)+'%';
-  if(isFinal && c.avgRsi){
-    let scores=calcScores(c.avgRsi,btcData.dir,0.5,btcData.momentum||0);
-    let topDigit=predictDigits(scores,c.avgRsi,btcData.momentum||0)[0];
+  if(isFinal){
     let digitBox=document.getElementById('consensusDigitBox');
     digitBox.style.display='flex';
-    digitBox.classList.toggle('highlight',c.isConfident);
-    document.getElementById('consensusDigitNum').innerHTML=topDigit.n;
-    document.getElementById('consensusDigitReason').innerHTML=`${DIGITS[topDigit.n].name} | ${topDigit.isGreen?'GREEN':'RED'} | ${topDigit.isBig?'BIG':'SMALL'}${topDigit.isViolet?' ⚡':''}`;
+    updateConsensusDigitLive();
   }
 }
 function lockSignal(c){
   if(signalLocked) return;
   signalLocked=true;
+  currentConsensus = c;
   document.getElementById('ps1').className='phase-step done-step';
   document.getElementById('ps2').className='phase-step done-step';
   document.getElementById('ps3').className='phase-step done-step';
@@ -388,20 +576,63 @@ function lockSignal(c){
   let td=document.getElementById('tradeDecision'); td.style.display='block';
   if(c.isConfident){
     td.className='trade-decision do-trade'; document.getElementById('tdMain').innerHTML=`✅ TRADE: ${c.consensusSignal}`;
-    document.getElementById('tdReason').innerHTML=`${c.total} pairs • ${c.agreement.toFixed(0)}% agreement • All filters passed. Digit: ${document.getElementById('consensusDigitNum').innerText}`;
+    document.getElementById('tdReason').innerHTML=`${c.total} pairs • ${c.agreement.toFixed(0)}% agreement • All filters passed. Digit: LIVE`;
   }else{
     td.className='trade-decision no-trade'; document.getElementById('tdMain').innerHTML='❌ SKIP';
     document.getElementById('tdReason').innerHTML=`Filters not aligned (ADX/MACD/Volume). Wait for better setup.`;
   }
-  let scores=calcScores(btcData.rsi,btcData.dir,btcData.changePct/5,btcData.momentum||0);
-  let digits=predictDigits(scores,btcData.rsi,btcData.momentum||0);
+  document.getElementById('copyFinalBtn').style.display = 'inline-flex';
+  // add to history with the locked digit (first call)
+  let scores=calcScores(btcData.rsi,btcData.momentum||0,btcData.changePct/5);
+  let digits=predictDigits(scores,btcData.rsi,btcData.momentum||0, c.consensusSignal);
   addToHistory(c.consensusSignal,digits.slice(0,2),c.agreement);
   if(c.isConfident&&soundUnlocked){ playAirHorn(c.consensusSignal); flashScreen(c.consensusSignal); }
 }
+
+function copyFinalSignal(){
+  if(!currentConsensus) return;
+  let sig = currentConsensus.consensusSignal;
+  let digitEl = document.getElementById('consensusDigitNum');
+  let digit = digitEl ? digitEl.innerText : '--';
+  let conf = Math.round(currentConsensus.agreement) + '%';
+  let text = `Trade :-${sig}\nNumber:- ${digit}\nConfidence:-${conf}`;
+  const copyBtn = document.getElementById('copyFinalBtn');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.innerHTML = '✅ COPIED!';
+      setTimeout(() => { copyBtn.innerHTML = '📋 COPY FINAL'; }, 1500);
+    }).catch(() => fallbackCopy(text, copyBtn));
+  } else fallbackCopy(text, copyBtn);
+}
+function fallbackCopy(text, btn) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+  document.body.appendChild(textarea); textarea.select();
+  try { document.execCommand('copy'); btn.innerHTML = '✅ COPIED!'; } catch (err) { btn.innerHTML = '❌ FAILED'; }
+  document.body.removeChild(textarea);
+  setTimeout(() => { btn.innerHTML = '📋 COPY FINAL'; }, 1500);
+}
+
+async function fullReset(){
+  if(isFetching) return;
+  isFetching=true; signalLocked=false; pairResults={}; pairsData={}; prevRsiMap={}; prevBtcRsi=50; fetchDoneCount=0; lastTopDigit = -1;
+  document.getElementById('consensusDigitBox').style.display='none';
+  document.getElementById('tradeDecision').style.display='none';
+  document.getElementById('signalLockBanner').classList.remove('visible');
+  document.getElementById('phaseBadge').className='phase-badge fetching'; document.getElementById('phaseBadge').innerHTML='⚡ FETCHING';
+  document.getElementById('fpBar').style.width='0%'; document.getElementById('fpCount').innerHTML='0/0';
+  document.getElementById('predWait').style.display='block'; document.getElementById('predContent').style.display='none';
+  document.getElementById('copyFinalBtn').style.display='none'; currentConsensus=null;
+  const ok = await fetchInitialBTCCandles();
+  if (ok) connectWebSocket();
+  let multi = await fetchBTCMultiTF();
+  if (multi && multi.data1m) updateBTCUI(multi.data1m, multi);
+  await fetchAllPairs();
+  isFetching=false;
+}
+
 async function fetchAllPairs(){
-  let total=ALL_PAIRS.length; fetchDoneCount=0; signalLocked=false; pairResults={}; pairsData={};
-  let multi=await fetchBTCMultiTF();
-  if(multi && multi.data1m) updateBTCUI(multi.data1m, multi);
+  let total=ALL_PAIRS.length; fetchDoneCount=0;
   renderPairsGrid();
   for(let i=0;i<total;i+=BATCH_SIZE){
     let batch=ALL_PAIRS.slice(i,i+BATCH_SIZE);
@@ -409,11 +640,18 @@ async function fetchAllPairs(){
       try{
         let k=await fetchPair(sym,'1m',30);
         if(k){
-          let d=processPairData(k); let scores=calcScores(d.rsi,d.dir,d.change/5,(prevRsiMap[sym]?d.rsi-prevRsiMap[sym]:0));
-          pairResults[sym]={rsi:d.rsi,signal:getWinner(scores)[0]};
-          pairsData[sym]={loaded:true,error:false,rsi:d.rsi,signal:getWinner(scores)[0]}; prevRsiMap[sym]=d.rsi;
-        }else{ pairResults[sym]=null; pairsData[sym]={loaded:true,error:true}; }
-      }catch(e){ pairResults[sym]=null; pairsData[sym]={loaded:true,error:true}; }
+          let d=processPairData(k);
+          let momentum = prevRsiMap[sym] ? d.rsi - prevRsiMap[sym] : 0;
+          let scores = calcScores(d.rsi, momentum, d.change/5);
+          pairResults[sym]={rsi:d.rsi, signal:getWinner(scores)[0]};
+          pairsData[sym]={loaded:true, error:false, rsi:d.rsi, signal:getWinner(scores)[0]};
+          prevRsiMap[sym]=d.rsi;
+        }else{
+          pairResults[sym]=null; pairsData[sym]={loaded:true, error:true};
+        }
+      }catch(e){
+        pairResults[sym]=null; pairsData[sym]={loaded:true, error:true};
+      }
       fetchDoneCount++;
       document.getElementById('fpCount').innerHTML=`${fetchDoneCount}/${total}`;
       document.getElementById('fpBar').style.width=(fetchDoneCount/total*100)+'%';
@@ -425,6 +663,7 @@ async function fetchAllPairs(){
   let finalC=buildConsensus(); if(finalC) lockSignal(finalC);
   incApiCount();
 }
+
 function renderPairsGrid(){
   let grid=document.getElementById('pairsGrid');
   let entries=Object.entries(pairsData);
@@ -461,7 +700,6 @@ function renderHistory(){
 function saveHistory(){ localStorage.setItem('ved_v9_history',JSON.stringify(signalHistory)); }
 function loadHistory(){ try{ let s=localStorage.getItem('ved_v9_history'); if(s) signalHistory=JSON.parse(s); }catch(e){} renderHistory(); }
 function incApiCount(){ let key=new Date().toDateString(); let c=0; try{ let d=JSON.parse(localStorage.getItem('ved_api_count')||'{}'); if(d.date===key) c=d.count; }catch(e){} c++; localStorage.setItem('ved_api_count',JSON.stringify({date:key,count:c})); document.getElementById('apiCount').innerHTML=c; document.getElementById('todayDate').innerHTML=key; }
-function fullReset(){ if(isFetching) return; isFetching=true; signalLocked=false; pairResults={}; pairsData={}; fetchDoneCount=0; document.getElementById('consensusDigitBox').style.display='none'; document.getElementById('tradeDecision').style.display='none'; document.getElementById('signalLockBanner').classList.remove('visible'); document.getElementById('phaseBadge').className='phase-badge fetching'; document.getElementById('phaseBadge').innerHTML='⚡ FETCHING'; document.getElementById('fpBar').style.width='0%'; document.getElementById('fpCount').innerHTML='0/0'; document.getElementById('predWait').style.display='block'; document.getElementById('predContent').style.display='none'; fetchAllPairs().finally(()=>{ isFetching=false; }); }
 function unlockSound(){ if(soundUnlocked) return; audioCtx=new(window.AudioContext||window.webkitAudioContext)(); audioCtx.resume().then(()=>{ soundUnlocked=true; document.getElementById('soundBanner').classList.add('unlocked'); document.getElementById('sbTxt').innerHTML='🔊 SOUND UNLOCKED'; document.getElementById('sbBtn').innerHTML='✅ ACTIVE'; });}
 function playAirHorn(color){ if(!soundUnlocked||!audioCtx) return; audioCtx.resume(); let freqs=(color==='GREEN'||color==='BIG')?[233,311,466]:(color==='SMALL'?[196,261,392]:[174,220,349]); let now=audioCtx.currentTime; freqs.forEach((f,i)=>{ let o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type='sawtooth'; o.frequency.value=f; let v=i===1?0.4:0.25; g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(v,now+0.04); g.gain.setValueAtTime(v,now+0.65); g.gain.exponentialRampToValueAtTime(0.001,now+1.1); o.start(now); o.stop(now+1.1); });}
 function flashScreen(color){ let el=document.getElementById('hornFlash'); el.className='flash-'+(color==='GREEN'||color==='BIG'?'green':color==='SMALL'?'violet':'red'); el.classList.add('visible'); setTimeout(()=>el.classList.remove('visible'),500);}
@@ -479,11 +717,16 @@ setInterval(()=>{
   document.getElementById('timerNum').innerHTML=rem;
   document.getElementById('timerFill').style.width=(rem/CYCLE*100)+'%';
   if(rem===CYCLE && !isFetching) fullReset();
-  if(signalLocked){ document.getElementById('timerNum').className='timer-num locked-phase'; document.getElementById('timerSub').innerHTML='🔒 SIGNAL LOCKED'; }
+  if(signalLocked){ document.getElementById('timerNum').className='timer-num locked-phase'; document.getElementById('timerSub').innerHTML='🔒 SIGNAL LOCKED • DIGIT LIVE'; }
   else if(isFetching){ document.getElementById('timerNum').className='timer-num fetch-phase'; document.getElementById('timerSub').innerHTML=`⚡ FETCHING`; }
   else{ document.getElementById('timerNum').className='timer-num'; document.getElementById('timerSub').innerHTML='🔄 READY'; }
 },1000);
-initGrids(); loadHistory(); setTimeout(()=>fullReset(),800);
+initGrids(); loadHistory();
+(async () => {
+  await fetchInitialBTCCandles();
+  connectWebSocket();
+  setTimeout(()=>fullReset(),800);
+})();
 </script>
 </body>
 </html>
