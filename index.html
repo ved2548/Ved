@@ -3,730 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VED v9 — Live Digit Engine</title>
+    <title>VED v9 – LIVE RSI | Digit Mapping Fix</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;800;900&display=swap');
-        :root {
-            --g: #16a34a; --r: #dc2626; --y: #ca8a04; --c: #0891b2; --p: #7c3aed; --o: #ea580c;
-            --bg: #060b14; --card: #0d1a2d; --border: rgba(255,255,255,0.06);
-            --txt: #e2e8f0; --txt2: #94a3b8;
-        }
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
-        body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);pointer-events:none;z-index:9999}
-        #hornFlash{position:fixed;inset:0;z-index:99999;pointer-events:none;opacity:0;transition:opacity 0.08s}
-        #hornFlash.flash-green{background:radial-gradient(ellipse at center,rgba(22,163,74,0.55) 0%,rgba(22,163,74,0.12) 60%,transparent 100%)}
-        #hornFlash.flash-red{background:radial-gradient(ellipse at center,rgba(220,38,38,0.55) 0%,rgba(220,38,38,0.12) 60%,transparent 100%)}
-        #hornFlash.flash-violet{background:radial-gradient(ellipse at center,rgba(124,58,237,0.55) 0%,rgba(124,58,237,0.12) 60%,transparent 100%)}
-        #hornFlash.visible{opacity:1}
-        #signalLockBanner{display:none;align-items:center;justify-content:center;gap:14px;padding:10px 20px;background:linear-gradient(90deg,rgba(22,163,74,0.35),rgba(6,182,212,0.35));border-bottom:2px solid rgba(22,163,74,0.7);animation:lockPulse 1.5s infinite}
-        #signalLockBanner.visible{display:flex}
-        @keyframes lockPulse{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,0.35)}50%{box-shadow:0 0 0 8px rgba(22,163,74,0)}}
-        .lock-txt{font-family:'Space Mono',monospace;font-size:13px;font-weight:900;letter-spacing:2px;color:#4ade80}
-        .lock-sub{font-family:'Space Mono',monospace;font-size:10px;color:#7dd3fc}
-        #soundBanner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:linear-gradient(90deg,rgba(234,88,12,0.3),rgba(124,58,237,0.3));border-bottom:1px solid rgba(234,88,12,0.5);cursor:pointer}
-        #soundBanner.unlocked{background:linear-gradient(90deg,rgba(22,163,74,0.25),rgba(6,182,212,0.25))}
-        .sb-txt{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#fbbf24}
-        #soundBanner.unlocked .sb-txt{color:#4ade80}
-        .sb-btn{font-family:'Space Mono',monospace;font-size:11px;font-weight:900;padding:6px 16px;border-radius:20px;border:2px solid #ea580c;background:rgba(234,88,12,0.2);color:#fb923c;cursor:pointer}
-        #soundBanner.unlocked .sb-btn{border-color:#16a34a;background:rgba(22,163,74,0.2);color:#4ade80}
-        header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,0.7);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;flex-wrap:wrap}
-        .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,#06b6d4,#a855f7,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .badge{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.4);color:#4ade80;font-size:10px;padding:4px 10px;border-radius:20px;letter-spacing:1.5px;font-family:'Space Mono',monospace}
-        .dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1.5s infinite}
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-        .hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-        .clock-wrap{font-family:'Space Mono',monospace;font-size:13px;color:#7dd3fc;background:rgba(6,182,212,0.08);padding:5px 12px;border-radius:8px;border:1px solid rgba(6,182,212,0.2)}
-        .horn-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(234,88,12,0.2);border:1px solid rgba(234,88,12,0.5);color:#fb923c;font-size:10px;padding:3px 10px;border-radius:20px;letter-spacing:1px;font-family:'Space Mono',monospace}
-        .horn-tag.sounding{animation:hornBlink 0.3s ease-in-out 6 alternate}
-        @keyframes hornBlink{from{background:rgba(234,88,12,0.1)}to{background:rgba(234,88,12,0.9);color:#fff}}
-        .phase-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;transition:all 0.3s}
-        .phase-badge.fetching{background:rgba(234,88,12,0.2);border:1px solid rgba(234,88,12,0.5);color:#fb923c}
-        .phase-badge.locked{background:rgba(22,163,74,0.2);border:1px solid rgba(22,163,74,0.5);color:#4ade80}
-        .wrap{padding:14px 16px;max-width:1600px;margin:0 auto;transition:transform 0.2s}
-        .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
-        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-        .grid-full{grid-column:1/-1}
-        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden}
-        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)}
-        .sec-title{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--txt2);text-transform:uppercase;margin-bottom:12px;font-family:'Space Mono',monospace}
-        .consensus-mega{padding:22px;border-radius:20px;border:2px solid;position:relative;overflow:hidden;transition:all 0.4s;margin-bottom:14px}
-        .consensus-mega::before{content:'';position:absolute;inset:0;opacity:0.05;background:currentColor}
+        body{font-family:'Inter',sans-serif;background:#060b14;color:#e2e8f0;min-height:100vh}
+        :root{--g:#16a34a;--r:#dc2626;--y:#ca8a04;--c:#0891b2;--p:#7c3aed}
+        .card{background:#0d1a2d;border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px;margin-bottom:14px}
+        .sec-title{font-size:11px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase;margin-bottom:12px;font-family:'Space Mono',monospace}
+        .consensus-mega{padding:22px;border-radius:20px;border:2px solid;margin-bottom:14px}
         .consensus-mega.c-green{border-color:#16a34a;color:#16a34a}
         .consensus-mega.c-red{border-color:#dc2626;color:#dc2626}
         .consensus-mega.c-big{border-color:#0891b2;color:#0891b2}
         .consensus-mega.c-small{border-color:#7c3aed;color:#7c3aed}
-        .consensus-mega.c-wait{border-color:#ca8a04;color:#ca8a04}
-        .consensus-mega.active-trade{animation:tradePulse 1s infinite}
-        @keyframes tradePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.18)}50%{box-shadow:0 0 0 22px rgba(255,255,255,0)}}
-        .con-top{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
-        .con-icon{font-size:56px}
-        .con-main{flex:1;min-width:200px}
-        .con-action{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;letter-spacing:2px}
-        .con-sub{font-size:13px;font-weight:700;margin-top:4px}
-        .con-reason{font-size:12px;margin-top:8px;line-height:1.7;color:var(--txt2)}
-        .con-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-        .con-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid currentColor;font-family:'Space Mono',monospace}
-        .con-stats{display:flex;flex-direction:column;gap:8px;align-items:flex-end;min-width:170px}
-        .con-rsi-big{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;line-height:1}
-        .vote-row{display:flex;align-items:center;gap:8px;font-size:10px;width:100%}
-        .vote-bar-bg{flex:1;height:7px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden}
-        .vote-bar-fill{height:100%;border-radius:4px;transition:width 0.6s}
-        .vote-count{font-family:'Space Mono',monospace;font-size:12px;font-weight:900;width:30px;text-align:right}
-        .consensus-digit{display:flex;flex-direction:column;align-items:center;background:rgba(0,0,0,0.55);border-radius:24px;padding:8px 18px;margin-left:12px;border:2px solid rgba(251,191,36,0.6);min-width:100px}
-        .consensus-digit.highlight{border-color:#fbbf24;box-shadow:0 0 20px rgba(251,191,36,0.4);animation:digitHighlight 0.8s infinite}
-        @keyframes digitHighlight{0%,100%{box-shadow:0 0 15px rgba(251,191,36,0.3)}50%{box-shadow:0 0 30px rgba(251,191,36,0.7)}}
-        .consensus-digit-label{font-size:9px;font-weight:900;letter-spacing:2px;color:#fbbf24}
-        .consensus-digit-number{font-family:'Orbitron',sans-serif;font-size:44px;font-weight:900;color:#fbbf24}
-        .consensus-digit-reason{font-size:8px;color:var(--txt2);text-align:center}
-        .indicators-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
-        .ind-badge{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px;text-align:center;font-size:10px;font-weight:700}
-        .ind-value{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;margin-top:2px}
-        .timer-num{font-family:'Orbitron',sans-serif;font-size:72px;font-weight:900;text-align:center;color:#7dd3fc;line-height:1}
-        .timer-num.locked-phase{color:#4ade80;animation:lockedGlow 1s infinite}
-        .timer-num.fetch-phase{color:#fb923c;animation:fetchGlow 1s infinite}
-        @keyframes lockedGlow{0%,100%{text-shadow:0 0 20px rgba(74,222,128,0.4)}50%{text-shadow:0 0 44px rgba(74,222,128,0.95)}}
-        @keyframes fetchGlow{0%,100%{text-shadow:0 0 20px rgba(251,146,60,0.4)}50%{text-shadow:0 0 44px rgba(251,146,60,0.85)}}
-        .timer-sub{text-align:center;font-size:10px;letter-spacing:2px;color:var(--txt2);margin-top:5px;font-family:'Space Mono',monospace}
-        .dual-pred-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-        .pred-card{border-radius:14px;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.1);text-align:center;position:relative}
-        .pred-card.top-pick{border-color:rgba(251,191,36,0.6);box-shadow:0 0 16px rgba(251,191,36,0.2)}
-        .pred-rank-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:900;padding:2px 10px;border-radius:10px}
-        .pred-circle{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;margin:10px auto 6px;color:#fff}
-        .pred-pct{font-family:'Space Mono',monospace;font-size:18px;font-weight:900}
-        .digit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-        .digit-cell{padding:8px 5px;border-radius:10px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)}
-        .digit-cell.predicted-digit{border-color:rgba(251,191,36,0.7);box-shadow:0 0 12px rgba(251,191,36,0.25);background:rgba(251,191,36,0.1)}
-        .digit-ball{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;margin:0 auto 4px;font-family:'Orbitron',sans-serif;color:#fff}
-        .digit-name{font-size:8px;font-weight:800;text-transform:uppercase}
-        .digit-emoji{font-size:12px;margin-top:2px}
-        .hist-scroll{max-height:260px;overflow-y:auto;padding-right:4px}
-        .hist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:6px;border-radius:10px;border-left:3px solid;background:rgba(255,255,255,0.03);animation:slideIn 0.3s}
-        @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1}}
-        .hist-balls{display:flex;gap:4px;flex-shrink:0}
-        .hist-ball{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;font-family:'Orbitron',sans-serif;color:#fff}
-        .hist-ball.rank2{width:26px;height:26px;font-size:11px;opacity:0.7}
-        .hist-signal{font-size:16px;font-weight:900;font-family:'Orbitron',sans-serif}
-        .hist-sub{font-size:10px;color:var(--txt2);margin-top:2px}
-        .hist-time{margin-left:auto;font-size:11px;color:var(--txt2);font-family:'Space Mono',monospace;white-space:nowrap}
-        .zoom-controls{position:fixed;bottom:20px;right:20px;z-index:1000;display:flex;gap:10px;background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);padding:6px 12px;border-radius:40px;border:1px solid rgba(255,255,255,0.15)}
-        .zoom-btn{width:36px;height:36px;border-radius:30px;background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.5);color:#7dd3fc;font-size:24px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
-        .zoom-level{font-family:'Space Mono',monospace;font-size:12px;padding:0 10px;display:flex;align-items:center;color:#c084fc}
-        @media(max-width:900px){.grid3,.grid2{grid-template-columns:1fr}.consensus-digit{margin-left:0;margin-top:8px}.timer-num{font-size:48px}}
-
-        .copy-final-btn {
-            background: rgba(251,191,36,0.15);
-            border: 2px solid #fbbf24;
-            color: #fbbf24;
-            font-family: 'Space Mono', monospace;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 8px 18px;
-            border-radius: 20px;
-            cursor: pointer;
-            margin-top: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            backdrop-filter: blur(4px);
-        }
-        .copy-final-btn:hover {
-            background: rgba(251,191,36,0.3);
-            box-shadow: 0 0 15px rgba(251,191,36,0.4);
-        }
-        .live-dot {
-            width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;
-            animation: livePulse 1s infinite; display: inline-block; margin-right: 4px;
-        }
-        @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-        .pairs-scroll { max-height: 420px; overflow-y: auto; }
-        .pairs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; }
-        .pair-cell { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 7px; text-align: center; transition: all 0.2s; }
-        .pair-cell.loading { opacity: 0.4; }
-        .pair-cell.error { border-color: #dc2626; background: rgba(220,38,38,0.1); }
-        .pair-sym { font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace; }
-        .pair-rsi { font-size: 14px; font-weight: 900; font-family: 'Orbitron', sans-serif; margin: 3px 0; }
-        .pair-sig { display: inline-block; font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 1px; }
-        .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .filter-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); color: var(--txt2); font-family: 'Space Mono', monospace; font-size: 10px; padding: 5px 10px; border-radius: 14px; cursor: pointer; transition: all 0.2s; }
-        .filter-btn.active { background: rgba(6,182,212,0.15); border-color: #06b6d4; color: #7dd3fc; }
-        .fetch-progress { margin-bottom: 14px; }
-        .fp-top { display: flex; justify-content: space-between; }
-        .fp-title { font-size: 11px; font-weight: 700; color: var(--txt2); }
-        .fp-count { font-size: 11px; font-weight: 700; color: #7dd3fc; }
-        .fp-bar-bg { background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; margin: 6px 0; }
-        .fp-bar-fill { height: 100%; border-radius: 3px; background: #06b6d4; transition: width 0.3s; }
+        .timer-num{font-family:'Orbitron',sans-serif;font-size:72px;font-weight:900;text-align:center;color:#7dd3fc}
+        .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .rsi-big-val{font-size:48px;font-weight:900;font-family:'Orbitron',sans-serif;text-align:center}
+        .pairs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+        .pair-cell{background:rgba(255,255,255,0.03);border-radius:8px;padding:6px;text-align:center}
+        .filter-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:#94a3b8;font-size:10px;padding:4px 10px;border-radius:14px;cursor:pointer}
+        .filter-btn.active{background:rgba(6,182,212,0.15);border-color:#06b6d4;color:#7dd3fc}
+        .pattern-ref{background:#00000033;border-radius:12px;padding:10px;margin-top:8px;font-size:11px}
+        .history-bs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+        .bs-badge{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:30px;font-weight:900;font-size:18px}
+        .bs-badge.B{background:#0891b2;color:#fff}
+        .bs-badge.S{background:#7c3aed;color:#fff}
+        .vote-bar-bg{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:4px}
+        .vote-bar-fill{height:100%;border-radius:4px}
+        .digit-allowed{display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+        .digit-allowed span{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:30px;font-weight:900;font-size:20px;background:#00000066;border:1px solid currentColor}
+        @media(max-width:900px){.grid3,.grid2{grid-template-columns:1fr}}
+        header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#000000b3;border-bottom:1px solid rgba(255,255,255,0.06);flex-wrap:wrap}
+        .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,#06b6d4,#a855f7,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .badge{background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.4);color:#4ade80;padding:4px 10px;border-radius:20px;font-size:10px}
+        .phase-badge.fetching{background:rgba(234,88,12,0.2);border:1px solid #ea580c;color:#fb923c;padding:3px 10px;border-radius:20px}
+        .phase-badge.locked{background:rgba(22,163,74,0.2);border:1px solid #16a34a;color:#4ade80}
+        .horn-tag{background:rgba(234,88,12,0.2);border:1px solid rgba(234,88,12,0.5);color:#fb923c;padding:3px 10px;border-radius:20px;font-size:10px;cursor:pointer}
+        .clock-wrap{font-family:'Space Mono',monospace;font-size:13px;color:#7dd3fc;background:rgba(6,182,212,0.08);padding:5px 12px;border-radius:8px;border:1px solid rgba(6,182,212,0.2)}
     </style>
 </head>
 <body>
-<div id="hornFlash"></div>
-<div id="signalLockBanner"><div><div class="lock-txt">🔒 SIGNAL LOCKED — ALL PAIRS ANALYZED</div><div class="lock-sub" id="lockBannerSub">Final consensus ready • Valid for current cycle</div></div></div>
-<div id="soundBanner" onclick="unlockSound()"><div class="sb-txt" id="sbTxt">🔇 SOUND LOCKED — CLICK TO UNLOCK HORN ALERT 🔊</div><button class="sb-btn" id="sbBtn">🔊 TAP TO UNLOCK</button></div>
+<div id="hornFlash" style="position:fixed;inset:0;pointer-events:none;opacity:0;transition:0.08s;z-index:99999"></div>
 <header>
-    <div class="logo">VED v9</div>
-    <div class="hdr-right">
-        <div class="badge"><div class="dot"></div><span id="pairCountBadge">0</span> PAIRS</div>
-        <span class="phase-badge fetching" id="phaseBadge">⚡ FETCHING</span>
-        <span class="horn-tag" id="hornTag">📢 HORN READY</span>
+    <div class="logo">VED v9 • RSI ENGINE</div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
         <div class="clock-wrap" id="clock">IST --:--:--</div>
+        <span class="badge"><span id="pairCount">0</span> PAIRS</span>
+        <span class="phase-badge fetching" id="phaseBadge">⚡ FETCHING</span>
+        <span class="horn-tag" id="hornTag">📢 HORN (tap to unlock)</span>
     </div>
 </header>
-<div class="wrap" id="mainWrap">
-<div class="consensus-mega c-wait" id="consensusBox">
-  <div class="con-top">
-    <div class="con-icon" id="conIcon">⏳</div>
-    <div class="con-main">
-      <div class="con-label">🌐 MULTI‑PAIR CONSENSUS — ALL USDT PAIRS</div>
-      <div class="con-action" id="conAction" style="color:#ca8a04;">FETCHING ALL PAIRS...</div>
-      <div class="con-sub" id="conSub" style="color:#ca8a04;">0 pairs analyzed • Fetching from Binance API...</div>
-      <div class="con-reason" id="conReason">Sabhi pairs ka RSI calculate ho raha hai...</div>
-      <div class="con-pills" id="conPills"><div class="con-pill" style="color:#ca8a04;"><div class="dot"></div>LOADING</div></div>
-      <div class="confidence-meter" id="confidenceMeter" style="display:none;">
-        <span class="confidence-label">CONFIDENCE</span>
-        <div class="confidence-bar-bg"><div class="confidence-bar-fill" id="confidenceBarFill" style="width:0%;background:#ca8a04;"></div></div>
-        <span class="confidence-pct" id="confidencePct">0%</span>
-      </div>
-      <div class="trade-decision wait" id="tradeDecision" style="display:none;"><div class="td-main" id="tdMain">⏳ WAIT</div><div class="td-reason" id="tdReason">Signal analyze ho raha hai...</div></div>
-      <button class="copy-final-btn" id="copyFinalBtn" style="display:none;" onclick="copyFinalSignal()">📋 COPY FINAL</button>
+<div class="wrap" style="padding:14px;max-width:1400px;margin:auto">
+    <!-- consensus box -->
+    <div class="consensus-mega c-wait" id="consensusBox">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center">
+            <div><div style="font-size:28px;font-weight:900" id="conAction">FETCHING...</div><div id="conSub">0 pairs analyzed</div><div id="conReason" style="font-size:12px;color:#94a3b8">Loading RSI data...</div></div>
+            <div><div class="sec-title" style="margin:0">AVG RSI</div><div style="font-size:36px;font-weight:900" id="conAvgRsi">--.-</div></div>
+            <div><div class="sec-title">CONFIDENCE</div><div id="conAgree" style="font-size:24px;font-weight:900">0%</div></div>
+            <div id="consensusDigitBox" style="display:none;background:#00000066;padding:8px 16px;border-radius:32px;text-align:center"><div class="sec-title">🎯 PREDICTED DIGIT</div><div style="font-size:48px;font-weight:900;color:#fbbf24" id="consensusDigitNum">--</div></div>
+        </div>
+        <div style="display:flex;gap:20px;margin-top:16px;flex-wrap:wrap">
+            <div style="flex:1"><div class="vote-row" style="display:flex;align-items:center;gap:8px;margin-bottom:5px">🟢 GREEN <div class="vote-bar-bg"><div class="vote-bar-fill" id="vbG" style="width:0%;background:#16a34a"></div></div><span id="vcG">0</span></div>
+            <div class="vote-row" style="display:flex;align-items:center;gap:8px;margin-bottom:5px">🔴 RED <div class="vote-bar-bg"><div class="vote-bar-fill" id="vbR" style="width:0%;background:#dc2626"></div></div><span id="vcR">0</span></div>
+            <div class="vote-row" style="display:flex;align-items:center;gap:8px;margin-bottom:5px">🔵 BIG <div class="vote-bar-bg"><div class="vote-bar-fill" id="vbB" style="width:0%;background:#0891b2"></div></div><span id="vcB">0</span></div>
+            <div class="vote-row" style="display:flex;align-items:center;gap:8px;margin-bottom:5px">🟣 SMALL <div class="vote-bar-bg"><div class="vote-bar-fill" id="vbS" style="width:0%;background:#7c3aed"></div></div><span id="vcS">0</span></div></div>
+            <div style="background:rgba(0,0,0,0.4);border-radius:16px;padding:8px 16px"><div class="sec-title">📢 FINAL TRADE DECISION</div><div id="tradeDecision" style="font-size:20px;font-weight:900">WAITING</div><div id="tradeReason" style="font-size:11px;color:#94a3b8">RSI consensus will decide</div></div>
+        </div>
     </div>
-    <div class="con-stats">
-      <div class="con-rsi-lbl">AVG RSI</div>
-      <div class="con-rsi-big" id="conAvgRsi" style="color:#7dd3fc;">--.-</div>
-      <div style="width:100%;display:flex;flex-direction:column;gap:5px;margin-top:4px;">
-        <div class="vote-row" style="color:#16a34a;">🟢<div class="vote-bar-bg"><div class="vote-bar-fill" id="vbG" style="width:0%;background:#16a34a;"></div></div><span class="vote-count" id="vcG">0</span></div>
-        <div class="vote-row" style="color:#dc2626;">🔴<div class="vote-bar-bg"><div class="vote-bar-fill" id="vbR" style="width:0%;background:#dc2626;"></div></div><span class="vote-count" id="vcR">0</span></div>
-        <div class="vote-row" style="color:#0891b2;">🔵<div class="vote-bar-bg"><div class="vote-bar-fill" id="vbB" style="width:0%;background:#0891b2;"></div></div><span class="vote-count" id="vcB">0</span></div>
-        <div class="vote-row" style="color:#7c3aed;">🟣<div class="vote-bar-bg"><div class="vote-bar-fill" id="vbS" style="width:0%;background:#7c3aed;"></div></div><span class="vote-count" id="vcS">0</span></div>
-      </div>
+
+    <div class="grid2">
+        <div class="card">
+            <div class="sec-title">📊 BTC/USDT – LIVE RSI (Primary)</div>
+            <div class="rsi-big-val" id="rsiBigVal">--.-</div>
+            <div id="rsiDir" style="text-align:center;font-size:13px">⚡ MOMENTUM: --</div>
+            <div id="btcMulti" style="display:flex;gap:10px;justify-content:center;margin:8px 0"></div>
+            <div class="sec-title" style="margin-top:8px">🔧 TECHNICALS</div>
+            <div id="btcIndicators" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+        </div>
+        <div class="card">
+            <div class="sec-title">⏱ 30‑SEC CYCLE (Live RSI refresh)</div>
+            <div class="timer-num" id="timerNum">30</div>
+            <div class="timer-sub" style="text-align:center" id="timerSub">Next cycle in ...</div>
+            <div style="margin-top:12px"><div class="sec-title">🎲 ALLOWED DIGITS FOR CURRENT SIGNAL</div><div id="allowedDigitsPanel" class="digit-allowed">—</div>
+            <div class="sec-title" style="margin-top:12px">🔢 PREDICTED TOP DIGIT (RSI‑based)</div><div id="predictedDigitDisplay" style="font-size:36px;font-weight:900;text-align:center;color:#fbbf24">--</div></div>
+        </div>
     </div>
-    <div class="consensus-digit" id="consensusDigitBox" style="display:none;">
-      <div class="consensus-digit-label"><span class="live-dot"></span> LIVE STRONGEST DIGIT</div>
-      <div class="consensus-digit-number" id="consensusDigitNum">--</div>
-      <div class="consensus-digit-reason" id="consensusDigitReason">calc...</div>
+
+    <div class="card">
+        <div class="sec-title">🌐 ALL USDT PAIRS – LIVE RSI SIGNALS</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="filter-btn active" onclick="filterPairs('all',this)">ALL</button>
+            <button class="filter-btn" onclick="filterPairs('GREEN',this)">🟢 GREEN (RSI<40)</button>
+            <button class="filter-btn" onclick="filterPairs('RED',this)">🔴 RED (RSI>60)</button>
+            <button class="filter-btn" onclick="filterPairs('BIG',this)">🔵 BIG (RSI>52 & momentum)</button>
+            <button class="filter-btn" onclick="filterPairs('SMALL',this)">🟣 SMALL (RSI<48 & momentum)</button>
+        </div>
+        <div class="pairs-grid" id="pairsGrid">Loading pairs...</div>
     </div>
-  </div>
-</div>
 
-<div class="fetch-progress" id="fetchProgress"><div class="fp-top"><div class="fp-title" id="fpTitle">⚡ PHASE 1: FETCHING ALL PAIRS — BINANCE API</div><div class="fp-count" id="fpCount">0 / 0</div></div><div class="fp-bar-bg"><div class="fp-bar-fill" id="fpBar" style="width:0%"></div></div><div style="margin-top:6px;font-size:10px;color:var(--txt2);font-family:var(--font-mono);" id="fpStatus">Initializing new cycle...</div></div>
-
-<div class="card" style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div class="sec-title" style="margin-bottom:0;">🌐 ALL PAIRS — LIVE RSI SIGNALS (A to Z)</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);" id="loadedCount">Loading...</div></div><div class="filter-bar"><button class="filter-btn active" onclick="filterPairs('all',this)">ALL</button><button class="filter-btn" style="color:#16a34a;" onclick="filterPairs('GREEN',this)">🟢 GREEN</button><button class="filter-btn" style="color:#dc2626;" onclick="filterPairs('RED',this)">🔴 RED</button><button class="filter-btn" style="color:#0891b2;" onclick="filterPairs('BIG',this)">🔵 BIG</button><button class="filter-btn" style="color:#7c3aed;" onclick="filterPairs('SMALL',this)">🟣 SMALL</button><button class="filter-btn" style="color:#ea580c;" onclick="filterPairs('dragon',this)">🐉 DRAGON</button><button class="filter-btn" style="color:#ef4444;" onclick="filterPairs('crash',this)">💥 CRASH</button><button class="filter-btn" style="color:#64748b;" onclick="filterPairs('skip',this)">❌ SKIP</button></div><div class="pairs-scroll"><div class="pairs-grid" id="pairsGrid"><div style="text-align:center;color:var(--txt2);padding:20px;font-size:12px;grid-column:1/-1;">Loading pairs...</div></div></div></div>
-
-<div class="grid3">
-<div class="card"><div class="sec-title">📊 BTC/USDT — RSI GAUGE</div><div class="rsi-bar-outer"><div class="rsi-needle" id="rsiNeedle" style="left:50%"></div></div><div class="rsi-zone-labels"><span style="color:#3b82f6">0</span><span>17</span><span>22</span><span style="color:#64748b">50</span><span>68</span><span>83</span><span style="color:#dc2626">100</span></div><div class="rsi-big-val" id="rsiBigVal" style="color:#7dd3fc;">--.-</div><div class="rsi-dir-badge" id="rsiDirBadge" style="color:#64748b;">● WAITING</div>
-<div class="multi-tf-row" id="multiTfRow"></div>
-<div class="indicators-grid" id="indicatorsGrid"></div>
+    <div class="grid2">
+        <div class="card">
+            <div class="sec-title">🎮 GAME PATTERN REFERENCE (for info only – does NOT affect trade)</div>
+            <div id="patternDisplayArea">
+                <div style="background:#00000033;border-radius:12px;padding:10px">
+                    <div><span class="sec-title" style="margin:0">📜 CONSENSUS B/S HISTORY (B=Big/Green, S=Small/Red)</span></div>
+                    <div id="bsHistoryContainer" class="history-bs">—</div>
+                    <div><span class="sec-title">🧩 DETECTED PATTERN (just visual)</span></div>
+                    <div id="detectedPatternName" style="font-weight:900;color:#fbbf24">—</div>
+                    <div id="patternSeqVisual" style="font-family:monospace;font-size:11px"></div>
+                    <div class="pattern-ref">💡 Pattern rules: Single→BSBS, Double→BBSS, Triple→BBBSSS, etc. These are game mapping only. Real signal = RSI consensus.</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="sec-title">📜 SIGNAL HISTORY (Consensus RSI signals)</div>
+            <div id="historyList" style="max-height:220px;overflow-y:auto"></div>
+            <button onclick="clearHistory()" style="margin-top:8px;background:none;border:1px solid #dc2626;color:#dc2626;padding:4px 12px;border-radius:20px;cursor:pointer">🗑 CLEAR</button>
+        </div>
+    </div>
 </div>
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div class="sec-title" style="margin-bottom:0">⚡ BTC SIGNAL</div><button class="copy-btn" id="copyBtn" onclick="copySignal()"><span>📋 COPY</span></button></div><div style="padding:10px 0;text-align:center;"><div class="signal-emoji" id="sigEmoji">⌛</div><div class="signal-txt" id="sigTxt" style="color:#ca8a04;">WAIT</div><div class="rating-circle" id="ratingCircle" style="color:#ca8a04;display:none;"><span class="r-num" id="rNum">0</span><span style="font-size:9px;opacity:0.5;">/10</span></div><div class="grade-badge" id="gradeBadge" style="display:none;color:#ca8a04;">—</div></div><div class="str-bar"><div class="str-fill" id="strFill" style="width:0%;background:#ca8a04;"></div></div><div style="text-align:center;font-size:11px;color:var(--txt2);margin-top:6px;" id="strInfo">Waiting...</div>
-<div class="adx-status" id="adxStatus" style="color:var(--txt2);">ADX: -- | EMA: --</div>
-<div class="score-grid"><div class="score-box" id="sb_G" style="color:#16a34a;"><div style="font-size:14px;">🟢</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_G" style="background:#16a34a;width:0%"></div></div><div class="sc-val" id="sv_G">—</div><div class="sc-label">GREEN</div></div><div class="score-box" id="sb_R" style="color:#dc2626;"><div style="font-size:14px;">🔴</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_R" style="background:#dc2626;width:0%"></div></div><div class="sc-val" id="sv_R">—</div><div class="sc-label">RED</div></div><div class="score-box" id="sb_B" style="color:#0891b2;"><div style="font-size:14px;">🔵</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_B" style="background:#0891b2;width:0%"></div></div><div class="sc-val" id="sv_B">—</div><div class="sc-label">BIG</div></div><div class="score-box" id="sb_S" style="color:#7c3aed;"><div style="font-size:14px;">🟣</div><div class="sc-bar-bg"><div class="sc-bar-fill" id="sbf_S" style="background:#7c3aed;width:0%"></div></div><div class="sc-val" id="sv_S">—</div><div class="sc-label">SMALL</div></div></div></div>
-<div class="card"><div class="sec-title">⏱ 30-SEC CYCLE</div><div class="timer-num" id="timerNum">30</div><div class="timer-sub" id="timerSub">WAITING FOR CYCLE</div><div class="timer-progress"><div class="timer-fill" id="timerFill" style="width:100%"></div></div><div class="cycle-phase-bar" id="cyclePhaseBar"><div class="phase-step pending-step" id="ps1">🔄 RESET</div><div class="phase-arrow">→</div><div class="phase-step pending-step" id="ps2">⚡ FETCH</div><div class="phase-arrow">→</div><div class="phase-step pending-step" id="ps3">🔒 LOCK</div></div><div style="margin-top:14px;"><div class="sec-title">🔢 TOP 2 PREDICTED DIGITS</div><div id="predWait" style="text-align:center;font-size:12px;color:var(--txt2);padding:12px 0;">Waiting...</div><div id="predContent" style="display:none;"><div class="dual-pred-wrap" id="dualPredWrap"></div><div id="violetWrap" style="display:none;margin-top:8px;text-align:center;"><div class="violet-badge">⚡ VIOLET BONUS DIGIT DETECTED</div></div></div></div></div></div>
-<div class="grid2"><div class="card"><div class="sec-title">🐉 RSI PATTERN — BTC</div><div class="pattern-main" id="patternMain"><div class="pat-name" id="patName" style="color:#64748b;">⏳ WAITING</div><div class="pat-desc" id="patDesc" style="color:var(--txt2);">RSI calculate ho raha hai...</div><div class="pat-tags" id="patTags"></div></div><div style="margin-top:10px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);"><div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--txt2);margin-bottom:6px;">WHY TRADE / WHY SKIP?</div><div id="whyText" style="font-size:12px;line-height:1.8;color:var(--txt2);">Signal ka wait karo...</div></div><div style="margin-top:10px;"><div class="sec-title">📊 MARKET BIAS</div><div class="bias-big" id="biasTxt" style="color:#ca8a04;">WAIT</div><div class="bias-bar-bg"><div class="bias-fill" id="biasBar" style="width:0%;background:#ca8a04;"></div></div></div><div class="asset-box" style="margin-top:10px;"><div style="font-size:13px;font-weight:800;" id="assetName">BTC/USDT</div><div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:900;margin-top:4px;color:#7dd3fc;" id="assetPrice">-- -- --</div><div style="font-size:12px;font-weight:700;margin-top:3px;" id="assetChange" style="color:#64748b;">Loading...</div></div></div>
-<div class="card"><div class="sec-title">📖 RSI PATTERN GUIDE</div><table class="pat-ref-table"><thead><tr><th>PATTERN</th><th>RSI</th><th>TRADE?</th><th>SIGNAL</th></tr></thead><tbody id="patRefBody"></tbody></table></div></div>
-<div class="grid3"><div class="card grid-full"><div class="sec-title">📈 TREND + CONSENSUS FLOW</div><svg class="trend-chart" viewBox="0 0 400 80"><line x1="0" y1="20" x2="400" y2="20" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><line x1="0" y1="40" x2="400" y2="40" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><line x1="0" y1="60" x2="400" y2="60" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><path id="trendBig" stroke="#16a34a" fill="none" stroke-width="2"/><path id="trendSmall" stroke="#dc2626" fill="none" stroke-width="2"/><path id="trendRsi" stroke="#0891b2" fill="none" stroke-width="1.5" stroke-dasharray="3,2"/><path id="trendConsensus" stroke="#f97316" fill="none" stroke-width="2" stroke-dasharray="6,3"/><text x="5" y="14" fill="#16a34a" font-size="8" font-weight="bold">BIG</text><text x="5" y="78" fill="#dc2626" font-size="8" font-weight="bold">SMALL</text><text x="290" y="14" fill="#0891b2" font-size="8" font-weight="bold">BTC RSI</text><text x="270" y="78" fill="#f97316" font-size="8" font-weight="bold">CONSENSUS</text></svg></div></div>
-<div class="grid2"><div class="card"><div class="sec-title">🔌 API HEALTH</div><div id="apiStatus" style="font-size:24px;font-weight:900;margin-top:6px;color:#ca8a04;">WAITING</div><div id="apiLastCall" style="font-size:11px;color:var(--txt2);margin-top:4px;">First call pending...</div><div style="margin-top:10px;" class="badge"><div class="dot"></div>BINANCE PUBLIC</div><div class="api-count" id="apiCount">0</div><div style="text-align:center;font-size:10px;color:var(--txt2);">API calls today</div><div style="text-align:center;font-size:11px;color:var(--txt2);margin-top:4px;" id="todayDate">—</div></div>
-<div class="card"><div class="sec-title">🔢 DIGIT REFERENCE — BDG WIN GO</div><div class="digit-grid" id="digitGrid"></div></div></div>
-<div class="card" style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div class="sec-title" style="margin-bottom:0;">📜 SIGNAL HISTORY (Consensus + BTC)</div><button class="clear-btn" onclick="clearHistory()">🗑 CLEAR</button></div><div class="hist-scroll" id="histList"><div style="text-align:center;color:var(--txt2);padding:20px;font-size:12px;">No signals yet...</div></div></div>
-</div>
-<div class="zoom-controls"><button class="zoom-btn" id="zoomOutBtn">−</button><div class="zoom-level" id="zoomLevel">100%</div><button class="zoom-btn" id="zoomInBtn">+</button></div>
 
 <script>
-// ========== VED v9 – LIVE DIGIT PREDICTION (Category‑Locked Mapping) ==========
+// ==================== LIVE RSI ENGINE – CORRECT DIGIT MAPPING ====================
 const BINANCE = 'https://api.binance.com/api/v3';
+const ALL_PAIRS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','DOTUSDT','LINKUSDT','MATICUSDT','SHIBUSDT','TRXUSDT','AVAXUSDT','ATOMUSDT','UNIUSDT','LTCUSDT','ETCUSDT','FILUSDT','APTUSDT','OPUSDT','NEARUSDT','AAVEUSDT'];
 const CYCLE = 30;
-const BATCH_SIZE = 12;
-const PAIR_WEIGHTS = { BTCUSDT:3, ETHUSDT:2, BNBUSDT:1.5, SOLUSDT:1.5, XRPUSDT:1.3, ADAUSDT:1.2, DOGEUSDT:1.2, DOTUSDT:1.1, LINKUSDT:1.1, MATICUSDT:1.1 };
-const ALL_PAIRS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','DOTUSDT','LINKUSDT','MATICUSDT','SHIBUSDT','TRXUSDT','AVAXUSDT','ATOMUSDT','UNIUSDT','LTCUSDT','ETCUSDT','FILUSDT','APTUSDT','ARBUSDT','OPUSDT','NEARUSDT','AAVEUSDT','MKRUSDT','RNDRUSDT','INJUSDT','FETUSDT','GRTUSDT','SANDUSDT','MANAUSDT'];
-const DIGITS = {0:{n:0,name:"Dump",emoji:"💀",color:"#dc2626",green:false,big:false,violet:true},1:{n:1,name:"Small Start",emoji:"🌱",color:"#16a34a",green:true,big:false,violet:false},2:{n:2,name:"Stable",emoji:"➡️",color:"#dc2626",green:false,big:false,violet:false},3:{n:3,name:"Active",emoji:"⚡",color:"#16a34a",green:true,big:false,violet:false},4:{n:4,name:"Red Press",emoji:"🔴",color:"#dc2626",green:false,big:false,violet:false},5:{n:5,name:"Confusion",emoji:"🌀",color:"#7c3aed",green:true,big:true,violet:true},6:{n:6,name:"Big Stable",emoji:"💪",color:"#dc2626",green:false,big:true,violet:false},7:{n:7,name:"Running",emoji:"🏃",color:"#16a34a",green:true,big:true,violet:false},8:{n:8,name:"Heavy",emoji:"🏋️",color:"#dc2626",green:false,big:true,violet:false},9:{n:9,name:"Extreme",emoji:"🚀",color:"#16a34a",green:true,big:true,violet:false}};
-function getDigitBadge(n){ let d=DIGITS[n]; let primary=d.violet?'#7c3aed':d.green?'#16a34a':'#dc2626'; return {...d,primary}; }
 
-let pairResults={}, pairsData={}, prevRsiMap={};
-let soundUnlocked=false, audioCtx=null, currentFilter='all';
-let fetchDoneCount=0, signalLocked=false, isFetching=false;
-let btcData={rsi:50,price:0,dir:'UP',changePct:0,momentum:0};
-let btcMultiTF={rsi5m:50,rsi15m:50};
-let btcTrend={adx:0,emaTrend:'neutral'};
-let btcAdvanced={macdHist:0,stochK:50,stochD:50,volTrend:'neutral'};
-let signalHistory=[];
-let prevBtcRsi = 50;
+// digit sets per signal
+const DIGIT_SETS = {
+    GREEN: [1,3,5,7,9],
+    RED: [0,2,4,6,8],
+    BIG: [5,6,7,8,9],
+    SMALL: [0,1,2,3,4]
+};
+
+let pairResults = {};
+let pairsData = {};
+let prevRsiMap = {};
+let btcLiveData = { rsi: 50, price: 0, changePct: 0, momentum: 0 };
+let signalHistory = [];
+let bsHistory = [];
+let isFetching = false;
+let signalLocked = false;
 let currentConsensus = null;
-let btcLiveCandles = [];
-let ws = null;
-let lastTopDigit = -1;
+let currentFilter = 'all';
+let soundUnlocked = false;
+let audioCtx = null;
 
-let zoom=1;
-document.getElementById('zoomInBtn').onclick=()=>{ zoom=Math.min(1.6,zoom+0.1); setZoom(); };
-document.getElementById('zoomOutBtn').onclick=()=>{ zoom=Math.max(0.6,zoom-0.1); setZoom(); };
-function setZoom(){ document.getElementById('mainWrap').style.transform=`scale(${zoom})`; document.getElementById('mainWrap').style.transformOrigin='top center'; document.getElementById('zoomLevel').innerText=Math.round(zoom*100)+'%'; }
-setZoom();
-
-function calcRSI(closes, p=14){ if(closes.length<p+1) return 50; let g=0,l=0; for(let i=1;i<=p;i++){ let d=closes[i]-closes[i-1]; if(d>0)g+=d; else l+=Math.abs(d); } let ag=g/p,al=l/p; for(let i=p+1;i<closes.length;i++){ let d=closes[i]-closes[i-1]; ag=(ag*(p-1)+(d>0?d:0))/p; al=(al*(p-1)+(d<0?Math.abs(d):0))/p; } if(al===0) return 100; return parseFloat((100-(100/(1+ag/al))).toFixed(2)); }
-function calcEMA(data,period=50){ if(data.length<period) return data[data.length-1]; let k=2/(period+1); let ema=data.slice(0,period).reduce((a,b)=>a+b,0)/period; for(let i=period;i<data.length;i++) ema=(data[i]-ema)*k+ema; return ema; }
-function calcADX(highs,lows,closes,period=14){ if(closes.length<period+1) return 0; let tr=[],pDM=[],mDM=[]; for(let i=1;i<closes.length;i++){ let h=highs[i],l=lows[i],pc=closes[i-1]; tr.push(Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc))); let up=h-highs[i-1],down=lows[i-1]-l; pDM.push(up>down&&up>0?up:0); mDM.push(down>up&&down>0?down:0); } let atr=tr.slice(0,period).reduce((a,b)=>a+b,0)/period; let pDI=pDM.slice(0,period).reduce((a,b)=>a+b,0)/period; let mDI=mDM.slice(0,period).reduce((a,b)=>a+b,0)/period; for(let i=period;i<tr.length;i++){ atr=(atr*(period-1)+tr[i])/period; pDI=(pDI*(period-1)+pDM[i])/period; mDI=(mDI*(period-1)+mDM[i])/period; } let dx=Math.abs(pDI-mDI)/(pDI+mDI)*100; return Math.min(100,dx); }
-function calcMACD(closes){ if(closes.length<26) return {macd:0,signal:0,hist:0}; let ema12=calcEMA(closes,12),ema26=calcEMA(closes,26); let macd=ema12-ema26; let signal=calcEMA([...Array(8).fill(0),macd],9); return {macd,signal,hist:macd-signal}; }
-function calcStochRSI(closes,period=14,kPeriod=3,dPeriod=3){ let rsiArr=[]; for(let i=period;i<closes.length;i++) rsiArr.push(calcRSI(closes.slice(0,i+1))); if(rsiArr.length<kPeriod) return {k:50,d:50}; let stochK=[]; for(let i=kPeriod-1;i<rsiArr.length;i++){ let slice=rsiArr.slice(i-kPeriod+1,i+1); let min=Math.min(...slice),max=Math.max(...slice); stochK.push(max===min?50:((rsiArr[i]-min)/(max-min))*100); } let k=stochK[stochK.length-1]; let d=stochK.slice(-dPeriod).reduce((a,b)=>a+b,0)/dPeriod; return {k,d}; }
-
-function processBTCFromCandles(candles) {
-  if (candles.length < 14) return null;
-  let closes = candles.map(c => c.close);
-  let highs = candles.map(c => c.high);
-  let lows = candles.map(c => c.low);
-  let volumes = candles.map(c => c.volume);
-  let rsi = calcRSI(closes);
-  let price = closes[closes.length-1], prev = closes[closes.length-2];
-  let dir = price >= prev ? 'UP' : 'DOWN';
-  let change = Math.abs((price-prev)/prev*100);
-  let ema50 = calcEMA(closes);
-  let emaTrend = price > ema50 ? 'UP' : 'DOWN';
-  let adx = calcADX(highs, lows, closes);
-  let momentum = rsi - (calcRSI(closes.slice(0,-1)) || 50);
-  return {rsi, dir, change, price, emaTrend, adx, closes, highs, lows, volumes, momentum};
-}
-
-function updateBTCFromLive() {
-  if (btcLiveCandles.length < 14) return;
-  let data = processBTCFromCandles(btcLiveCandles);
-  if (!data) return;
-  let multi = { rsi5m: btcMultiTF.rsi5m, rsi15m: btcMultiTF.rsi15m, 
-                ema5m: 0, ema15m: 0, macd: btcAdvanced, stoch: {k: btcAdvanced.stochK, d: btcAdvanced.stochD}, 
-                volTrend: btcAdvanced.volTrend };
-  let macd = calcMACD(data.closes);
-  let stoch = calcStochRSI(data.closes);
-  multi.macd = macd; multi.stoch = stoch;
-  btcAdvanced.macdHist = macd.hist; btcAdvanced.stochK = stoch.k; btcAdvanced.stochD = stoch.d;
-  updateBTCUI(data, multi);
-  if (signalLocked && currentConsensus) {
-    updateConsensusDigitLive();
-  }
-}
-
-function updateConsensusDigitLive() {
-  if (!btcData.rsi || !currentConsensus) return;
-  let scores = calcScores(btcData.rsi, btcData.momentum || 0, btcData.changePct/5);
-  // force digit set to match the locked consensus signal
-  let topDigit = predictDigits(scores, btcData.rsi, btcData.momentum || 0, currentConsensus.consensusSignal)[0];
-  let digitBox = document.getElementById('consensusDigitBox');
-  digitBox.style.display = 'flex';
-  digitBox.classList.toggle('highlight', currentConsensus.isConfident);
-  document.getElementById('consensusDigitNum').innerHTML = topDigit.n;
-  document.getElementById('consensusDigitReason').innerHTML = `${DIGITS[topDigit.n].name} | ${topDigit.isGreen?'GREEN':'RED'} | ${topDigit.isBig?'BIG':'SMALL'}${topDigit.isViolet?' ⚡':''}`;
-  lastTopDigit = topDigit.n;
-}
-
-function connectWebSocket() {
-  if (ws) { ws.close(); ws = null; }
-  ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@kline_1m');
-  ws.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    const k = msg.k;
-    if (!k) return;
-    const close = parseFloat(k.c);
-    if (btcLiveCandles.length === 0) return;
-    const last = btcLiveCandles[btcLiveCandles.length-1];
-    if (last && last.t === k.t) {
-      last.close = close;
-      last.high = parseFloat(k.h);
-      last.low = parseFloat(k.l);
-      last.volume = parseFloat(k.v);
-    } else {
-      btcLiveCandles.push({
-        t: k.t, open: parseFloat(k.o), high: parseFloat(k.h),
-        low: parseFloat(k.l), close: close, volume: parseFloat(k.v)
-      });
-      if (btcLiveCandles.length > 30) btcLiveCandles.shift();
+// ------------------- RSI & HELPERS -------------------
+function calcRSI(closes, period=14) {
+    if(closes.length < period+1) return 50;
+    let gains=0, losses=0;
+    for(let i=1;i<=period;i++) {
+        let diff = closes[i] - closes[i-1];
+        if(diff>=0) gains+=diff; else losses-=diff;
     }
-    updateBTCFromLive();
-  };
-  ws.onerror = () => {};
-  ws.onclose = () => { setTimeout(connectWebSocket, 3000); };
-}
-
-async function fetchPair(sym,interval='1m',limit=30){ try{ let res=await fetch(`${BINANCE}/klines?symbol=${sym}&interval=${interval}&limit=${limit}`); if(!res.ok) throw new Error(); return await res.json(); }catch(e){ return null; } }
-
-async function fetchInitialBTCCandles() {
-  const k = await fetchPair('BTCUSDT', '1m', 30);
-  if (k) {
-    btcLiveCandles = k.map(c => ({
-      t: c[0], open: parseFloat(c[1]), high: parseFloat(c[2]),
-      low: parseFloat(c[3]), close: parseFloat(c[4]), volume: parseFloat(c[5])
-    }));
-    return true;
-  }
-  return false;
-}
-
-function processPairData(k){ let closes=k.map(c=>parseFloat(c[4])); let highs=k.map(c=>parseFloat(c[2])); let lows=k.map(c=>parseFloat(c[3])); let volumes=k.map(c=>parseFloat(c[5])); let rsi=calcRSI(closes); let price=closes[closes.length-1],prev=closes[closes.length-2]; let dir=price>=prev?'UP':'DOWN'; let change=Math.abs((price-prev)/prev*100); let ema50=calcEMA(closes); let emaTrend=price>ema50?'UP':'DOWN'; let adx=calcADX(highs,lows,closes); return {rsi,dir,change,price,emaTrend,adx,closes,highs,lows,volumes}; }
-
-async function fetchBTCMultiTF(){
-  let k1m=await fetchPair('BTCUSDT','1m',60);
-  let k5m=await fetchPair('BTCUSDT','5m',30);
-  let k15m=await fetchPair('BTCUSDT','15m',30);
-  if(!k1m) return null;
-  let data1m=processPairData(k1m);
-  let rsi5m=k5m?calcRSI(k5m.map(c=>parseFloat(c[4]))):50;
-  let rsi15m=k15m?calcRSI(k15m.map(c=>parseFloat(c[4]))):50;
-  let ema5m=k5m?calcEMA(k5m.map(c=>parseFloat(c[4]))):data1m.price;
-  let ema15m=k15m?calcEMA(k15m.map(c=>parseFloat(c[4]))):data1m.price;
-  let macd=calcMACD(data1m.closes);
-  let stoch=calcStochRSI(data1m.closes);
-  let volTrend='neutral'; if(data1m.volumes.length>5){ let avgStart=data1m.volumes.slice(0,5).reduce((a,b)=>a+b,0)/5; let avgEnd=data1m.volumes.slice(-5).reduce((a,b)=>a+b,0)/5; volTrend=avgEnd>avgStart*1.1?'up':avgEnd<avgStart*0.9?'down':'neutral'; }
-  return {data1m,rsi5m,rsi15m,ema5m,ema15m,macd,stoch,volTrend};
+    let avgGain = gains/period, avgLoss = losses/period;
+    for(let i=period+1;i<closes.length;i++) {
+        let diff = closes[i]-closes[i-1];
+        avgGain = (avgGain*(period-1) + (diff>0?diff:0))/period;
+        avgLoss = (avgLoss*(period-1) + (diff<0?-diff:0))/period;
+    }
+    if(avgLoss===0) return 100;
+    let rs = avgGain/avgLoss;
+    return parseFloat((100 - 100/(1+rs)).toFixed(2));
 }
 
 function calcScores(rsi, momentum, volatility) {
-  let green=0, red=0, big=0, small=0;
-  if (rsi < 40) green = (40 - rsi) * 2.5 + (momentum > 0 ? momentum * 4 : 0);
-  else if (rsi < 50) green = (50 - rsi) * 1.5 + (momentum > 0 ? momentum * 3 : 0);
-  else green = (momentum > 0.5 ? momentum * 2 : 0);
-  if (rsi > 60) red = (rsi - 60) * 2.5 + (momentum < 0 ? -momentum * 4 : 0);
-  else if (rsi > 50) red = (rsi - 50) * 1.5 + (momentum < 0 ? -momentum * 3 : 0);
-  else red = (momentum < -0.5 ? -momentum * 2 : 0);
-  if (rsi > 52) big = (rsi - 52) * 2 + (momentum > 0 ? momentum * 3 : (momentum < -1 ? momentum * 3 : 0));
-  else big = (momentum > 1 ? momentum * 2 : 0);
-  if (rsi < 48) small = (48 - rsi) * 2 + (momentum < 0 ? -momentum * 3 : (momentum > 1 ? -momentum * 3 : 0));
-  else small = (momentum < -1 ? -momentum * 2 : 0);
-  let volFactor = Math.min(5, volatility * 1.5);
-  if (momentum > 1) { green += volFactor * 0.5; big += volFactor * 0.5; }
-  else if (momentum < -1) { red += volFactor * 0.5; small += volFactor * 0.5; }
-  return {
-    GREEN: Math.min(100, Math.round(green)),
-    RED: Math.min(100, Math.round(red)),
-    BIG: Math.min(100, Math.round(big)),
-    SMALL: Math.min(100, Math.round(small))
-  };
-}
-function getWinner(s){ return Object.entries(s).reduce((a,b)=>b[1]>a[1]?b:a); }
-function updateBTCUI(data, multi){
-  let {rsi,dir,change,price,emaTrend,adx,momentum} = data;
-  prevBtcRsi = rsi;
-  let scores = calcScores(rsi, momentum, change/5);
-  let winner = getWinner(scores);
-  document.getElementById('rsiNeedle').style.left=rsi+'%';
-  document.getElementById('rsiBigVal').innerHTML=rsi.toFixed(1);
-  document.getElementById('rsiBigVal').style.color=rsi>60?'#4ade80':rsi<40?'#f87171':'#7dd3fc';
-  document.getElementById('rsiDirBadge').innerHTML=momentum>0.3?'▲ RISING':momentum<-0.3?'▼ FALLING':'● STEADY';
-  document.getElementById('multiTfRow').innerHTML=`<div class="multi-tf-badge" style="color:${multi.rsi5m<40?'#f87171':multi.rsi5m>60?'#4ade80':'#94a3b8'};">5m RSI ${multi.rsi5m.toFixed(1)}</div><div class="multi-tf-badge" style="color:${multi.rsi15m<40?'#f87171':multi.rsi15m>60?'#4ade80':'#94a3b8'};">15m RSI ${multi.rsi15m.toFixed(1)}</div>`;
-  document.getElementById('adxStatus').innerHTML=`ADX: ${adx.toFixed(1)} | EMA Trend: ${emaTrend==='UP'?'▲ UP':'▼ DOWN'}`;
-  document.getElementById('adxStatus').style.color=adx>25?'#4ade80':adx>20?'#fbbf24':'#94a3b8';
-  let macd=multi.macd, stoch=multi.stoch;
-  document.getElementById('indicatorsGrid').innerHTML=`
-    <div class="ind-badge"><div style="color:#94a3b8;">MACD</div><div class="ind-value" style="color:${macd.hist>0?'#4ade80':'#f87171'}">${macd.hist.toFixed(2)}</div></div>
-    <div class="ind-badge"><div style="color:#94a3b8;">STOCH K</div><div class="ind-value" style="color:${stoch.k>80?'#f87171':stoch.k<20?'#4ade80':'#fbbf24'}">${stoch.k.toFixed(1)}</div></div>
-    <div class="ind-badge"><div style="color:#94a3b8;">VOL</div><div class="ind-value" style="color:${multi.volTrend==='up'?'#4ade80':multi.volTrend==='down'?'#f87171':'#94a3b8'}">${multi.volTrend}</div></div>
-    <div class="ind-badge"><div style="color:#94a3b8;">EMA 5m</div><div class="ind-value" style="color:${price>multi.ema5m?'#4ade80':'#f87171'}">${price>multi.ema5m?'▲':'▼'}</div></div>
-  `;
-  btcMultiTF={rsi5m:multi.rsi5m,rsi15m:multi.rsi15m};
-  btcTrend={adx,emaTrend};
-  btcAdvanced={macdHist:macd.hist,stochK:stoch.k,stochD:stoch.d,volTrend:multi.volTrend};
-  document.getElementById('sigEmoji').innerHTML={GREEN:'🟢',RED:'🔴',BIG:'🔵',SMALL:'🟣'}[winner[0]];
-  document.getElementById('sigTxt').innerHTML=winner[0];
-  document.getElementById('sigTxt').style.color={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[winner[0]];
-  let rating=Math.min(10,Math.round(winner[1]/10));
-  document.getElementById('ratingCircle').style.display='flex';
-  document.getElementById('ratingCircle').style.color={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[winner[0]];
-  document.getElementById('rNum').innerHTML=rating;
-  document.getElementById('strFill').style.width=winner[1]+'%';
-  document.getElementById('strInfo').innerHTML=`${winner[0]}: ${winner[1]}% | RSI:${rsi.toFixed(1)}`;
-  ['GREEN','RED','BIG','SMALL'].forEach(s=>{
-    document.getElementById(`sv_${s[0]}`).innerHTML=scores[s];
-    document.getElementById(`sbf_${s[0]}`).style.width=scores[s]+'%';
-  });
-  document.getElementById('biasTxt').innerHTML={GREEN:'BULLISH ▲',RED:'BEARISH ▼',BIG:'HIGH MOM',SMALL:'LOW MOM'}[winner[0]];
-  document.getElementById('biasBar').style.width=winner[1]+'%';
-  // BTC‑only predictions (not category‑forced) for reference
-  let digits = predictDigits(scores, rsi, momentum);
-  renderDigits(digits.slice(0,2));
-  highlightPredictedDigits(digits.slice(0,3));
-  document.getElementById('assetPrice').innerHTML=price.toLocaleString(undefined,{minimumFractionDigits:2});
-  document.getElementById('assetChange').innerHTML=`${dir==='UP'?'▲ +':'▼ -'}${change.toFixed(4)}%`;
-  btcData = data;
+    let green = 0, red = 0, big = 0, small = 0;
+    if(rsi < 40) green = (40-rsi)*2.5 + (momentum>0?momentum*3:0);
+    else if(rsi<50) green = (50-rsi)*1.5 + (momentum>0?momentum*2:0);
+    if(rsi > 60) red = (rsi-60)*2.5 + (momentum<0?-momentum*3:0);
+    else if(rsi>50) red = (rsi-50)*1.5 + (momentum<0?-momentum*2:0);
+    if(rsi > 52) big = (rsi-52)*2 + (momentum>0?momentum*3:0);
+    if(rsi < 48) small = (48-rsi)*2 + (momentum<0?-momentum*3:0);
+    return { GREEN: Math.min(100,Math.round(green)), RED: Math.min(100,Math.round(red)), BIG: Math.min(100,Math.round(big)), SMALL: Math.min(100,Math.round(small)) };
 }
 
-// ========== NEW PREDICTION LOGIC WITH FORCED CATEGORY ==========
-function predictDigits(scores, rsi, momentum, forcedSignal = null) {
-  // Determine allowed digit set based on forced category (or free if null)
-  let allowed = [];
-  if (forcedSignal === 'GREEN') {
-    allowed = [1,3,5,7,9];
-  } else if (forcedSignal === 'RED') {
-    allowed = [0,2,4,6,8];
-  } else if (forcedSignal === 'BIG') {
-    allowed = [5,6,7,8,9];
-  } else if (forcedSignal === 'SMALL') {
-    allowed = [0,1,2,3,4];
-  } else {
-    // free mode – use BTC's own regime from scores (for the BTC signal card)
-    let greenStr = scores.GREEN > 60;
-    let redStr = scores.RED > 60;
-    let bigStr = scores.BIG > 60;
-    let smallStr = scores.SMALL > 60;
-    if (greenStr) {
-      allowed = [1,3,5,7,9];
-      if (bigStr) allowed = allowed.filter(d => d >= 5);
-      else if (smallStr) allowed = allowed.filter(d => d <= 4);
-    } else if (redStr) {
-      allowed = [0,2,4,6,8];
-      if (bigStr) allowed = allowed.filter(d => d >= 5);
-      else if (smallStr) allowed = allowed.filter(d => d <= 4);
-    } else {
-      allowed = [0,1,2,3,4,5,6,7,8,9];
-    }
-  }
-
-  // Compute an "ideal" digit from market data
-  let ideal = Math.round((rsi / 100) * 9);
-  ideal += momentum * 2;
-  ideal += btcAdvanced.macdHist * 1.5;
-  if (btcAdvanced.stochK > 80) ideal -= 1;
-  if (btcAdvanced.stochK < 20) ideal += 1;
-  ideal = Math.max(0, Math.min(9, Math.round(ideal)));
-
-  // Score each allowed digit
-  let scored = allowed.map(n => {
-    let d = DIGITS[n];
-    let score = 0;
-    let dist = Math.abs(n - ideal);
-    score += Math.max(0, 20 - dist * 4); // up to 20 points for proximity
-    // momentum direction bonus
-    if (momentum > 0.5 && d.green) score += 6;
-    if (momentum < -0.5 && !d.green) score += 6;
-    // violet bonus
-    if (d.violet && (rsi < 25 || rsi > 75 || (rsi > 45 && rsi < 55))) score += 8;
-    // anti‑repeat penalty
-    if (n === lastTopDigit) score -= 5;
-    return { n, score: Math.max(0, Math.round(score)), isGreen: d.green, isBig: d.big, isViolet: d.violet };
-  });
-
-  scored.sort((a,b) => b.score - a.score);
-  if (scored.length > 0 && !forcedSignal) lastTopDigit = scored[0].n; // only free mode updates the global lastTopDigit
-  return scored;
+function getWinner(scores) {
+    return Object.entries(scores).reduce((a,b) => b[1] > a[1] ? b : a);
 }
 
-function renderDigits(top2){
-  document.getElementById('predWait').style.display='none';
-  document.getElementById('predContent').style.display='block';
-  document.getElementById('violetWrap').style.display=top2.some(d=>d.isViolet)?'block':'none';
-  document.getElementById('dualPredWrap').innerHTML=top2.map((d,i)=>{
-    let dm=DIGITS[d.n], bdg=getDigitBadge(d.n);
-    let bg=bdg.isViolet&&d.n===0?'linear-gradient(135deg,#dc2626 50%,#7c3aed 50%)':bdg.isViolet&&d.n===5?'linear-gradient(135deg,#16a34a 50%,#7c3aed 50%)':bdg.primary;
-    return `<div class="pred-card ${i===0?'top-pick':''}"><div class="pred-rank-badge" style="background:${i===0?'#fbbf24':'#94a3b8'}33;">#${i+1}</div><div class="pred-circle" style="background:${bg};">${d.n}</div><div class="pred-pct">${d.score}%</div><div class="pred-score-bar-bg"><div class="pred-score-bar" style="width:${d.score}%;background:${dm.color};"></div></div><div style="font-size:10px;color:${dm.color}">${dm.emoji} ${dm.name}</div></div>`;
-  }).join('');
-}
-function highlightPredictedDigits(topDigits){
-  document.querySelectorAll('.digit-cell').forEach(c=>c.classList.remove('predicted-digit'));
-  topDigits.forEach(d=>{ document.querySelectorAll('.digit-cell').forEach(c=>{ let ball=c.querySelector('.digit-ball'); if(ball&&parseInt(ball.textContent)===d.n) c.classList.add('predicted-digit'); }); });
+async function fetchKlines(sym, interval='1m', limit=30) {
+    try {
+        let res = await fetch(`${BINANCE}/klines?symbol=${sym}&interval=${interval}&limit=${limit}`);
+        if(!res.ok) return null;
+        return await res.json();
+    } catch(e) { return null; }
 }
 
-// ========== CONSENSUS & LOCK ==========
-function buildConsensus(){
-  let valid=Object.entries(pairResults).filter(([,r])=>r&&!r.error);
-  if(!valid.length) return null;
-  let votes={GREEN:0,RED:0,BIG:0,SMALL:0}, totalW=0, totalRsi=0;
-  valid.forEach(([sym,r])=>{
-    let w=PAIR_WEIGHTS[sym]||1;
-    if(btcTrend.emaTrend==='DOWN' && r.signal==='GREEN') w*=0.3;
-    if(btcTrend.emaTrend==='UP' && r.signal==='RED') w*=0.3;
-    if(btcTrend.adx<18) w*=0.5;
-    if(btcAdvanced.macdHist>0.2 && (r.signal==='GREEN'||r.signal==='BIG')) w*=1.2;
-    if(btcAdvanced.macdHist<-0.2 && (r.signal==='RED'||r.signal==='SMALL')) w*=1.2;
-    if(btcAdvanced.volTrend==='up' && (r.signal==='GREEN'||r.signal==='BIG')) w*=1.1;
-    votes[r.signal]+=w; totalW+=w; totalRsi+=r.rsi*w;
-  });
-  let avgRsi=totalRsi/totalW;
-  let winner=Object.entries(votes).reduce((a,b)=>b[1]>a[1]?b:a);
-  let agreement=(winner[1]/totalW)*100;
-  let isConfident=agreement>=45 && btcTrend.adx>18 && btcAdvanced.macdHist*(winner[0]==='GREEN'||winner[0]==='BIG'?1:-1)>-0.2;
-  return {consensusSignal:winner[0],votes,total:valid.length,avgRsi,agreement,isConfident};
-}
-function updateConsensusUI(c,isFinal){
-  if(!c) return;
-  let box=document.getElementById('consensusBox');
-  box.className=`consensus-mega c-${c.consensusSignal.toLowerCase()}`;
-  document.getElementById('conIcon').innerHTML=isFinal?(c.isConfident?'✅':'⚠️'):'🔄';
-  document.getElementById('conAction').innerHTML=`${isFinal?'FINAL: ':'LIVE: '}${c.consensusSignal}`;
-  document.getElementById('conAction').style.color={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[c.consensusSignal];
-  document.getElementById('conSub').innerHTML=`${c.total} pairs • ${c.agreement.toFixed(0)}% agreement`;
-  document.getElementById('conAvgRsi').innerHTML=c.avgRsi.toFixed(1);
-  document.getElementById('pairCountBadge').innerHTML=c.total;
-  let maxV=Math.max(...Object.values(c.votes),1);
-  document.getElementById('vbG').style.width=(c.votes.GREEN/maxV*100)+'%'; document.getElementById('vcG').innerHTML=Math.round(c.votes.GREEN);
-  document.getElementById('vbR').style.width=(c.votes.RED/maxV*100)+'%'; document.getElementById('vcR').innerHTML=Math.round(c.votes.RED);
-  document.getElementById('vbB').style.width=(c.votes.BIG/maxV*100)+'%'; document.getElementById('vcB').innerHTML=Math.round(c.votes.BIG);
-  document.getElementById('vbS').style.width=(c.votes.SMALL/maxV*100)+'%'; document.getElementById('vcS').innerHTML=Math.round(c.votes.SMALL);
-  document.getElementById('confidenceMeter').style.display='flex';
-  document.getElementById('confidenceBarFill').style.width=c.agreement+'%';
-  document.getElementById('confidencePct').innerHTML=c.agreement.toFixed(0)+'%';
-  if(isFinal){
-    let digitBox=document.getElementById('consensusDigitBox');
-    digitBox.style.display='flex';
-    updateConsensusDigitLive();
-  }
-}
-function lockSignal(c){
-  if(signalLocked) return;
-  signalLocked=true;
-  currentConsensus = c;
-  document.getElementById('ps1').className='phase-step done-step';
-  document.getElementById('ps2').className='phase-step done-step';
-  document.getElementById('ps3').className='phase-step done-step';
-  document.getElementById('signalLockBanner').classList.add('visible');
-  document.getElementById('phaseBadge').className='phase-badge locked'; document.getElementById('phaseBadge').innerHTML='🔒 SIGNAL LOCKED';
-  updateConsensusUI(c,true);
-  let td=document.getElementById('tradeDecision'); td.style.display='block';
-  if(c.isConfident){
-    td.className='trade-decision do-trade'; document.getElementById('tdMain').innerHTML=`✅ TRADE: ${c.consensusSignal}`;
-    document.getElementById('tdReason').innerHTML=`${c.total} pairs • ${c.agreement.toFixed(0)}% agreement • All filters passed. Digit: LIVE`;
-  }else{
-    td.className='trade-decision no-trade'; document.getElementById('tdMain').innerHTML='❌ SKIP';
-    document.getElementById('tdReason').innerHTML=`Filters not aligned (ADX/MACD/Volume). Wait for better setup.`;
-  }
-  document.getElementById('copyFinalBtn').style.display = 'inline-flex';
-  // add to history with the locked digit (first call)
-  let scores=calcScores(btcData.rsi,btcData.momentum||0,btcData.changePct/5);
-  let digits=predictDigits(scores,btcData.rsi,btcData.momentum||0, c.consensusSignal);
-  addToHistory(c.consensusSignal,digits.slice(0,2),c.agreement);
-  if(c.isConfident&&soundUnlocked){ playAirHorn(c.consensusSignal); flashScreen(c.consensusSignal); }
+function processPairData(k) {
+    let closes = k.map(c => parseFloat(c[4]));
+    let rsi = calcRSI(closes);
+    let price = closes[closes.length-1];
+    let prev = closes[closes.length-2];
+    let changePct = Math.abs((price-prev)/prev*100);
+    return { rsi, price, changePct, closes };
 }
 
-function copyFinalSignal(){
-  if(!currentConsensus) return;
-  let sig = currentConsensus.consensusSignal;
-  let digitEl = document.getElementById('consensusDigitNum');
-  let digit = digitEl ? digitEl.innerText : '--';
-  let conf = Math.round(currentConsensus.agreement) + '%';
-  let text = `Trade :-${sig}\nNumber:- ${digit}\nConfidence:-${conf}`;
-  const copyBtn = document.getElementById('copyFinalBtn');
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(() => {
-      copyBtn.innerHTML = '✅ COPIED!';
-      setTimeout(() => { copyBtn.innerHTML = '📋 COPY FINAL'; }, 1500);
-    }).catch(() => fallbackCopy(text, copyBtn));
-  } else fallbackCopy(text, copyBtn);
-}
-function fallbackCopy(text, btn) {
-  const textarea = document.createElement('textarea');
-  textarea.value = text; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
-  document.body.appendChild(textarea); textarea.select();
-  try { document.execCommand('copy'); btn.innerHTML = '✅ COPIED!'; } catch (err) { btn.innerHTML = '❌ FAILED'; }
-  document.body.removeChild(textarea);
-  setTimeout(() => { btn.innerHTML = '📋 COPY FINAL'; }, 1500);
+async function fetchBTCData() {
+    let k1m = await fetchKlines('BTCUSDT','1m',30);
+    if(!k1m) return null;
+    let data = processPairData(k1m);
+    let momentum = data.rsi - (prevRsiMap['BTCUSDT'] || data.rsi);
+    prevRsiMap['BTCUSDT'] = data.rsi;
+    let scores = calcScores(data.rsi, momentum, data.changePct/5);
+    let winner = getWinner(scores);
+    btcLiveData = { rsi: data.rsi, price: data.price, changePct: data.changePct, momentum, winner: winner[0] };
+    document.getElementById('rsiBigVal').innerHTML = data.rsi.toFixed(1);
+    document.getElementById('rsiBigVal').style.color = data.rsi>60?'#4ade80':data.rsi<40?'#f87171':'#7dd3fc';
+    document.getElementById('rsiDir').innerHTML = momentum>0.3?'▲ RISING MOMENTUM':momentum<-0.3?'▼ FALLING MOMENTUM':'● NEUTRAL MOMENTUM';
+    document.getElementById('btcIndicators').innerHTML = `<div>🔄 RSI: ${data.rsi.toFixed(1)}</div><div>📈 MOM: ${momentum.toFixed(2)}</div><div>💹 VOLATILITY: ${data.changePct.toFixed(2)}%</div><div>🎯 SIGNAL: ${winner[0]}</div>`;
+    return btcLiveData;
 }
 
-async function fullReset(){
-  if(isFetching) return;
-  isFetching=true; signalLocked=false; pairResults={}; pairsData={}; prevRsiMap={}; prevBtcRsi=50; fetchDoneCount=0; lastTopDigit = -1;
-  document.getElementById('consensusDigitBox').style.display='none';
-  document.getElementById('tradeDecision').style.display='none';
-  document.getElementById('signalLockBanner').classList.remove('visible');
-  document.getElementById('phaseBadge').className='phase-badge fetching'; document.getElementById('phaseBadge').innerHTML='⚡ FETCHING';
-  document.getElementById('fpBar').style.width='0%'; document.getElementById('fpCount').innerHTML='0/0';
-  document.getElementById('predWait').style.display='block'; document.getElementById('predContent').style.display='none';
-  document.getElementById('copyFinalBtn').style.display='none'; currentConsensus=null;
-  const ok = await fetchInitialBTCCandles();
-  if (ok) connectWebSocket();
-  let multi = await fetchBTCMultiTF();
-  if (multi && multi.data1m) updateBTCUI(multi.data1m, multi);
-  await fetchAllPairs();
-  isFetching=false;
-}
-
-async function fetchAllPairs(){
-  let total=ALL_PAIRS.length; fetchDoneCount=0;
-  renderPairsGrid();
-  for(let i=0;i<total;i+=BATCH_SIZE){
-    let batch=ALL_PAIRS.slice(i,i+BATCH_SIZE);
-    await Promise.allSettled(batch.map(async sym=>{
-      try{
-        let k=await fetchPair(sym,'1m',30);
-        if(k){
-          let d=processPairData(k);
-          let momentum = prevRsiMap[sym] ? d.rsi - prevRsiMap[sym] : 0;
-          let scores = calcScores(d.rsi, momentum, d.change/5);
-          pairResults[sym]={rsi:d.rsi, signal:getWinner(scores)[0]};
-          pairsData[sym]={loaded:true, error:false, rsi:d.rsi, signal:getWinner(scores)[0]};
-          prevRsiMap[sym]=d.rsi;
-        }else{
-          pairResults[sym]=null; pairsData[sym]={loaded:true, error:true};
+// ------------------- Consensus from all pairs -------------------
+async function updateAllPairs() {
+    let total = ALL_PAIRS.length;
+    let done = 0;
+    for(let sym of ALL_PAIRS) {
+        let k = await fetchKlines(sym, '1m', 30);
+        if(k) {
+            let d = processPairData(k);
+            let momentum = d.rsi - (prevRsiMap[sym] || d.rsi);
+            let scores = calcScores(d.rsi, momentum, d.changePct/5);
+            let signal = getWinner(scores)[0];
+            pairResults[sym] = { rsi: d.rsi, signal, momentum };
+            pairsData[sym] = { loaded: true, error: false, rsi: d.rsi, signal };
+            prevRsiMap[sym] = d.rsi;
+        } else {
+            pairsData[sym] = { loaded: false, error: true };
         }
-      }catch(e){
-        pairResults[sym]=null; pairsData[sym]={loaded:true, error:true};
-      }
-      fetchDoneCount++;
-      document.getElementById('fpCount').innerHTML=`${fetchDoneCount}/${total}`;
-      document.getElementById('fpBar').style.width=(fetchDoneCount/total*100)+'%';
-      renderPairsGrid();
-      let liveC=buildConsensus(); if(liveC) updateConsensusUI(liveC,false);
-    }));
-    if(i+BATCH_SIZE<total) await new Promise(r=>setTimeout(r,100));
-  }
-  let finalC=buildConsensus(); if(finalC) lockSignal(finalC);
-  incApiCount();
+        done++;
+        document.getElementById('pairCount').innerHTML = Object.keys(pairsData).length;
+        renderPairsGrid();
+        let tempCons = buildConsensus();
+        if(tempCons) updateConsensusUI(tempCons, false);
+        await new Promise(r => setTimeout(r, 80));
+    }
+    let finalCons = buildConsensus();
+    if(finalCons) lockConsensus(finalCons);
 }
 
-function renderPairsGrid(){
-  let grid=document.getElementById('pairsGrid');
-  let entries=Object.entries(pairsData);
-  if(!entries.length){ grid.innerHTML='<div style="padding:20px;">Loading...</div>'; return; }
-  let filtered=entries.filter(([sym,d])=>{
-    if(currentFilter==='all') return true;
-    if(!d.loaded||d.error) return false;
-    if(currentFilter==='dragon') return d.rsi>=68&&d.rsi<83;
-    if(currentFilter==='crash') return d.rsi>=17&&d.rsi<22;
-    if(currentFilter==='skip') return d.rsi>=42&&d.rsi<=58;
-    return d.signal===currentFilter;
-  });
-  grid.innerHTML=filtered.map(([sym,d])=>{
-    let short=sym.replace('USDT','');
-    if(!d.loaded) return `<div class="pair-cell loading"><div class="pair-sym">${short}</div><div class="pair-rsi">...</div></div>`;
-    if(d.error) return `<div class="pair-cell error"><div class="pair-sym">${short}</div><div class="pair-rsi">ERR</div></div>`;
-    let color={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'}[d.signal]||'#64748b';
-    return `<div class="pair-cell loaded"><div class="pair-sym" style="color:${color};">${short}</div><div class="pair-rsi" style="color:${color};">${d.rsi?.toFixed(1)}</div><div class="pair-sig" style="background:${color}22;color:${color};">${d.signal}</div></div>`;
-  }).join('');
-  document.getElementById('loadedCount').innerHTML=`${entries.filter(([,d])=>d.loaded&&!d.error).length}/${ALL_PAIRS.length}`;
+function buildConsensus() {
+    let valid = Object.entries(pairResults).filter(([,r]) => r && !r.error);
+    if(!valid.length) return null;
+    let votes = { GREEN:0, RED:0, BIG:0, SMALL:0 };
+    let totalRsi = 0;
+    for(let [sym, r] of valid) {
+        votes[r.signal] += 1;
+        totalRsi += r.rsi;
+    }
+    let avgRsi = totalRsi / valid.length;
+    let winner = Object.entries(votes).reduce((a,b)=>b[1]>a[1]?b:a);
+    let agreement = (winner[1]/valid.length)*100;
+    let isConfident = agreement >= 45;
+    return { consensusSignal: winner[0], votes, totalPairs: valid.length, avgRsi, agreement, isConfident };
 }
-window.filterPairs=function(f,btn){ currentFilter=f; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderPairsGrid(); };
-function addToHistory(sig,digits,agreement){
-  signalHistory.unshift({sig,rating:Math.min(10,Math.round(agreement/10)),digits:digits.map(d=>d.n),agreement:Math.round(agreement),time:new Date().toLocaleTimeString()});
-  if(signalHistory.length>40) signalHistory.pop();
-  saveHistory(); renderHistory();
+
+function updateConsensusUI(cons, isFinal) {
+    if(!cons) return;
+    let box = document.getElementById('consensusBox');
+    let colorMap = { GREEN:'green', RED:'red', BIG:'big', SMALL:'small' };
+    box.className = `consensus-mega c-${colorMap[cons.consensusSignal] || 'wait'}`;
+    document.getElementById('conAction').innerHTML = isFinal ? `✅ FINAL: ${cons.consensusSignal}` : `🔄 LIVE: ${cons.consensusSignal}`;
+    document.getElementById('conSub').innerHTML = `${cons.totalPairs} pairs analyzed • RSI avg: ${cons.avgRsi.toFixed(1)}`;
+    document.getElementById('conAvgRsi').innerHTML = cons.avgRsi.toFixed(1);
+    document.getElementById('conAgree').innerHTML = `${cons.agreement.toFixed(0)}%`;
+    let maxV = Math.max(...Object.values(cons.votes), 1);
+    document.getElementById('vbG').style.width = (cons.votes.GREEN/maxV*100)+'%';
+    document.getElementById('vcG').innerHTML = cons.votes.GREEN;
+    document.getElementById('vbR').style.width = (cons.votes.RED/maxV*100)+'%';
+    document.getElementById('vcR').innerHTML = cons.votes.RED;
+    document.getElementById('vbB').style.width = (cons.votes.BIG/maxV*100)+'%';
+    document.getElementById('vcB').innerHTML = cons.votes.BIG;
+    document.getElementById('vbS').style.width = (cons.votes.SMALL/maxV*100)+'%';
+    document.getElementById('vcS').innerHTML = cons.votes.SMALL;
+    if(isFinal) {
+        document.getElementById('tradeDecision').innerHTML = cons.isConfident ? `TRADE: ${cons.consensusSignal}` : '❌ SKIP (low confidence)';
+        document.getElementById('tradeReason').innerHTML = cons.isConfident ? `Agreement ${cons.agreement.toFixed(0)}% • RSI avg ${cons.avgRsi.toFixed(1)}` : 'Wait for stronger alignment';
+        document.getElementById('consensusDigitBox').style.display = 'block';
+        let allowed = DIGIT_SETS[cons.consensusSignal];
+        let digit = predictBestDigitFromRSI(cons.avgRsi, allowed);
+        document.getElementById('consensusDigitNum').innerHTML = digit;
+        // update allowed digits panel
+        let panel = document.getElementById('allowedDigitsPanel');
+        panel.innerHTML = allowed.map(d => `<span style="border-color:${cons.consensusSignal==='GREEN'?'#16a34a':cons.consensusSignal==='RED'?'#dc2626':cons.consensusSignal==='BIG'?'#0891b2':'#7c3aed'}">${d}</span>`).join('');
+        document.getElementById('predictedDigitDisplay').innerHTML = digit;
+        // add to history for pattern display (B/S)
+        let bin = (cons.consensusSignal === 'GREEN' || cons.consensusSignal === 'BIG') ? 'B' : 'S';
+        bsHistory.push(bin);
+        if(bsHistory.length > 20) bsHistory.shift();
+        updatePatternDisplay();
+        signalHistory.unshift({ signal: cons.consensusSignal, digit, agreement: cons.agreement.toFixed(0), time: new Date().toLocaleTimeString() });
+        if(signalHistory.length > 20) signalHistory.pop();
+        renderHistory();
+        if(cons.isConfident && soundUnlocked) playHorn();
+    }
 }
-function renderHistory(){
-  let c=document.getElementById('histList');
-  if(!signalHistory.length){ c.innerHTML='<div style="padding:20px;">No history</div>'; return; }
-  let cols={GREEN:'#16a34a',RED:'#dc2626',BIG:'#0891b2',SMALL:'#7c3aed'};
-  c.innerHTML=signalHistory.map(item=>`<div class="hist-item" style="border-left-color:${cols[item.sig]||'#ca8a04'};"><div class="hist-balls">${item.digits.map((d,i)=>`<div class="hist-ball ${i===1?'rank2':''}" style="background:${getDigitBadge(d).primary};color:#fff;">${d}</div>`).join('')}</div><div><div class="hist-signal" style="color:${cols[item.sig]}">${item.sig}</div><div class="hist-sub">Rating ${item.rating}/10 • ${item.agreement}%</div></div><div class="hist-time">${item.time}</div></div>`).join('');
+
+function predictBestDigitFromRSI(rsi, allowedSet) {
+    // map 0-100 RSI to 0-9 ideal digit
+    let ideal = Math.round((rsi / 100) * 9);
+    // pick closest from allowed set
+    return allowedSet.reduce((best, d) => Math.abs(d - ideal) < Math.abs(best - ideal) ? d : best);
 }
-function saveHistory(){ localStorage.setItem('ved_v9_history',JSON.stringify(signalHistory)); }
-function loadHistory(){ try{ let s=localStorage.getItem('ved_v9_history'); if(s) signalHistory=JSON.parse(s); }catch(e){} renderHistory(); }
-function incApiCount(){ let key=new Date().toDateString(); let c=0; try{ let d=JSON.parse(localStorage.getItem('ved_api_count')||'{}'); if(d.date===key) c=d.count; }catch(e){} c++; localStorage.setItem('ved_api_count',JSON.stringify({date:key,count:c})); document.getElementById('apiCount').innerHTML=c; document.getElementById('todayDate').innerHTML=key; }
-function unlockSound(){ if(soundUnlocked) return; audioCtx=new(window.AudioContext||window.webkitAudioContext)(); audioCtx.resume().then(()=>{ soundUnlocked=true; document.getElementById('soundBanner').classList.add('unlocked'); document.getElementById('sbTxt').innerHTML='🔊 SOUND UNLOCKED'; document.getElementById('sbBtn').innerHTML='✅ ACTIVE'; });}
-function playAirHorn(color){ if(!soundUnlocked||!audioCtx) return; audioCtx.resume(); let freqs=(color==='GREEN'||color==='BIG')?[233,311,466]:(color==='SMALL'?[196,261,392]:[174,220,349]); let now=audioCtx.currentTime; freqs.forEach((f,i)=>{ let o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.type='sawtooth'; o.frequency.value=f; let v=i===1?0.4:0.25; g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(v,now+0.04); g.gain.setValueAtTime(v,now+0.65); g.gain.exponentialRampToValueAtTime(0.001,now+1.1); o.start(now); o.stop(now+1.1); });}
-function flashScreen(color){ let el=document.getElementById('hornFlash'); el.className='flash-'+(color==='GREEN'||color==='BIG'?'green':color==='SMALL'?'violet':'red'); el.classList.add('visible'); setTimeout(()=>el.classList.remove('visible'),500);}
-window.copySignal=function(){ let sig=document.getElementById('sigTxt').innerHTML; let digit=document.getElementById('consensusDigitNum').innerHTML; navigator.clipboard.writeText(`VED v9: ${sig} | Digit ${digit} | ${new Date().toLocaleTimeString()}`); let btn=document.getElementById('copyBtn'); btn.innerHTML='✅ COPIED!'; setTimeout(()=>btn.innerHTML='<span>📋 COPY</span>',1500);};
-window.clearHistory=function(){ signalHistory=[]; saveHistory(); renderHistory(); };
-function initGrids(){
-  let dh=''; for(let n=0;n<=9;n++){ let d=DIGITS[n],b=getDigitBadge(n); let bg=b.isViolet&&n===0?'linear-gradient(135deg,#dc2626 50%,#7c3aed 50%)':b.isViolet&&n===5?'linear-gradient(135deg,#16a34a 50%,#7c3aed 50%)':b.primary; dh+=`<div class="digit-cell"><div class="digit-ball" style="background:${bg};">${n}</div><div class="digit-name" style="color:${d.color};">${d.name}</div><div class="digit-emoji">${d.emoji}</div></div>`; }
-  document.getElementById('digitGrid').innerHTML=dh;
-  let guide=[{name:'💥 Extreme SMALL',r:'0-17',trade:true,sig:'SMALL/RED'},{name:'💥 Crash',r:'17-22',trade:true,sig:'RED/SMALL'},{name:'🐻 Bear',r:'22-35',trade:true,sig:'RED'},{name:'💀 Dead',r:'42-58',trade:false,sig:'SKIP'},{name:'⬆️ Bull',r:'62-68',trade:true,sig:'GREEN'},{name:'🐉 Dragon',r:'68-76',trade:true,sig:'BIG/GREEN'},{name:'🚀 Rocket',r:'76-83',trade:true,sig:'BIG'}];
-  document.getElementById('patRefBody').innerHTML=guide.map(r=>`<tr><td style="color:${r.trade?'#4ade80':'#f87171'}">${r.name}</td><td>${r.r}</td><td><span class="trade-pill ${r.trade?'yes':'no'}">${r.trade?'✅':'❌'}</span></td><td style="color:${r.trade?'#4ade80':'#f87171'}">${r.sig}</td></tr>`).join('');
+
+function renderPairsGrid() {
+    let grid = document.getElementById('pairsGrid');
+    let entries = Object.entries(pairsData).filter(([,d]) => d.loaded && !d.error);
+    if(!entries.length) { grid.innerHTML = '<div>Loading pairs...</div>'; return; }
+    let filtered = entries.filter(([sym,d]) => {
+        if(currentFilter === 'all') return true;
+        return d.signal === currentFilter;
+    });
+    grid.innerHTML = filtered.map(([sym,d]) => {
+        let short = sym.replace('USDT','');
+        let color = { GREEN:'#16a34a', RED:'#dc2626', BIG:'#0891b2', SMALL:'#7c3aed' }[d.signal] || '#94a3b8';
+        return `<div class="pair-cell"><div style="font-weight:bold">${short}</div><div style="font-size:14px;font-weight:900;color:${color}">${d.rsi.toFixed(1)}</div><div style="font-size:10px;color:${color}">${d.signal}</div></div>`;
+    }).join('');
 }
-setInterval(()=>{ let d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'})); document.getElementById('clock').innerHTML='IST '+d.toTimeString().slice(0,8); },1000);
-setInterval(()=>{
-  let sec=new Date().getSeconds(), rem=CYCLE-(sec%CYCLE);
-  document.getElementById('timerNum').innerHTML=rem;
-  document.getElementById('timerFill').style.width=(rem/CYCLE*100)+'%';
-  if(rem===CYCLE && !isFetching) fullReset();
-  if(signalLocked){ document.getElementById('timerNum').className='timer-num locked-phase'; document.getElementById('timerSub').innerHTML='🔒 SIGNAL LOCKED • DIGIT LIVE'; }
-  else if(isFetching){ document.getElementById('timerNum').className='timer-num fetch-phase'; document.getElementById('timerSub').innerHTML=`⚡ FETCHING`; }
-  else{ document.getElementById('timerNum').className='timer-num'; document.getElementById('timerSub').innerHTML='🔄 READY'; }
-},1000);
-initGrids(); loadHistory();
-(async () => {
-  await fetchInitialBTCCandles();
-  connectWebSocket();
-  setTimeout(()=>fullReset(),800);
-})();
+
+function lockConsensus(cons) {
+    if(signalLocked) return;
+    signalLocked = true;
+    currentConsensus = cons;
+    updateConsensusUI(cons, true);
+    document.getElementById('phaseBadge').className = 'phase-badge locked';
+    document.getElementById('phaseBadge').innerHTML = '🔒 SIGNAL LOCKED';
+}
+
+// ------------- pattern display only (game reference) ------------
+function updatePatternDisplay() {
+    let container = document.getElementById('bsHistoryContainer');
+    let historyHtml = bsHistory.slice(-16).map(b => `<span class="bs-badge ${b}">${b}</span>`).join('');
+    container.innerHTML = historyHtml || '— no signals yet —';
+    let last6 = bsHistory.slice(-6).join('');
+    let pattern = "Unknown";
+    if(last6 === "BSBSBS") pattern = "Single Trand (alternating)";
+    else if(last6 === "BBSSBB") pattern = "Double Trand";
+    else if(last6 === "BBBSSS") pattern = "Triple Trand";
+    else if(bsHistory.slice(-12).every(v=>v==='B')) pattern = "Long Trand (BULL)";
+    else if(bsHistory.slice(-12).every(v=>v==='S')) pattern = "Long Trand (BEAR)";
+    document.getElementById('detectedPatternName').innerHTML = pattern;
+    document.getElementById('patternSeqVisual').innerHTML = `Recent: ${bsHistory.slice(-12).join(' ')}`;
+}
+
+function renderHistory() {
+    let histDiv = document.getElementById('historyList');
+    if(!signalHistory.length) { histDiv.innerHTML = '<div style="color:#94a3b8">No signals yet...</div>'; return; }
+    histDiv.innerHTML = signalHistory.map(h => `<div style="border-left:3px solid #fbbf24;padding:6px;margin-bottom:6px"><strong>${h.signal}</strong> | Digit ${h.digit} | ${h.agreement}% | ${h.time}</div>`).join('');
+}
+
+function clearHistory() {
+    signalHistory = [];
+    bsHistory = [];
+    renderHistory();
+    updatePatternDisplay();
+}
+
+async function fullCycle() {
+    if(isFetching) return;
+    isFetching = true;
+    signalLocked = false;
+    pairResults = {};
+    pairsData = {};
+    document.getElementById('phaseBadge').className = 'phase-badge fetching';
+    document.getElementById('phaseBadge').innerHTML = '⚡ FETCHING RSI...';
+    document.getElementById('consensusDigitBox').style.display = 'none';
+    document.getElementById('tradeDecision').innerHTML = 'WAITING';
+    await fetchBTCData();
+    await updateAllPairs();
+    isFetching = false;
+}
+
+// timer & cycle
+let interval;
+function startTimer() {
+    interval = setInterval(() => {
+        let sec = new Date().getSeconds();
+        let rem = CYCLE - (sec % CYCLE);
+        document.getElementById('timerNum').innerHTML = rem;
+        document.getElementById('timerSub').innerHTML = `Next RSI refresh in ${rem}s`;
+        if(rem === CYCLE && !isFetching) {
+            fullCycle();
+        }
+    }, 1000);
+}
+
+// sound
+function playHorn() {
+    if(!soundUnlocked || !audioCtx) return;
+    audioCtx.resume();
+    let o = audioCtx.createOscillator();
+    let g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.5);
+    o.start(); o.stop(audioCtx.currentTime+0.5);
+    let flash = document.getElementById('hornFlash');
+    flash.style.background = 'radial-gradient(ellipse at center, rgba(22,163,74,0.6), transparent)';
+    flash.style.opacity = '1';
+    setTimeout(() => flash.style.opacity = '0', 300);
+}
+function unlockSound() {
+    if(soundUnlocked) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtx.resume().then(() => {
+        soundUnlocked = true;
+        document.getElementById('hornTag').innerHTML = '🔊 HORN ACTIVE';
+    });
+}
+document.getElementById('hornTag').onclick = unlockSound;
+
+window.filterPairs = function(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderPairsGrid();
+};
+window.clearHistory = clearHistory;
+
+// live clock IST
+function updateClock() {
+    let d = new Date(new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'}));
+    document.getElementById('clock').innerHTML = 'IST ' + d.toTimeString().slice(0,8);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+startTimer();
+fullCycle();
 </script>
 </body>
 </html>
