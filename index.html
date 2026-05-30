@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VED v9 – RSI Engine | Live Refresh</title>
+    <title>VED v9 – RSI Engine | Signal Alternation (Forward/Reverse)</title>
     <style>
         * {
             margin: 0;
@@ -200,12 +200,12 @@
             font-size: 14px;
             font-family: monospace;
         }
-        .error-msg {
-            background: #dc262622;
-            border: 1px solid #dc2626;
-            padding: 8px 16px;
+        .alternation-info {
+            background: #0891b222;
+            border: 1px solid #0891b2;
+            padding: 6px 12px;
             border-radius: 40px;
-            font-size: 14px;
+            font-size: 13px;
         }
         @media (max-width: 800px) {
             body { font-size: 14px; }
@@ -221,6 +221,7 @@
         <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
             <div class="clock-wrap" id="clock">IST --:--:--</div>
             <div class="refresh-badge">🔄 LIVE REFRESH EVERY 30s</div>
+            <div class="alternation-info" id="altCounterDisplay">⚡ VALID: 0 | NEXT: FORWARD</div>
             <div class="badge" style="background: #16a34a22; padding: 6px 16px; border-radius: 40px;"><span id="pairCount">0</span> PAIRS</div>
             <div class="phase-badge" id="phaseBadge" style="background:#ea580c22; padding:6px 16px; border-radius:40px;">⚡ FETCHING</div>
             <div class="horn-tag" id="hornTag" style="background:#ea580c22; padding:6px 16px; border-radius:40px; cursor:pointer;">📢 HORN (tap)</div>
@@ -243,9 +244,9 @@
                 <div class="vote-row">🟣 SMALL <div class="vote-bar-bg"><div class="vote-bar-fill" id="vbS" style="width:0%; background:#7c3aed"></div></div><span id="vcS">0</span></div>
             </div>
             <div style="background:#00000044; border-radius: 24px; padding: 12px 24px;">
-                <div class="sec-title">📢 FINAL TRADE DECISION</div>
+                <div class="sec-title">📢 FINAL TRADE DECISION (after alternation)</div>
                 <div id="tradeDecision" style="font-size: 28px; font-weight: 900;">WAITING</div>
-                <div id="tradeReason" style="font-size: 14px;">RSI consensus will decide</div>
+                <div id="tradeReason" style="font-size: 14px;">RSI consensus + alternation rule</div>
                 <button id="manualRefreshBtn" style="margin-top: 12px;">⟳ REFRESH NOW</button>
             </div>
         </div>
@@ -263,7 +264,7 @@
             <div class="timer-num" id="timerNum">30</div>
             <div class="timer-sub" style="text-align:center; font-size: 16px;" id="timerSub">Next refresh in ...</div>
             <div style="margin-top: 24px;">
-                <div class="sec-title">🎲 ALLOWED DIGITS (current signal)</div>
+                <div class="sec-title">🎲 ALLOWED DIGITS (final signal)</div>
                 <div id="allowedDigitsPanel" class="digit-allowed">—</div>
                 <div class="sec-title" style="margin-top: 16px;">🔢 PREDICTED TOP DIGIT</div>
                 <div id="predictedDigitDisplay" style="font-size: 56px; font-weight: 900; text-align: center; color: #fbbf24;">--</div>
@@ -289,7 +290,7 @@
             <div class="sec-title">🎮 GAME PATTERN REFERENCE (visual only)</div>
             <div id="patternDisplayArea">
                 <div style="background:#00000033; border-radius: 20px; padding: 16px;">
-                    <div><span class="sec-title">📜 B/S HISTORY (B=Big/Green, S=Small/Red)</span></div>
+                    <div><span class="sec-title">📜 B/S HISTORY (final signal)</span></div>
                     <div id="bsHistoryContainer" class="history-bs">—</div>
                     <div><span class="sec-title">🧩 DETECTED PATTERN</span></div>
                     <div id="detectedPatternName" style="font-size: 22px; font-weight: 900; color:#fbbf24;">—</div>
@@ -299,7 +300,7 @@
             </div>
         </div>
         <div class="card">
-            <div class="sec-title">📜 SIGNAL HISTORY (Consensus)</div>
+            <div class="sec-title">📜 SIGNAL HISTORY (final trade signals)</div>
             <div id="historyList" style="max-height: 300px; overflow-y: auto;"></div>
             <button onclick="clearHistory()" style="margin-top: 12px;">🗑 CLEAR HISTORY</button>
         </div>
@@ -314,6 +315,17 @@ const DIGIT_SETS = {
     BIG: [5,6,7,8,9],
     SMALL: [0,1,2,3,4]
 };
+
+// Reverse mapping for alternation
+function reverseSignal(signal) {
+    const map = {
+        'GREEN': 'RED',
+        'RED': 'GREEN',
+        'BIG': 'SMALL',
+        'SMALL': 'BIG'
+    };
+    return map[signal] || signal;
+}
 
 const BINANCE = 'https://api.binance.com/api/v3';
 const ALL_PAIRS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','DOTUSDT','LINKUSDT','MATICUSDT','SHIBUSDT','TRXUSDT','AVAXUSDT','ATOMUSDT','UNIUSDT','LTCUSDT','ETCUSDT','FILUSDT','APTUSDT','OPUSDT','NEARUSDT','AAVEUSDT'];
@@ -332,6 +344,47 @@ let currentFilter = 'all';
 let soundUnlocked = false;
 let audioCtx = null;
 let lastPredictedDigit = -1;
+
+// ----- Alternation state (stored in localStorage to persist across page reloads) -----
+let validSignalCount = 0;
+function loadAlternationState() {
+    try {
+        let stored = localStorage.getItem('ved_alternation_count');
+        if (stored !== null) {
+            validSignalCount = parseInt(stored, 10);
+            if (isNaN(validSignalCount)) validSignalCount = 0;
+        }
+    } catch(e) {}
+    updateAlternationDisplay();
+}
+function saveAlternationState() {
+    try {
+        localStorage.setItem('ved_alternation_count', validSignalCount);
+    } catch(e) {}
+}
+function incrementValidCount() {
+    validSignalCount++;
+    saveAlternationState();
+    updateAlternationDisplay();
+}
+function resetAlternationCount() {
+    validSignalCount = 0;
+    saveAlternationState();
+    updateAlternationDisplay();
+}
+function updateAlternationDisplay() {
+    let next = (validSignalCount % 2 === 0) ? "FORWARD" : "REVERSE";
+    document.getElementById('altCounterDisplay').innerHTML = `⚡ VALID: ${validSignalCount} | NEXT: ${next}`;
+}
+function getFinalSignal(originalSignal, isConfident) {
+    if (!isConfident) return null; // skip
+    // valid non-skip signal
+    incrementValidCount(); // count this valid signal
+    // decide forward or reverse based on count after increment (1st valid = odd -> forward)
+    let isForward = (validSignalCount % 2 === 1); // because we just incremented
+    if (isForward) return originalSignal;
+    else return reverseSignal(originalSignal);
+}
 
 // ----- RSI & helpers -----
 function calcRSI(closes, period=14) {
@@ -472,7 +525,7 @@ function updateConsensusUI(cons, isFinal) {
     let box = document.getElementById('consensusBox');
     let colorMap = { GREEN:'green', RED:'red', BIG:'big', SMALL:'small' };
     box.className = `consensus-mega c-${colorMap[cons.consensusSignal] || 'wait'}`;
-    document.getElementById('conAction').innerHTML = isFinal ? `✅ FINAL: ${cons.consensusSignal}` : `🔄 LIVE: ${cons.consensusSignal}`;
+    document.getElementById('conAction').innerHTML = isFinal ? `✅ FINAL CONSENSUS: ${cons.consensusSignal}` : `🔄 LIVE: ${cons.consensusSignal}`;
     document.getElementById('conSub').innerHTML = `${cons.totalPairs} pairs • RSI avg ${cons.avgRsi.toFixed(1)}`;
     document.getElementById('conAvgRsi').innerHTML = cons.avgRsi.toFixed(1);
     document.getElementById('conAgree').innerHTML = `${cons.agreement.toFixed(0)}%`;
@@ -486,24 +539,37 @@ function updateConsensusUI(cons, isFinal) {
     document.getElementById('vbS').style.width = (cons.votes.SMALL/maxV*100)+'%';
     document.getElementById('vcS').innerHTML = cons.votes.SMALL;
     if(isFinal) {
-        document.getElementById('tradeDecision').innerHTML = cons.isConfident ? `TRADE: ${cons.consensusSignal}` : '❌ SKIP (low confidence)';
-        document.getElementById('tradeReason').innerHTML = cons.isConfident ? `Agreement ${cons.agreement.toFixed(0)}% • RSI avg ${cons.avgRsi.toFixed(1)}` : 'Weak consensus, wait';
+        // Apply alternation rule
+        let finalSignal = getFinalSignal(cons.consensusSignal, cons.isConfident);
+        let isSkip = !cons.isConfident;
+        if (isSkip) {
+            document.getElementById('tradeDecision').innerHTML = '❌ SKIP (low confidence)';
+            document.getElementById('tradeReason').innerHTML = `Agreement ${cons.agreement.toFixed(0)}% < 45% – no trade, not counted in alternation.`;
+            document.getElementById('consensusDigitBox').style.display = 'none';
+            document.getElementById('allowedDigitsPanel').innerHTML = '— SKIP —';
+            document.getElementById('predictedDigitDisplay').innerHTML = '--';
+            return;
+        }
+        // Valid signal (non-skip)
+        document.getElementById('tradeDecision').innerHTML = `✅ TRADE: ${finalSignal}`;
+        document.getElementById('tradeReason').innerHTML = `Original: ${cons.consensusSignal} → ${(validSignalCount % 2 === 1) ? 'FORWARD' : 'REVERSE'} (Valid count: ${validSignalCount})`;
         document.getElementById('consensusDigitBox').style.display = 'block';
-        let allowed = DIGIT_SETS[cons.consensusSignal];
+        let allowed = DIGIT_SETS[finalSignal];
         let predicted = predictBestDigit(cons.avgRsi, btcLiveData.momentum || 0, allowed, lastPredictedDigit);
         lastPredictedDigit = predicted;
         document.getElementById('consensusDigitNum').innerHTML = predicted;
         document.getElementById('predictedDigitDisplay').innerHTML = predicted;
         let panel = document.getElementById('allowedDigitsPanel');
-        panel.innerHTML = allowed.map(d => `<span style="border-color:${cons.consensusSignal==='GREEN'?'#16a34a':cons.consensusSignal==='RED'?'#dc2626':cons.consensusSignal==='BIG'?'#0891b2':'#7c3aed'}">${d}</span>`).join('');
-        let bin = (cons.consensusSignal === 'GREEN' || cons.consensusSignal === 'BIG') ? 'B' : 'S';
+        panel.innerHTML = allowed.map(d => `<span style="border-color:${finalSignal==='GREEN'?'#16a34a':finalSignal==='RED'?'#dc2626':finalSignal==='BIG'?'#0891b2':'#7c3aed'}">${d}</span>`).join('');
+        // B/S history uses final signal
+        let bin = (finalSignal === 'GREEN' || finalSignal === 'BIG') ? 'B' : 'S';
         bsHistory.push(bin);
         if(bsHistory.length > 20) bsHistory.shift();
         updatePatternDisplay();
-        signalHistory.unshift({ signal: cons.consensusSignal, digit: predicted, agreement: cons.agreement.toFixed(0), time: new Date().toLocaleTimeString() });
+        signalHistory.unshift({ signal: finalSignal, original: cons.consensusSignal, digit: predicted, agreement: cons.agreement.toFixed(0), time: new Date().toLocaleTimeString() });
         if(signalHistory.length > 20) signalHistory.pop();
         renderHistory();
-        if(cons.isConfident && soundUnlocked) playHorn();
+        if(soundUnlocked) playHorn();
     }
 }
 
@@ -549,15 +615,20 @@ function updatePatternDisplay() {
 function renderHistory() {
     let histDiv = document.getElementById('historyList');
     if(!signalHistory.length) { histDiv.innerHTML = '<div style="color:#94a3b8">No signals yet</div>'; return; }
-    histDiv.innerHTML = signalHistory.map(h => `<div style="border-left:4px solid #fbbf24; padding:10px; margin-bottom:10px; background:#00000033; border-radius:12px;"><strong style="font-size:18px;">${h.signal}</strong> | Digit ${h.digit} | ${h.agreement}% | ${h.time}</div>`).join('');
+    histDiv.innerHTML = signalHistory.map(h => `<div style="border-left:4px solid #fbbf24; padding:10px; margin-bottom:10px; background:#00000033; border-radius:12px;"><strong style="font-size:18px;">${h.signal}</strong> (orig: ${h.original}) | Digit ${h.digit} | ${h.agreement}% | ${h.time}</div>`).join('');
 }
 
 function clearHistory() {
     signalHistory = [];
     bsHistory = [];
     lastPredictedDigit = -1;
+    resetAlternationCount();   // reset the alternation counter as well
     renderHistory();
     updatePatternDisplay();
+    document.getElementById('tradeDecision').innerHTML = 'WAITING';
+    document.getElementById('consensusDigitBox').style.display = 'none';
+    document.getElementById('allowedDigitsPanel').innerHTML = '—';
+    document.getElementById('predictedDigitDisplay').innerHTML = '--';
 }
 
 async function fullRefresh() {
@@ -638,7 +709,8 @@ window.filterPairs = function(f, btn) {
 };
 window.clearHistory = clearHistory;
 
-// Start everything
+// Initialize
+loadAlternationState();
 startRefreshCycle();
 fullRefresh();
 </script>
