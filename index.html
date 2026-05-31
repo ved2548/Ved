@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VED v8 – 5 MIN CYCLE | REAL RSI+EMA+ADX</title>
+    <!-- Auto refresh every 30 seconds -->
+    <meta http-equiv="refresh" content="30">
+    <title>VED v8 – AUTO REFRESH 30s | 5 MIN CYCLE</title>
     <style>
         * {
             margin: 0;
@@ -226,6 +228,12 @@
             gap: 12px;
             z-index: 100;
         }
+        .refresh-note {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 10px;
+        }
         @media (max-width: 800px) {
             .grid-3, .grid-2 { grid-template-columns: 1fr; }
             .timer { font-size: 48px; }
@@ -235,7 +243,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <div class="logo">⚡ VED v8 – 5 MIN CYCLE</div>
+        <div class="logo">⚡ VED v8 – AUTO REFRESH 30s</div>
         <div class="badge" id="pairCountBadge">0 Pairs</div>
         <div class="badge" id="clock">IST --:--:--</div>
     </div>
@@ -262,6 +270,14 @@
         <div id="tradeDecision" class="trade-decision trade-no" style="display: none;"></div>
     </div>
 
+    <!-- 5 MIN CYCLE TIMER - NOW AT TOP (above BTC) -->
+    <div class="card">
+        <div style="font-weight: 800;">⏱️ 5 MINUTE CYCLE TIMER</div>
+        <div class="timer" id="timer">5:00</div>
+        <div class="progress-bar"><div class="progress-fill" id="cycleFill" style="width: 100%;"></div></div>
+        <div class="refresh-note">🔄 Page auto-refresh every 30 seconds | Fresh data every cycle</div>
+    </div>
+
     <!-- Fetch Progress -->
     <div class="card">
         <div style="display: flex; justify-content: space-between;">
@@ -272,7 +288,7 @@
         <div id="fetchDetail" style="font-size: 12px; margin-top: 8px;">Initializing...</div>
     </div>
 
-    <!-- BTC Analysis -->
+    <!-- BTC Analysis (now below timer) -->
     <div class="grid-3">
         <div class="card">
             <div style="font-weight: 800;">BTC/USDT – RSI (14)</div>
@@ -293,13 +309,11 @@
                 <div style="font-size: 12px;" id="btcPrice">$---</div>
             </div>
         </div>
+        <!-- Extra card for balance (empty but keeps grid) -->
         <div class="card">
-            <div style="font-weight: 800;">⏱️ 5 MIN CYCLE</div>
-            <div class="timer" id="timer">5:00</div>
-            <div class="progress-bar"><div class="progress-fill" id="cycleFill" style="width: 100%;"></div></div>
-            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 12px;">
-                <span id="phase1">🔄</span> → <span id="phase2">⚡</span> → <span id="phase3">🔒</span>
-            </div>
+            <div style="font-weight: 800;">📊 MARKET STATUS</div>
+            <div id="lastUpdate" style="font-size: 14px; margin-top: 12px;">Last update: --</div>
+            <div style="margin-top: 12px;" class="badge">Next auto-refresh in 30s</div>
         </div>
     </div>
 
@@ -347,7 +361,8 @@
 
 <script>
     // --------------------------------------------------------------
-    // 5 MINUTE CYCLE – REAL TECHNICAL INDICATORS (Binance Live)
+    // 5 MINUTE CYCLE with AUTO PAGE REFRESH every 30s (handled by meta)
+    // But we also need to fetch data on load and compute
     // --------------------------------------------------------------
     const BINANCE_API = 'https://api.binance.com/api/v3';
     const ALL_SYMBOLS = [
@@ -355,14 +370,12 @@
         'SHIBUSDT','TRXUSDT','AVAXUSDT','ATOMUSDT','UNIUSDT','LTCUSDT','ETCUSDT','FILUSDT','APTUSDT','ARBUSDT',
         'OPUSDT','NEARUSDT','AAVEUSDT','MKRUSDT','RNDRUSDT','INJUSDT','FETUSDT','GRTUSDT','SANDUSDT','MANAUSDT'
     ];
-    const CYCLE_SEC = 300;   // 5 minutes (better signals)
+    const CYCLE_SEC = 300;   // 5 minutes for cycle display
 
-    // State
     let pairData = {};
     let btcData = { rsi: 50, emaTrend: 'NEUTRAL', adx: 0, price: 0 };
     let multiTF = { rsi5m: 50, rsi15m: 50 };
     let consensus = { bull: 0, bear: 0, strong: 0, avgRsi: 50, total: 0 };
-    let signalLocked = false;
     let isFetching = false;
     let fetchProgress = 0;
     let history = [];
@@ -380,7 +393,6 @@
     const strongCountEl = document.getElementById('strongCount');
     const bullBearBar = document.getElementById('bullBearBar');
     const tradeDecisionDiv = document.getElementById('tradeDecision');
-    const fetchStatusSpan = document.getElementById('fetchStatus');
     const fetchCounterSpan = document.getElementById('fetchCounter');
     const fetchBar = document.getElementById('fetchBar');
     const fetchDetail = document.getElementById('fetchDetail');
@@ -397,13 +409,10 @@
     const btcPriceSpan = document.getElementById('btcPrice');
     const timerSpan = document.getElementById('timer');
     const cycleFill = document.getElementById('cycleFill');
-    const phase1 = document.getElementById('phase1');
-    const phase2 = document.getElementById('phase2');
-    const phase3 = document.getElementById('phase3');
     const pairsGrid = document.getElementById('pairsGrid');
     const historyList = document.getElementById('historyList');
+    const lastUpdateSpan = document.getElementById('lastUpdate');
 
-    // Helper: fetch klines
     async function fetchKlines(symbol, interval = '1m', limit = 60) {
         try {
             const url = `${BINANCE_API}/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
@@ -536,12 +545,8 @@
     async function fetchAllPairs() {
         if (isFetching) return;
         isFetching = true;
-        signalLocked = false;
         fetchProgress = 0;
         pairData = {};
-        phase1.innerText = '🔄';
-        phase2.innerText = '⚡';
-        phase3.innerText = '⏳';
         tradeDecisionDiv.style.display = 'none';
 
         for (let i = 0; i < ALL_SYMBOLS.length; i++) {
@@ -558,10 +563,7 @@
         await updateBTC();
         computeConsensusAndLock();
         isFetching = false;
-        phase1.innerText = '✅';
-        phase2.innerText = '✅';
-        phase3.innerText = '🔒';
-        fetchDetail.innerText = `✅ Done. ${consensus.total} pairs analyzed. Next update in 5 minutes.`;
+        fetchDetail.innerText = `✅ Done. ${consensus.total} pairs analyzed. Next auto-refresh in 30s.`;
     }
 
     function computeConsensusAndLock() {
@@ -620,9 +622,9 @@
         if (history.length > 20) history.pop();
         renderHistory();
         localStorage.setItem('ved_history', JSON.stringify(history));
-        signalLocked = true;
         renderPairsGrid();
         if (shouldTrade && soundUnlocked) playAlertSound();
+        lastUpdateSpan.innerText = `Updated: ${new Date().toLocaleTimeString()}`;
     }
 
     function renderPairsGrid() {
@@ -683,19 +685,15 @@
         });
     }
 
-    // Timer with mm:ss format for 5 minutes
-    let cycleInterval = setInterval(() => {
+    // Update 5-minute cycle display (independent of page refresh)
+    function updateCycleTimer() {
         const now = new Date();
         const seconds = now.getSeconds();
         const minutes = now.getMinutes();
-        // Calculate remaining seconds in the current 5-minute window
         const totalSeconds = (minutes % 5) * 60 + seconds;
         const remaining = CYCLE_SEC - totalSeconds;
         if (remaining <= 0 || remaining > CYCLE_SEC) {
-            // Just after the cycle boundary, trigger fetch if not already
-            if (!isFetching && !signalLocked) fetchAllPairs();
-            const mins = Math.floor(CYCLE_SEC / 60);
-            timerSpan.innerText = `${mins}:00`;
+            timerSpan.innerText = `5:00`;
             cycleFill.style.width = '100%';
         } else {
             const minsLeft = Math.floor(remaining / 60);
@@ -703,13 +701,7 @@
             timerSpan.innerText = `${minsLeft}:${secsLeft.toString().padStart(2,'0')}`;
             cycleFill.style.width = `${(remaining / CYCLE_SEC) * 100}%`;
         }
-        if (remaining === CYCLE_SEC && !isFetching) {
-            fetchAllPairs();
-        }
-        if (signalLocked) {
-            document.getElementById('timerSub') && (document.getElementById('timerSub').innerText = '🔒 Signal Active');
-        }
-    }, 200);
+    }
 
     // Filters
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -733,13 +725,18 @@
     document.getElementById('zoomIn').onclick = () => { zoom = Math.min(1.6, zoom + 0.1); container.style.transform = `scale(${zoom})`; container.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
     document.getElementById('zoomOut').onclick = () => { zoom = Math.max(0.6, zoom - 0.1); container.style.transform = `scale(${zoom})`; container.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
 
-    // Load history and start
+    // Load history and start fetching
     try {
         const saved = localStorage.getItem('ved_history');
         if (saved) history = JSON.parse(saved);
         renderHistory();
     } catch(e) {}
-    fetchAllPairs();
+    
+    fetchAllPairs();  // initial fetch
+    setInterval(updateCycleTimer, 200);  // update timer display
+    setInterval(() => {
+        // Additional safety: if somehow fetch didn't happen, but page refresh handles it.
+    }, 1000);
 
     // Clock
     function updateClock() {
