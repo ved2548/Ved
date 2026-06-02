@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VED Pro – High Latency Optimized | Auto Disable on Latency >200ms</title>
+    <title>VED Pro Max v3 – Cycle‑Resetting Signals + Volume Profile</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -24,14 +24,7 @@
         }
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 28px;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
         .logo { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #a855f7, #f97316); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .badge { background: rgba(30, 41, 59, 0.8); padding: 6px 16px; border-radius: 40px; font-size: 13px; font-weight: 500; font-family: monospace; border: 1px solid rgba(255,255,255,0.08); }
         .signal-box { text-align: center; padding: 28px; border-radius: 48px; background: rgba(0,0,0,0.4); margin-bottom: 16px; transition: all 0.3s; }
@@ -40,7 +33,6 @@
         .signal-bull { background: linear-gradient(135deg, #14532d, #064e3b); border: 2px solid #4ade80; }
         .signal-bear { background: linear-gradient(135deg, #7f1d1d, #450a0a); border: 2px solid #f87171; }
         .signal-neu { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #facc15; }
-        .signal-disabled { background: linear-gradient(135deg, #2d3748, #1a202c); border: 2px solid #facc15; opacity: 0.7; }
         .metric-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .metric-label { font-size: 13px; color: #94a3b8; font-weight: 500; }
         .metric-value { font-size: 24px; font-weight: 700; font-family: monospace; }
@@ -48,25 +40,23 @@
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #a855f7); border-radius: 12px; transition: width 0.2s; }
         .trend-canvas { background: rgba(0,0,0,0.3); border-radius: 24px; padding: 12px; margin-top: 8px; }
         canvas { width: 100%; height: 180px; display: block; border-radius: 16px; }
+        .sm-level { background: #0f172a; border-radius: 20px; padding: 12px; margin-top: 12px; font-family: monospace; font-size: 12px; max-height: 120px; overflow-y: auto; }
         .zoom-controls { position: fixed; bottom: 24px; right: 24px; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 8px 16px; border-radius: 60px; display: flex; gap: 16px; z-index: 100; }
         button { background: #3b82f6; border: none; padding: 6px 14px; border-radius: 30px; color: white; font-weight: 600; cursor: pointer; }
         .timer-highlight { font-size: 48px; font-weight: 800; font-family: monospace; }
         .lock-timer { font-size: 14px; font-family: monospace; color: #facc15; }
-        .latency-good { color: #4ade80; }
-        .latency-ok { color: #facc15; }
-        .latency-bad { color: #f87171; }
-        .warning { color: #f97316; background: rgba(249,115,22,0.2); border-radius: 20px; padding: 4px 12px; display: inline-block; }
         @media (max-width: 800px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .signal-text { font-size: 32px; } }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <div class="logo">🔬 VED Pro – Latency Optimized (Auto‑Disable)</div>
+        <div class="logo">🔬 VED PRO MAX v3 – RESETTING SIGNALS + VOLUME PROFILE</div>
         <div class="badge" id="clock">IST --:--:--</div>
         <div class="badge" id="wsStatus">🔌 CONNECTING</div>
     </div>
 
+    <!-- Main Signal Card -->
     <div class="card">
         <div class="signal-box" id="signalBox">
             <div class="signal-emoji" id="signalEmoji">⏳</div>
@@ -88,53 +78,67 @@
         </div>
     </div>
 
+    <!-- Advanced Metrics -->
     <div class="grid-3">
         <div class="card">
             <div class="metric-label">📈 Cumulative Volume Delta (CVD)</div>
             <div class="metric-value" id="cvdValue" style="font-size: 28px;">0</div>
             <div class="progress-bar"><div class="progress-fill" id="cvdBar" style="background:#22c55e;"></div></div>
+            <div class="metric-label">Aggressive flow strength</div>
         </div>
         <div class="card">
-            <div class="metric-label">⚖️ Tick Imbalance Ratio (30s)</div>
+            <div class="metric-label">⚖️ Tick Imbalance Ratio</div>
             <div class="metric-value" id="imbalanceRatio">0.00</div>
             <div class="progress-bar"><div class="progress-fill" id="imbBar" style="background:#facc15;"></div></div>
+            <div class="metric-label">Buy ticks / total (30s)</div>
         </div>
         <div class="card">
             <div class="metric-label">📊 Relative Volume (RVOL)</div>
             <div class="metric-value" id="rvolValue">0.00x</div>
             <div class="progress-bar"><div class="progress-fill" id="rvolBar" style="background:#a855f7;"></div></div>
+            <div class="metric-label">Current vol / 20‑period avg</div>
         </div>
     </div>
 
+    <!-- Volume Profile + Divergence + S/R -->
     <div class="grid-2">
         <div class="card">
-            <div class="metric-label">📡 Network Latency (WebSocket RTT)</div>
-            <div class="metric-value" id="latencyValue" style="font-size: 28px;">-- ms</div>
-            <div class="progress-bar"><div class="progress-fill" id="latencyBar" style="background:#38bdf8;"></div></div>
-            <div class="metric-label" id="latencyStatus">⚠️ Latency >200ms will disable signals</div>
+            <div class="metric-label">📊 Volume Profile (Point of Control)</div>
+            <div id="volumeProfile" class="sm-level">Collecting ticks...</div>
+            <div class="metric-row" style="margin-top: 8px;">
+                <span>🔄 CVD vs Price Divergence</span>
+                <span id="divergenceMsg" class="metric-value" style="font-size: 16px;">--</span>
+            </div>
         </div>
         <div class="card">
-            <div class="metric-label">📉 Price + CVD Trend</div>
+            <div class="metric-label">📉 Price + CVD Trend (Real‑time)</div>
             <div class="trend-canvas">
                 <canvas id="trendCanvas" width="600" height="180" style="width:100%; height:180px"></canvas>
             </div>
         </div>
     </div>
 
+    <!-- Cycle Timer & Support/Resistance -->
     <div class="grid-2">
         <div class="card">
             <div class="metric-label">🎯 30‑Second Cycle Signal Lock</div>
             <div class="metric-value timer-highlight" id="timer">30</div>
             <div class="progress-bar"><div class="progress-fill" id="cycleFill" style="background:#f97316;"></div></div>
-            <div class="lock-timer" id="lockStatus">🔓 Signal locks at 10 seconds remaining</div>
-            <div class="metric-label" style="margin-top: 8px;">⏱️ Next lock in: <span id="nextLockSec">10</span> seconds</div>
+            <div class="lock-timer" id="lockStatus">🔓 Signal locks at 20 seconds remaining</div>
+            <div class="metric-label" style="margin-top: 8px;">⏱️ Next update: every second, lock at ⏳ <span id="nextLockSec">20</span>s</div>
         </div>
         <div class="card">
-            <div class="metric-label">📡 Data Health</div>
-            <div class="metric-row"><span>WebSocket</span><span id="wsHealth" style="color:#4ade80;">● ACTIVE</span></div>
-            <div class="metric-row"><span>Last tick time</span><span id="lastTickTime">--</span></div>
-            <div class="metric-row"><span>Heartbeat</span><span>every 30s (optimized)</span></div>
+            <div class="metric-label">📐 Dynamic Support / Resistance</div>
+            <div id="srLevels" class="sm-level">Waiting for price action...</div>
         </div>
+    </div>
+
+    <!-- Data Health -->
+    <div class="card">
+        <div class="metric-label">📡 Data Health</div>
+        <div class="metric-row"><span>WebSocket</span><span id="wsHealth" style="color:#4ade80;">● ACTIVE</span></div>
+        <div class="metric-row"><span>Last tick time</span><span id="lastTickTime">--</span></div>
+        <div class="metric-row"><span>API Key</span><span>Twelve Data (real)</span></div>
     </div>
 </div>
 <div class="zoom-controls">
@@ -145,38 +149,35 @@
 
 <script>
     // ============================================================
-    // HIGH LATENCY OPTIMIZED SCRIPT
-    // - Auto‑disable signal lock when latency > 200ms
-    // - Throttled UI updates (200ms)
-    // - Optimized tick processing, no console.log in production
-    // - Heartbeat interval increased to 30s
+    // VED PRO MAX v3 – CYCLE RESET, VOLUME PROFILE, REAL SIGNALS
+    // Every cycle starts fresh – no stale bias.
+    // Signal locks at exactly 20 seconds remaining.
     // ============================================================
-    const API_KEY = "246618a38ee84e1abdb9511a378c46d4";
+    const API_KEY = "7d8ec8ca7bf8483b81ff4490c76dfe88";
     const SYMBOL = "EUR/USD";
     const WS_URL = `wss://ws.twelvedata.com/v1/quotes/price?apikey=${API_KEY}`;
-    const LATENCY_THRESHOLD = 200; // ms
-    const UI_UPDATE_INTERVAL = 200; // ms
 
     let ws = null;
     let lastPrice = null;
-    let priceHistory = [];
-    let tickDirection = [];
+    let priceHistory = [];           // last 60 prices
+    let tickDirection = [];          // 'BUY' or 'SELL' for each tick (based on price change)
     let cumulativeCVD = 0;
     let cvdHistory = [];
     let tickVolumePerSecond = [];
     let currentSecondVol = 0;
     let lastSecond = -1;
 
-    let lastHeartbeatSent = 0;
-    let currentLatency = 0;
-    let heartbeatInterval = null;
+    // Volume Profile: map price -> tick count (rounded to 5 decimals)
+    let priceVolumeMap = new Map();
+    let pointOfControl = null;       // price with highest tick volume
 
+    // For support/resistance: swing highs/lows
+    let swingHighs = [], swingLows = [];
+
+    // Signal state
     let signalLocked = false;
-    let signalsEnabled = true;   // will be disabled if latency > threshold
     let currentScore = { bull: 0, bear: 0, confidence: 50, direction: 'NEUTRAL', reason: '' };
-    let lastRemaining = -1;
-    let pendingUIUpdate = false;
-    let latestMetrics = { imbalance: 0.5, rvol: 1, cvd: 0 };
+    let cycleStartTime = 0;
 
     // DOM elements
     const signalBox = document.getElementById('signalBox');
@@ -198,55 +199,17 @@
     const lockStatusSpan = document.getElementById('lockStatus');
     const wsHealthSpan = document.getElementById('wsHealth');
     const lastTickTimeSpan = document.getElementById('lastTickTime');
-    const latencyValueSpan = document.getElementById('latencyValue');
-    const latencyBar = document.getElementById('latencyBar');
-    const latencyStatusSpan = document.getElementById('latencyStatus');
+    const volumeProfileDiv = document.getElementById('volumeProfile');
+    const divergenceMsgSpan = document.getElementById('divergenceMsg');
+    const srLevelsDiv = document.getElementById('srLevels');
     const nextLockSecSpan = document.getElementById('nextLockSec');
+
     const canvas = document.getElementById('trendCanvas');
     const ctx = canvas.getContext('2d');
 
     function formatNum(n, d=5) { return n.toFixed(d); }
 
-    // Throttled UI update function
-    function throttledUIUpdate() {
-        if (pendingUIUpdate) return;
-        pendingUIUpdate = true;
-        setTimeout(() => {
-            // Update displayed metrics from latestMetrics
-            imbalanceRatioSpan.innerText = latestMetrics.imbalance.toFixed(3);
-            imbBar.style.width = (latestMetrics.imbalance * 100) + '%';
-            imbBar.style.background = latestMetrics.imbalance > 0.6 ? '#22c55e' : (latestMetrics.imbalance < 0.4 ? '#ef4444' : '#facc15');
-            rvolValueSpan.innerText = latestMetrics.rvol.toFixed(2) + 'x';
-            let rvolNorm = Math.min(100, (latestMetrics.rvol / 3) * 100);
-            rvolBar.style.width = rvolNorm + '%';
-            cvdValueSpan.innerText = latestMetrics.cvd;
-            let cvdNorm = Math.min(100, Math.max(0, 50 + latestMetrics.cvd * 1.5));
-            cvdBar.style.width = cvdNorm + '%';
-            cvdBar.style.background = latestMetrics.cvd >= 0 ? '#22c55e' : '#ef4444';
-
-            if (!signalLocked && signalsEnabled) {
-                confPctSpan.innerText = Math.round(currentScore.confidence) + '%';
-                confBar.style.width = currentScore.confidence + '%';
-                if (currentScore.direction === 'BULLISH') {
-                    signalEmoji.innerText = '🟢';
-                    signalText.innerText = 'BULLISH BIAS';
-                    signalText.style.color = '#4ade80';
-                } else if (currentScore.direction === 'BEARISH') {
-                    signalEmoji.innerText = '🔴';
-                    signalText.innerText = 'BEARISH BIAS';
-                    signalText.style.color = '#f87171';
-                } else {
-                    signalEmoji.innerText = '⚪';
-                    signalText.innerText = 'NEUTRAL';
-                    signalText.style.color = '#facc15';
-                }
-                signalReasonSpan.innerText = currentScore.reason;
-            }
-            pendingUIUpdate = false;
-        }, UI_UPDATE_INTERVAL);
-    }
-
-    // WebSocket with 30s heartbeat
+    // --- WebSocket connection ---
     function connectWebSocket() {
         if (ws && ws.readyState === WebSocket.OPEN) return;
         ws = new WebSocket(WS_URL);
@@ -255,13 +218,10 @@
             wsHealthSpan.style.color = '#4ade80';
             document.getElementById('wsStatus').innerHTML = '🟢 LIVE';
             ws.send(JSON.stringify({ action: "subscribe", params: { symbols: SYMBOL } }));
-            if (heartbeatInterval) clearInterval(heartbeatInterval);
-            heartbeatInterval = setInterval(() => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    lastHeartbeatSent = Date.now();
-                    ws.send(JSON.stringify({ action: "heartbeat" }));
-                }
-            }, 30000); // 30 seconds
+            if (window.heartbeatInterval) clearInterval(window.heartbeatInterval);
+            window.heartbeatInterval = setInterval(() => {
+                if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ action: "heartbeat" }));
+            }, 25000);
         };
         ws.onmessage = (ev) => {
             try {
@@ -270,42 +230,6 @@
                     const price = parseFloat(msg.price);
                     const timestamp = msg.timestamp || Date.now();
                     processTick(price, timestamp);
-                }
-                if (msg.event === "heartbeat" && lastHeartbeatSent) {
-                    const rtt = Date.now() - lastHeartbeatSent;
-                    currentLatency = Math.min(500, rtt);
-                    latencyValueSpan.innerText = currentLatency + " ms";
-                    let percent = Math.min(100, (currentLatency / 200) * 100);
-                    latencyBar.style.width = percent + "%";
-                    const cls = currentLatency < 100 ? 'latency-good' : (currentLatency < 200 ? 'latency-ok' : 'latency-bad');
-                    latencyValueSpan.className = `metric-value ${cls}`;
-                    // Check threshold
-                    if (currentLatency > LATENCY_THRESHOLD) {
-                        if (signalsEnabled) {
-                            signalsEnabled = false;
-                            latencyStatusSpan.innerHTML = '⚠️ HIGH LATENCY (>200ms) – SIGNALS DISABLED';
-                            latencyStatusSpan.className = 'warning';
-                            // Force signal box to disabled state
-                            signalBox.classList.add('signal-disabled');
-                            signalEmoji.innerText = '⚠️';
-                            signalText.innerText = 'DISABLED';
-                            signalText.style.color = '#facc15';
-                            signalReasonSpan.innerText = `Latency ${currentLatency}ms > ${LATENCY_THRESHOLD}ms. Trading disabled.`;
-                            lockStatusSpan.innerText = '🔴 SIGNALS DISABLED DUE TO LATENCY';
-                        }
-                    } else {
-                        if (!signalsEnabled) {
-                            signalsEnabled = true;
-                            latencyStatusSpan.innerHTML = '✅ Latency OK – Signals Enabled';
-                            latencyStatusSpan.className = '';
-                            signalBox.classList.remove('signal-disabled');
-                            signalEmoji.innerText = '⏳';
-                            signalText.innerText = 'COLLECTING DATA';
-                            signalText.style.color = '#facc15';
-                            lockStatusSpan.innerText = '🔓 Signal locks at 10 seconds remaining';
-                            resetCycle();  // fresh start
-                        }
-                    }
                 }
             } catch(e) { console.warn(e); }
         };
@@ -322,7 +246,7 @@
         };
     }
 
-    // Optimized tick processing (no console.log, throttled UI)
+    // --- Process each tick ---
     function processTick(price, timestamp) {
         const now = new Date();
         const sec = now.getSeconds();
@@ -333,125 +257,187 @@
             lastSecond = sec;
         }
         currentSecondVol++;
-        const totalVol60 = tickVolumePerSecond.reduce((a,b)=>a+b,0);
-        // Update tick volume (not throttled, cheap)
-        tickVolSpan.innerText = totalVol60;
+        const totalVolume60 = tickVolumePerSecond.reduce((a,b)=>a+b,0);
+        tickVolSpan.innerText = totalVolume60;
 
+        // Determine tick direction
         let direction = 'NEUTRAL';
         if (lastPrice !== null && price !== lastPrice) {
             direction = price > lastPrice ? 'BUY' : 'SELL';
             tickDirection.push(direction);
             if (tickDirection.length > 150) tickDirection.shift();
+
+            // Update CVD
             if (direction === 'BUY') cumulativeCVD++;
             else cumulativeCVD--;
+            cvdValueSpan.innerText = cumulativeCVD;
+            const cvdNorm = Math.min(100, Math.max(0, 50 + cumulativeCVD * 1.5));
+            cvdBar.style.width = cvdNorm + '%';
+            cvdBar.style.background = cumulativeCVD >= 0 ? '#22c55e' : '#ef4444';
             cvdHistory.push(cumulativeCVD);
             if (cvdHistory.length > 60) cvdHistory.shift();
+
+            // Volume Profile: increment count for this price (rounded)
+            const priceKey = price.toFixed(5);
+            priceVolumeMap.set(priceKey, (priceVolumeMap.get(priceKey) || 0) + 1);
+            // Update Point of Control
+            let maxCount = 0;
+            let poc = null;
+            for (let [p, cnt] of priceVolumeMap.entries()) {
+                if (cnt > maxCount) { maxCount = cnt; poc = p; }
+            }
+            pointOfControl = poc;
+            if (pointOfControl) {
+                volumeProfileDiv.innerHTML = `🔥 POC: ${pointOfControl}<br>Total levels: ${priceVolumeMap.size}`;
+            }
         }
 
+        // Update price history
         priceHistory.push(price);
         if (priceHistory.length > 60) priceHistory.shift();
         lastPrice = price;
         lastPriceSpan.innerText = price.toFixed(5);
         lastTickTimeSpan.innerText = new Date(timestamp).toLocaleTimeString();
 
-        // Calculate metrics (lightweight)
+        // Calculate Tick Imbalance (last 30 seconds)
         const recentTicks = tickDirection.slice(-30);
-        const buyCnt = recentTicks.filter(d => d === 'BUY').length;
-        const sellCnt = recentTicks.filter(d => d === 'SELL').length;
-        const total = buyCnt + sellCnt;
-        let imbalance = total === 0 ? 0.5 : buyCnt / total;
+        const buyCount = recentTicks.filter(d => d === 'BUY').length;
+        const sellCount = recentTicks.filter(d => d === 'SELL').length;
+        const totalTicks = buyCount + sellCount;
+        let imbalance = 0.5;
+        if (totalTicks > 0) imbalance = buyCount / totalTicks;
+        imbalanceRatioSpan.innerText = imbalance.toFixed(3);
+        imbBar.style.width = (imbalance * 100) + '%';
+        imbBar.style.background = imbalance > 0.6 ? '#22c55e' : (imbalance < 0.4 ? '#ef4444' : '#facc15');
 
+        // RVOL (20-second average)
         let volSum = 0;
         for (let i = Math.max(0, tickVolumePerSecond.length-20); i < tickVolumePerSecond.length; i++) volSum += tickVolumePerSecond[i];
         let avgVol = volSum / Math.min(20, tickVolumePerSecond.length);
-        let currVol = tickVolumePerSecond[tickVolumePerSecond.length-1] || 1;
-        let rvol = avgVol === 0 ? 1 : currVol / avgVol;
+        let currentVol = tickVolumePerSecond[tickVolumePerSecond.length-1] || 1;
+        let rvol = avgVol === 0 ? 1 : currentVol / avgVol;
+        rvolValueSpan.innerText = rvol.toFixed(2) + 'x';
+        let rvolNorm = Math.min(100, (rvol / 3) * 100);
+        rvolBar.style.width = rvolNorm + '%';
 
-        // Store latest metrics for throttled UI
-        latestMetrics = { imbalance, rvol, cvd: cumulativeCVD };
-
-        // Update composite score (only if signals enabled)
-        if (signalsEnabled && !signalLocked) {
-            updateCompositeSignal(imbalance, rvol, cumulativeCVD);
+        // Divergence detection: compare CVD direction with price direction over last 10 candles
+        if (priceHistory.length >= 10 && cvdHistory.length >= 10) {
+            let priceDir = priceHistory[priceHistory.length-1] > priceHistory[priceHistory.length-11] ? 1 : -1;
+            let cvdDir = cvdHistory[cvdHistory.length-1] > cvdHistory[cvdHistory.length-11] ? 1 : -1;
+            if (priceDir === 1 && cvdDir === -1) divergenceMsgSpan.innerText = '🔻 Bearish Divergence (price up, CVD down)';
+            else if (priceDir === -1 && cvdDir === 1) divergenceMsgSpan.innerText = '🟢 Bullish Divergence (price down, CVD up)';
+            else divergenceMsgSpan.innerText = '✅ No divergence';
         }
 
-        // Throttle UI updates
-        throttledUIUpdate();
-
-        // Draw chart (debounced via requestAnimationFrame)
-        if (!window.drawPending) {
-            window.drawPending = true;
-            requestAnimationFrame(() => {
-                drawTrends();
-                window.drawPending = false;
-            });
+        // Dynamic Support/Resistance (simple swing points)
+        if (priceHistory.length >= 5) {
+            let last5 = priceHistory.slice(-5);
+            let isSwingHigh = last5[4] > last5[3] && last5[3] > last5[2] && last5[2] > last5[1] && last5[1] > last5[0];
+            let isSwingLow = last5[4] < last5[3] && last5[3] < last5[2] && last5[2] < last5[1] && last5[1] < last5[0];
+            if (isSwingHigh) swingHighs.push(last5[4]);
+            if (isSwingLow) swingLows.push(last5[4]);
+            if (swingHighs.length > 10) swingHighs.shift();
+            if (swingLows.length > 10) swingLows.shift();
+            let recentRes = swingHighs.length ? swingHighs.slice(-3).map(p => p.toFixed(5)).join(', ') : '--';
+            let recentSup = swingLows.length ? swingLows.slice(-3).map(p => p.toFixed(5)).join(', ') : '--';
+            srLevelsDiv.innerHTML = `🔴 Resistance: ${recentRes}<br>🟢 Support: ${recentSup}`;
         }
+
+        // Update composite signal only if not locked
+        if (!signalLocked) updateCompositeSignal(imbalance, rvol, cumulativeCVD);
+        drawTrends();
     }
 
+    // --- Composite Scoring (resets each cycle via resetCycle) ---
     function updateCompositeSignal(imb, rvol, cvd) {
-        let bull = 0, bear = 0;
-        if (imb > 0.55) bull += 40;
-        else if (imb < 0.45) bear += 40;
-        else { bull += 20; bear += 20; }
+        let bullScore = 0, bearScore = 0;
 
-        if (cvd > 5) bull += 30;
-        else if (cvd < -5) bear += 30;
-        else { bull += 15; bear += 15; }
+        // 1. Tick Imbalance (40%)
+        if (imb > 0.55) bullScore += 40;
+        else if (imb < 0.45) bearScore += 40;
+        else { bullScore += 20; bearScore += 20; }
 
+        // 2. CVD (30%)
+        if (cvd > 5) bullScore += 30;
+        else if (cvd < -5) bearScore += 30;
+        else { bullScore += 15; bearScore += 15; }
+
+        // 3. RVOL (20%) – adds to the leading side
         if (rvol > 1.5) {
-            if (bull > bear) bull += 20;
-            else if (bear > bull) bear += 20;
-            else { bull += 10; bear += 10; }
+            if (bullScore > bearScore) bullScore += 20;
+            else if (bearScore > bullScore) bearScore += 20;
+            else { bullScore += 10; bearScore += 10; }
         } else if (rvol > 1.2) {
-            if (bull > bear) bull += 10;
-            else if (bear > bull) bear += 10;
+            if (bullScore > bearScore) bullScore += 10;
+            else if (bearScore > bullScore) bearScore += 10;
         }
 
+        // 4. Momentum (10%)
         if (priceHistory.length >= 2) {
             const last = priceHistory[priceHistory.length-1];
             const prev = priceHistory[priceHistory.length-2];
-            if (last > prev) bull += 10;
-            else if (last < prev) bear += 10;
-            else { bull += 5; bear += 5; }
+            if (last > prev) bullScore += 10;
+            else if (last < prev) bearScore += 10;
+            else { bullScore += 5; bearScore += 5; }
         }
 
-        let total = bull + bear;
+        let total = bullScore + bearScore;
         if (total === 0) total = 1;
-        let confidence = (Math.max(bull, bear) / total) * 100;
+        let confidence = (Math.max(bullScore, bearScore) / total) * 100;
         confidence = Math.min(98, Math.max(2, confidence));
-        let direction = bull > bear ? 'BULLISH' : (bear > bull ? 'BEARISH' : 'NEUTRAL');
+        let direction = bullScore > bearScore ? 'BULLISH' : (bearScore > bullScore ? 'BEARISH' : 'NEUTRAL');
         let reason = `Imb:${imb.toFixed(2)} CVD:${cvd} RVOL:${rvol.toFixed(2)}`;
 
-        currentScore = { bull, bear, confidence, direction, reason };
+        currentScore = { bull: bullScore, bear: bearScore, confidence, direction, reason };
+
+        // Update UI immediately (real-time bias)
+        confPctSpan.innerText = Math.round(confidence) + '%';
+        confBar.style.width = confidence + '%';
+        if (direction === 'BULLISH') {
+            signalEmoji.innerText = '🟢';
+            signalText.innerText = 'BULLISH BIAS';
+            signalText.style.color = '#4ade80';
+            signalReasonSpan.innerText = reason;
+        } else if (direction === 'BEARISH') {
+            signalEmoji.innerText = '🔴';
+            signalText.innerText = 'BEARISH BIAS';
+            signalText.style.color = '#f87171';
+            signalReasonSpan.innerText = reason;
+        } else {
+            signalEmoji.innerText = '⚪';
+            signalText.innerText = 'NEUTRAL';
+            signalText.style.color = '#facc15';
+            signalReasonSpan.innerText = reason;
+        }
     }
 
+    // --- Reset cycle at 0 seconds ---
     function resetCycle() {
         signalLocked = false;
+        // Reset short-term buffers but keep long-term CVD and volume profile? 
+        // For clean cycle, we reset tickDirection and imbalance but keep cumulative CVD (shows long-term trend)
+        // However, to avoid stale bias, we reset currentScore to neutral with 50% confidence.
         tickDirection = [];
+        // Do NOT reset cumulativeCVD – keep long-term
+        // Reset currentScore to neutral
         currentScore = { bull: 20, bear: 20, confidence: 50, direction: 'NEUTRAL', reason: 'Cycle reset – collecting fresh ticks' };
-        signalBox.classList.remove('signal-bull', 'signal-bear', 'signal-neu', 'signal-disabled');
-        if (!signalsEnabled) {
-            signalBox.classList.add('signal-disabled');
-            signalEmoji.innerText = '⚠️';
-            signalText.innerText = 'DISABLED';
-        } else {
-            signalBox.classList.remove('signal-disabled');
-            signalEmoji.innerText = '⏳';
-            signalText.innerText = 'COLLECTING DATA';
-        }
+        // Update UI to neutral
+        signalBox.className = 'signal-box';
+        signalEmoji.innerText = '⏳';
+        signalText.innerText = 'COLLECTING DATA';
         signalText.style.color = '#facc15';
         signalReasonSpan.innerText = 'New cycle – waiting for ticks';
         confPctSpan.innerText = '50%';
         confBar.style.width = '50%';
-        lockStatusSpan.innerText = signalsEnabled ? '🔓 Signal locks at 10 seconds remaining' : '🔴 SIGNALS DISABLED';
+        lockStatusSpan.innerText = '🔓 Signal will lock at 20 seconds remaining';
+        // Also reset the UI for the final signal box (no lock yet)
+        document.getElementById('signalBox').classList.remove('signal-bull', 'signal-bear', 'signal-neu');
+        // Remove any leftover locked styling
     }
 
+    // --- Lock signal at 20 seconds remaining ---
     function lockSignal() {
         if (signalLocked) return;
-        if (!signalsEnabled) {
-            lockStatusSpan.innerText = '🔴 SIGNALS DISABLED DUE TO HIGH LATENCY';
-            return;
-        }
         signalLocked = true;
         lockStatusSpan.innerText = '🔒 SIGNAL LOCKED – valid until cycle end';
         let finalDir = currentScore.direction;
@@ -462,38 +448,51 @@
             signalEmoji.innerText = '🟢';
             signalText.innerText = 'BUY / LONG';
             signalText.style.color = '#bbf7d0';
+            signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}%`;
         } else if (finalDir === 'BEARISH') {
             signalBox.className = 'signal-box signal-bear';
             signalEmoji.innerText = '🔴';
             signalText.innerText = 'SELL / SHORT';
             signalText.style.color = '#fecaca';
+            signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}%`;
         } else {
             signalBox.className = 'signal-box signal-neu';
             signalEmoji.innerText = '⚪';
             signalText.innerText = 'NO TRADE';
             signalText.style.color = '#fef08a';
+            signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}% (balanced market)`;
         }
-        signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}%`;
+        // Also update confidence display one last time
         confPctSpan.innerText = Math.round(finalConf) + '%';
         confBar.style.width = finalConf + '%';
     }
 
+    // --- Timer and cycle management (updates every second) ---
+    let lastRemaining = -1;
     function startCycleTimer() {
         setInterval(() => {
             const now = new Date();
             const sec = now.getSeconds();
             let remaining = 30 - (sec % 30);
-            if (remaining === 0) remaining = 30;
+            if (remaining === 0) remaining = 30; // display 30 instead of 0
             timerSpan.innerText = remaining;
             cycleFill.style.width = ((remaining / 30) * 100) + '%';
-            if (lastRemaining === 1 && remaining === 30) resetCycle();
-            if (remaining === 10 && !signalLocked && signalsEnabled) lockSignal();
+            // At the start of a new cycle (when remaining jumps from 1 to 30), reset everything
+            if (lastRemaining === 1 && remaining === 30) {
+                resetCycle();
+            }
+            // When remaining becomes 20, lock signal (only once)
+            if (remaining === 20 && !signalLocked) {
+                lockSignal();
+            }
             lastRemaining = remaining;
-            let nextLock = remaining > 10 ? remaining - 10 : 0;
+            // Update next lock indicator
+            let nextLock = remaining > 20 ? remaining - 20 : 0;
             nextLockSecSpan.innerText = nextLock;
         }, 200);
     }
 
+    // --- Canvas drawing ---
     function drawTrends() {
         if (!canvas || priceHistory.length < 2) return;
         const w = canvas.clientWidth;
@@ -501,6 +500,7 @@
         canvas.width = w;
         canvas.height = h;
         ctx.clearRect(0, 0, w, h);
+        // Price line
         const prices = priceHistory;
         const minP = Math.min(...prices);
         const maxP = Math.max(...prices);
@@ -515,6 +515,7 @@
             else ctx.lineTo(x, y);
         }
         ctx.stroke();
+        // CVD line
         if (cvdHistory.length > 1) {
             const minC = Math.min(...cvdHistory);
             const maxC = Math.max(...cvdHistory);
@@ -532,7 +533,7 @@
         }
     }
 
-    // Zoom and clock
+    // --- Zoom & Clock ---
     let zoom=1; const cont = document.querySelector('.container');
     document.getElementById('zoomIn').onclick = () => { zoom = Math.min(1.6, zoom+0.1); cont.style.transform = `scale(${zoom})`; cont.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
     document.getElementById('zoomOut').onclick = () => { zoom = Math.max(0.6, zoom-0.1); cont.style.transform = `scale(${zoom})`; cont.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
@@ -544,10 +545,12 @@
     setInterval(updateClock, 1000);
     updateClock();
 
+    // Start everything
     connectWebSocket();
     startCycleTimer();
+    setInterval(() => drawTrends(), 300);
     window.addEventListener('resize', () => drawTrends());
-    resetCycle();
+    resetCycle(); // initial state
 </script>
 </body>
 </html>
