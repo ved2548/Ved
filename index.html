@@ -3,353 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <!-- Auto refresh every 30 seconds -->
-    <meta http-equiv="refresh" content="30">
-    <title>VED v8 – AUTO REFRESH 30s | 5 MIN CYCLE</title>
+    <title>VED Pro – High Latency Optimized | Auto Disable on Latency >200ms</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #0a0f1a;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: #e2e8f0;
-            padding: 16px;
+            background: radial-gradient(circle at 20% 30%, #030712, #000000);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #f1f5f9;
+            padding: 24px;
+            min-height: 100vh;
         }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1600px; margin: 0 auto; }
         .card {
-            background: #111827;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #1f2937;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            background: rgba(15, 25, 45, 0.65);
+            backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
         }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 12px;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #a855f7);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .badge {
-            background: #1e293b;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: monospace;
-        }
-        .rsi-bar {
-            height: 24px;
-            background: linear-gradient(90deg, #2563eb, #22c55e, #eab308, #ef4444);
-            border-radius: 12px;
-            position: relative;
-            margin: 15px 0;
-        }
-        .rsi-needle {
-            position: absolute;
-            width: 6px;
-            height: 36px;
-            background: white;
-            border-radius: 4px;
-            top: -6px;
-            transform: translateX(-50%);
-            box-shadow: 0 0 12px white;
-            transition: left 0.2s;
-        }
-        .rsi-value {
-            font-size: 48px;
-            font-weight: 800;
-            text-align: center;
-            font-family: monospace;
-        }
-        .signal-box {
-            text-align: center;
-            padding: 16px;
-            border-radius: 20px;
-            background: #0f172a;
-            margin-top: 12px;
-        }
-        .signal-emoji {
-            font-size: 64px;
-        }
-        .signal-text {
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
-        .score-grid {
-            display: flex;
             gap: 16px;
-            justify-content: center;
-            margin: 16px 0;
+            margin-bottom: 28px;
         }
-        .score-item {
-            background: #1e293b;
-            padding: 12px;
-            border-radius: 20px;
-            text-align: center;
-            flex: 1;
-        }
-        .score-number {
-            font-size: 28px;
-            font-weight: 800;
-        }
-        .winner {
-            border: 2px solid #fbbf24;
-            background: #2d3a4e;
-        }
-        .pair-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-            max-height: 360px;
-            overflow-y: auto;
-            margin-top: 12px;
-        }
-        .pair-card {
-            background: #1e293b;
-            padding: 10px;
-            border-radius: 16px;
-            text-align: center;
-        }
-        .filter-bar {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-        .filter-btn {
-            background: #1e293b;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 40px;
-            color: #cbd5e1;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .filter-btn.active {
-            background: #3b82f6;
-            color: white;
-        }
-        .progress-bar {
-            height: 8px;
-            background: #334155;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #a855f7);
-            transition: width 0.2s;
-        }
-        .timer {
-            font-size: 64px;
-            font-weight: 800;
-            text-align: center;
-            font-family: monospace;
-        }
-        .trade-decision {
-            padding: 16px;
-            border-radius: 20px;
-            margin-top: 16px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .trade-yes {
-            background: #14532d;
-            border: 1px solid #22c55e;
-            color: #bbf7d0;
-        }
-        .trade-no {
-            background: #7f1d1d;
-            border: 1px solid #ef4444;
-            color: #fecaca;
-        }
-        .history-list {
-            max-height: 280px;
-            overflow-y: auto;
-        }
-        .history-item {
-            background: #0f172a;
-            margin-bottom: 8px;
-            padding: 10px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            border-left: 4px solid;
-        }
-        button {
-            background: #3b82f6;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 40px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .zoom-controls {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #0f172a;
-            padding: 8px 12px;
-            border-radius: 60px;
-            display: flex;
-            gap: 12px;
-            z-index: 100;
-        }
-        .refresh-note {
-            font-size: 11px;
-            color: #94a3b8;
-            text-align: center;
-            margin-top: 10px;
-        }
-        @media (max-width: 800px) {
-            .grid-3, .grid-2 { grid-template-columns: 1fr; }
-            .timer { font-size: 48px; }
-        }
+        .logo { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #a855f7, #f97316); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .badge { background: rgba(30, 41, 59, 0.8); padding: 6px 16px; border-radius: 40px; font-size: 13px; font-weight: 500; font-family: monospace; border: 1px solid rgba(255,255,255,0.08); }
+        .signal-box { text-align: center; padding: 28px; border-radius: 48px; background: rgba(0,0,0,0.4); margin-bottom: 16px; transition: all 0.3s; }
+        .signal-emoji { font-size: 80px; }
+        .signal-text { font-size: 48px; font-weight: 800; letter-spacing: 2px; margin-top: 8px; }
+        .signal-bull { background: linear-gradient(135deg, #14532d, #064e3b); border: 2px solid #4ade80; }
+        .signal-bear { background: linear-gradient(135deg, #7f1d1d, #450a0a); border: 2px solid #f87171; }
+        .signal-neu { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #facc15; }
+        .signal-disabled { background: linear-gradient(135deg, #2d3748, #1a202c); border: 2px solid #facc15; opacity: 0.7; }
+        .metric-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .metric-label { font-size: 13px; color: #94a3b8; font-weight: 500; }
+        .metric-value { font-size: 24px; font-weight: 700; font-family: monospace; }
+        .progress-bar { height: 8px; background: #334155; border-radius: 12px; overflow: hidden; margin: 12px 0; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #a855f7); border-radius: 12px; transition: width 0.2s; }
+        .trend-canvas { background: rgba(0,0,0,0.3); border-radius: 24px; padding: 12px; margin-top: 8px; }
+        canvas { width: 100%; height: 180px; display: block; border-radius: 16px; }
+        .zoom-controls { position: fixed; bottom: 24px; right: 24px; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 8px 16px; border-radius: 60px; display: flex; gap: 16px; z-index: 100; }
+        button { background: #3b82f6; border: none; padding: 6px 14px; border-radius: 30px; color: white; font-weight: 600; cursor: pointer; }
+        .timer-highlight { font-size: 48px; font-weight: 800; font-family: monospace; }
+        .lock-timer { font-size: 14px; font-family: monospace; color: #facc15; }
+        .latency-good { color: #4ade80; }
+        .latency-ok { color: #facc15; }
+        .latency-bad { color: #f87171; }
+        .warning { color: #f97316; background: rgba(249,115,22,0.2); border-radius: 20px; padding: 4px 12px; display: inline-block; }
+        @media (max-width: 800px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .signal-text { font-size: 32px; } }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <div class="logo">⚡ VED v8 – AUTO REFRESH 30s</div>
-        <div class="badge" id="pairCountBadge">0 Pairs</div>
+        <div class="logo">🔬 VED Pro – Latency Optimized (Auto‑Disable)</div>
         <div class="badge" id="clock">IST --:--:--</div>
+        <div class="badge" id="wsStatus">🔌 CONNECTING</div>
     </div>
 
-    <!-- Consensus Card -->
-    <div class="card" id="consensusCard">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <div>
-                <div style="font-size: 12px; letter-spacing: 2px;">MARKET CONSENSUS</div>
-                <div style="font-size: 32px; font-weight: 800;" id="consensusDir">🟡 ANALYZING</div>
-                <div id="consensusSub">Fetching live data...</div>
-            </div>
-            <div style="text-align: right;">
-                <div>Avg RSI</div>
-                <div style="font-size: 36px; font-weight: 800;" id="avgRsi">--</div>
-            </div>
-        </div>
-        <div class="progress-bar" style="margin: 16px 0;"><div class="progress-fill" id="bullBearBar" style="width: 50%; background: #22c55e;"></div></div>
-        <div style="display: flex; gap: 20px; justify-content: space-between;">
-            <span>🐂 BULL: <span id="bullCount">0</span></span>
-            <span>🐻 BEAR: <span id="bearCount">0</span></span>
-            <span>⚡ STRONG TREND: <span id="strongCount">0</span></span>
-        </div>
-        <div id="tradeDecision" class="trade-decision trade-no" style="display: none;"></div>
-    </div>
-
-    <!-- 5 MIN CYCLE TIMER - NOW AT TOP (above BTC) -->
     <div class="card">
-        <div style="font-weight: 800;">⏱️ 5 MINUTE CYCLE TIMER</div>
-        <div class="timer" id="timer">5:00</div>
-        <div class="progress-bar"><div class="progress-fill" id="cycleFill" style="width: 100%;"></div></div>
-        <div class="refresh-note">🔄 Page auto-refresh every 30 seconds | Fresh data every cycle</div>
-    </div>
-
-    <!-- Fetch Progress -->
-    <div class="card">
-        <div style="display: flex; justify-content: space-between;">
-            <span id="fetchStatus">🔄 FETCHING PAIRS</span>
-            <span id="fetchCounter">0 / 30</span>
+        <div class="signal-box" id="signalBox">
+            <div class="signal-emoji" id="signalEmoji">⏳</div>
+            <div class="signal-text" id="signalText">INITIALIZING</div>
+            <div id="signalReason" class="metric-label" style="margin-top: 8px;">Waiting for live ticks...</div>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="fetchBar"></div></div>
-        <div id="fetchDetail" style="font-size: 12px; margin-top: 8px;">Initializing...</div>
+        <div class="metric-row">
+            <span class="metric-label">📊 Composite Confidence</span>
+            <span class="metric-value" id="confPct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="confBar"></div></div>
+        <div class="metric-row">
+            <span class="metric-label">Last Price (EUR/USD)</span>
+            <span class="metric-value" id="lastPrice">--</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Tick Volume (last 60s)</span>
+            <span class="metric-value" id="tickVol">0</span>
+        </div>
     </div>
 
-    <!-- BTC Analysis (now below timer) -->
     <div class="grid-3">
         <div class="card">
-            <div style="font-weight: 800;">BTC/USDT – RSI (14)</div>
-            <div class="rsi-bar"><div class="rsi-needle" id="rsiNeedle" style="left: 50%;"></div></div>
-            <div class="rsi-value" id="btcRsi">--</div>
-            <div id="btcAdxEma" style="text-align: center; font-size: 13px;">ADX: -- | EMA: --</div>
-            <div id="btcMulti" style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;"></div>
+            <div class="metric-label">📈 Cumulative Volume Delta (CVD)</div>
+            <div class="metric-value" id="cvdValue" style="font-size: 28px;">0</div>
+            <div class="progress-bar"><div class="progress-fill" id="cvdBar" style="background:#22c55e;"></div></div>
         </div>
         <div class="card">
-            <div style="font-weight: 800;">BTC SIGNAL</div>
-            <div class="signal-box">
-                <div class="signal-emoji" id="signalEmoji">⏳</div>
-                <div class="signal-text" id="signalText">WAIT</div>
-                <div class="score-grid">
-                    <div class="score-item" id="bullScoreBox"><div>🟢 BULL</div><div class="score-number" id="bullScore">0</div></div>
-                    <div class="score-item" id="bearScoreBox"><div>🔴 BEAR</div><div class="score-number" id="bearScore">0</div></div>
-                </div>
-                <div style="font-size: 12px;" id="btcPrice">$---</div>
-            </div>
+            <div class="metric-label">⚖️ Tick Imbalance Ratio (30s)</div>
+            <div class="metric-value" id="imbalanceRatio">0.00</div>
+            <div class="progress-bar"><div class="progress-fill" id="imbBar" style="background:#facc15;"></div></div>
         </div>
-        <!-- Extra card for balance (empty but keeps grid) -->
         <div class="card">
-            <div style="font-weight: 800;">📊 MARKET STATUS</div>
-            <div id="lastUpdate" style="font-size: 14px; margin-top: 12px;">Last update: --</div>
-            <div style="margin-top: 12px;" class="badge">Next auto-refresh in 30s</div>
+            <div class="metric-label">📊 Relative Volume (RVOL)</div>
+            <div class="metric-value" id="rvolValue">0.00x</div>
+            <div class="progress-bar"><div class="progress-fill" id="rvolBar" style="background:#a855f7;"></div></div>
         </div>
-    </div>
-
-    <!-- All Pairs List -->
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <div style="font-weight: 800;">📊 ALL USDT PAIRS – REAL RSI + TREND</div>
-            <div class="filter-bar" id="filterBar">
-                <button class="filter-btn active" data-filter="all">ALL</button>
-                <button class="filter-btn" data-filter="BULL">🟢 BULL</button>
-                <button class="filter-btn" data-filter="BEAR">🔴 BEAR</button>
-                <button class="filter-btn" data-filter="STRONG">⚡ STRONG TREND</button>
-            </div>
-        </div>
-        <div class="pair-grid" id="pairsGrid">Loading pairs...</div>
     </div>
 
     <div class="grid-2">
         <div class="card">
-            <div style="font-weight: 800;">📖 RSI TRADING GUIDE</div>
-            <table style="width: 100%; font-size: 13px; margin-top: 12px;">
-                <tr><th>RSI Range</th><th>Signal</th></tr>
-                <tr><td>&lt; 30</td><td style="color: #22c55e;">Oversold → BUY</td></tr>
-                <tr><td>30 - 45</td><td style="color: #eab308;">Weak / Wait</td></tr>
-                <tr><td>45 - 55</td><td style="color: #94a3b8;">Neutral</td></tr>
-                <tr><td>55 - 70</td><td style="color: #22c55e;">Bullish Momentum</td></tr>
-                <tr><td>&gt; 70</td><td style="color: #ef4444;">Overbought → Caution</td></tr>
-            </table>
-            <div style="margin-top: 12px; font-size: 12px;">✅ EMA50 + ADX(14) filter applied</div>
+            <div class="metric-label">📡 Network Latency (WebSocket RTT)</div>
+            <div class="metric-value" id="latencyValue" style="font-size: 28px;">-- ms</div>
+            <div class="progress-bar"><div class="progress-fill" id="latencyBar" style="background:#38bdf8;"></div></div>
+            <div class="metric-label" id="latencyStatus">⚠️ Latency >200ms will disable signals</div>
         </div>
         <div class="card">
-            <div style="display: flex; justify-content: space-between;">
-                <div style="font-weight: 800;">📜 SIGNAL HISTORY</div>
-                <button id="clearHistoryBtn">🗑️ Clear</button>
+            <div class="metric-label">📉 Price + CVD Trend</div>
+            <div class="trend-canvas">
+                <canvas id="trendCanvas" width="600" height="180" style="width:100%; height:180px"></canvas>
             </div>
-            <div class="history-list" id="historyList">No signals yet.</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="metric-label">🎯 30‑Second Cycle Signal Lock</div>
+            <div class="metric-value timer-highlight" id="timer">30</div>
+            <div class="progress-bar"><div class="progress-fill" id="cycleFill" style="background:#f97316;"></div></div>
+            <div class="lock-timer" id="lockStatus">🔓 Signal locks at 10 seconds remaining</div>
+            <div class="metric-label" style="margin-top: 8px;">⏱️ Next lock in: <span id="nextLockSec">10</span> seconds</div>
+        </div>
+        <div class="card">
+            <div class="metric-label">📡 Data Health</div>
+            <div class="metric-row"><span>WebSocket</span><span id="wsHealth" style="color:#4ade80;">● ACTIVE</span></div>
+            <div class="metric-row"><span>Last tick time</span><span id="lastTickTime">--</span></div>
+            <div class="metric-row"><span>Heartbeat</span><span>every 30s (optimized)</span></div>
         </div>
     </div>
 </div>
@@ -360,396 +144,410 @@
 </div>
 
 <script>
-    // --------------------------------------------------------------
-    // 5 MINUTE CYCLE with AUTO PAGE REFRESH every 30s (handled by meta)
-    // But we also need to fetch data on load and compute
-    // --------------------------------------------------------------
-    const BINANCE_API = 'https://api.binance.com/api/v3';
-    const ALL_SYMBOLS = [
-        'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','DOTUSDT','LINKUSDT','MATICUSDT',
-        'SHIBUSDT','TRXUSDT','AVAXUSDT','ATOMUSDT','UNIUSDT','LTCUSDT','ETCUSDT','FILUSDT','APTUSDT','ARBUSDT',
-        'OPUSDT','NEARUSDT','AAVEUSDT','MKRUSDT','RNDRUSDT','INJUSDT','FETUSDT','GRTUSDT','SANDUSDT','MANAUSDT'
-    ];
-    const CYCLE_SEC = 300;   // 5 minutes for cycle display
+    // ============================================================
+    // HIGH LATENCY OPTIMIZED SCRIPT
+    // - Auto‑disable signal lock when latency > 200ms
+    // - Throttled UI updates (200ms)
+    // - Optimized tick processing, no console.log in production
+    // - Heartbeat interval increased to 30s
+    // ============================================================
+    const API_KEY = "246618a38ee84e1abdb9511a378c46d4";
+    const SYMBOL = "EUR/USD";
+    const WS_URL = `wss://ws.twelvedata.com/v1/quotes/price?apikey=${API_KEY}`;
+    const LATENCY_THRESHOLD = 200; // ms
+    const UI_UPDATE_INTERVAL = 200; // ms
 
-    let pairData = {};
-    let btcData = { rsi: 50, emaTrend: 'NEUTRAL', adx: 0, price: 0 };
-    let multiTF = { rsi5m: 50, rsi15m: 50 };
-    let consensus = { bull: 0, bear: 0, strong: 0, avgRsi: 50, total: 0 };
-    let isFetching = false;
-    let fetchProgress = 0;
-    let history = [];
-    let currentFilter = 'all';
-    let soundUnlocked = false;
-    let audioCtx = null;
+    let ws = null;
+    let lastPrice = null;
+    let priceHistory = [];
+    let tickDirection = [];
+    let cumulativeCVD = 0;
+    let cvdHistory = [];
+    let tickVolumePerSecond = [];
+    let currentSecondVol = 0;
+    let lastSecond = -1;
+
+    let lastHeartbeatSent = 0;
+    let currentLatency = 0;
+    let heartbeatInterval = null;
+
+    let signalLocked = false;
+    let signalsEnabled = true;   // will be disabled if latency > threshold
+    let currentScore = { bull: 0, bear: 0, confidence: 50, direction: 'NEUTRAL', reason: '' };
+    let lastRemaining = -1;
+    let pendingUIUpdate = false;
+    let latestMetrics = { imbalance: 0.5, rvol: 1, cvd: 0 };
 
     // DOM elements
-    const pairCountBadge = document.getElementById('pairCountBadge');
-    const consensusDirEl = document.getElementById('consensusDir');
-    const consensusSub = document.getElementById('consensusSub');
-    const avgRsiEl = document.getElementById('avgRsi');
-    const bullCountEl = document.getElementById('bullCount');
-    const bearCountEl = document.getElementById('bearCount');
-    const strongCountEl = document.getElementById('strongCount');
-    const bullBearBar = document.getElementById('bullBearBar');
-    const tradeDecisionDiv = document.getElementById('tradeDecision');
-    const fetchCounterSpan = document.getElementById('fetchCounter');
-    const fetchBar = document.getElementById('fetchBar');
-    const fetchDetail = document.getElementById('fetchDetail');
-    const rsiNeedle = document.getElementById('rsiNeedle');
-    const btcRsiSpan = document.getElementById('btcRsi');
-    const btcAdxEmaSpan = document.getElementById('btcAdxEma');
-    const btcMultiSpan = document.getElementById('btcMulti');
+    const signalBox = document.getElementById('signalBox');
     const signalEmoji = document.getElementById('signalEmoji');
     const signalText = document.getElementById('signalText');
-    const bullScoreSpan = document.getElementById('bullScore');
-    const bearScoreSpan = document.getElementById('bearScore');
-    const bullScoreBox = document.getElementById('bullScoreBox');
-    const bearScoreBox = document.getElementById('bearScoreBox');
-    const btcPriceSpan = document.getElementById('btcPrice');
+    const signalReasonSpan = document.getElementById('signalReason');
+    const confPctSpan = document.getElementById('confPct');
+    const confBar = document.getElementById('confBar');
+    const lastPriceSpan = document.getElementById('lastPrice');
+    const tickVolSpan = document.getElementById('tickVol');
+    const cvdValueSpan = document.getElementById('cvdValue');
+    const cvdBar = document.getElementById('cvdBar');
+    const imbalanceRatioSpan = document.getElementById('imbalanceRatio');
+    const imbBar = document.getElementById('imbBar');
+    const rvolValueSpan = document.getElementById('rvolValue');
+    const rvolBar = document.getElementById('rvolBar');
     const timerSpan = document.getElementById('timer');
     const cycleFill = document.getElementById('cycleFill');
-    const pairsGrid = document.getElementById('pairsGrid');
-    const historyList = document.getElementById('historyList');
-    const lastUpdateSpan = document.getElementById('lastUpdate');
+    const lockStatusSpan = document.getElementById('lockStatus');
+    const wsHealthSpan = document.getElementById('wsHealth');
+    const lastTickTimeSpan = document.getElementById('lastTickTime');
+    const latencyValueSpan = document.getElementById('latencyValue');
+    const latencyBar = document.getElementById('latencyBar');
+    const latencyStatusSpan = document.getElementById('latencyStatus');
+    const nextLockSecSpan = document.getElementById('nextLockSec');
+    const canvas = document.getElementById('trendCanvas');
+    const ctx = canvas.getContext('2d');
 
-    async function fetchKlines(symbol, interval = '1m', limit = 60) {
-        try {
-            const url = `${BINANCE_API}/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('API error');
-            const data = await res.json();
-            const closes = data.map(c => parseFloat(c[4]));
-            const highs = data.map(c => parseFloat(c[2]));
-            const lows = data.map(c => parseFloat(c[3]));
-            return { closes, highs, lows, price: closes[closes.length-1], prev: closes[closes.length-2] };
-        } catch(e) {
-            console.warn(`Error fetching ${symbol}:`, e);
-            return null;
-        }
-    }
+    function formatNum(n, d=5) { return n.toFixed(d); }
 
-    function calcRSI(closes, period = 14) {
-        if (closes.length < period + 1) return 50;
-        let gains = 0, losses = 0;
-        for (let i = 1; i <= period; i++) {
-            const diff = closes[i] - closes[i-1];
-            if (diff >= 0) gains += diff;
-            else losses -= diff;
-        }
-        let avgGain = gains / period;
-        let avgLoss = losses / period;
-        for (let i = period + 1; i < closes.length; i++) {
-            const diff = closes[i] - closes[i-1];
-            avgGain = (avgGain * (period-1) + (diff > 0 ? diff : 0)) / period;
-            avgLoss = (avgLoss * (period-1) + (diff < 0 ? -diff : 0)) / period;
-        }
-        if (avgLoss === 0) return 100;
-        const rs = avgGain / avgLoss;
-        return parseFloat((100 - 100 / (1 + rs)).toFixed(2));
-    }
+    // Throttled UI update function
+    function throttledUIUpdate() {
+        if (pendingUIUpdate) return;
+        pendingUIUpdate = true;
+        setTimeout(() => {
+            // Update displayed metrics from latestMetrics
+            imbalanceRatioSpan.innerText = latestMetrics.imbalance.toFixed(3);
+            imbBar.style.width = (latestMetrics.imbalance * 100) + '%';
+            imbBar.style.background = latestMetrics.imbalance > 0.6 ? '#22c55e' : (latestMetrics.imbalance < 0.4 ? '#ef4444' : '#facc15');
+            rvolValueSpan.innerText = latestMetrics.rvol.toFixed(2) + 'x';
+            let rvolNorm = Math.min(100, (latestMetrics.rvol / 3) * 100);
+            rvolBar.style.width = rvolNorm + '%';
+            cvdValueSpan.innerText = latestMetrics.cvd;
+            let cvdNorm = Math.min(100, Math.max(0, 50 + latestMetrics.cvd * 1.5));
+            cvdBar.style.width = cvdNorm + '%';
+            cvdBar.style.background = latestMetrics.cvd >= 0 ? '#22c55e' : '#ef4444';
 
-    function calcEMA(closes, period = 50) {
-        if (closes.length < period) return closes[closes.length-1];
-        let k = 2 / (period + 1);
-        let ema = closes.slice(0, period).reduce((a,b) => a+b, 0) / period;
-        for (let i = period; i < closes.length; i++) {
-            ema = (closes[i] - ema) * k + ema;
-        }
-        return ema;
-    }
-
-    function calcADX(highs, lows, closes, period = 14) {
-        if (closes.length < period + 1) return 0;
-        let tr = [], plusDM = [], minusDM = [];
-        for (let i = 1; i < closes.length; i++) {
-            const h = highs[i], l = lows[i], pc = closes[i-1];
-            tr.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
-            const up = h - highs[i-1];
-            const down = lows[i-1] - l;
-            plusDM.push((up > down && up > 0) ? up : 0);
-            minusDM.push((down > up && down > 0) ? down : 0);
-        }
-        let atr = tr.slice(0, period).reduce((a,b) => a+b, 0) / period;
-        let plusS = plusDM.slice(0, period).reduce((a,b) => a+b, 0) / period;
-        let minusS = minusDM.slice(0, period).reduce((a,b) => a+b, 0) / period;
-        for (let i = period; i < tr.length; i++) {
-            atr = (atr * (period-1) + tr[i]) / period;
-            plusS = (plusS * (period-1) + plusDM[i]) / period;
-            minusS = (minusS * (period-1) + minusDM[i]) / period;
-        }
-        const plusDI = (plusS / atr) * 100;
-        const minusDI = (minusS / atr) * 100;
-        const dx = Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100;
-        return Math.min(100, dx);
-    }
-
-    async function analyzeSymbol(symbol) {
-        const k = await fetchKlines(symbol, '1m', 60);
-        if (!k) return null;
-        const rsi = calcRSI(k.closes, 14);
-        const ema50 = calcEMA(k.closes, 50);
-        const emaTrend = k.price > ema50 ? 'BULL' : 'BEAR';
-        const adx = calcADX(k.highs, k.lows, k.closes, 14);
-        const strong = adx > 25;
-        return { rsi, emaTrend, adx, strong, signal: emaTrend, price: k.price, change: ((k.price - k.prev)/k.prev * 100) };
-    }
-
-    async function updateBTC() {
-        const btc1m = await analyzeSymbol('BTCUSDT');
-        if (!btc1m) return;
-        btcData = {
-            rsi: btc1m.rsi,
-            emaTrend: btc1m.emaTrend,
-            adx: btc1m.adx,
-            price: btc1m.price,
-            change: btc1m.change
-        };
-        const k5 = await fetchKlines('BTCUSDT', '5m', 30);
-        const k15 = await fetchKlines('BTCUSDT', '15m', 30);
-        multiTF.rsi5m = k5 ? calcRSI(k5.closes, 14) : 50;
-        multiTF.rsi15m = k15 ? calcRSI(k15.closes, 14) : 50;
-
-        rsiNeedle.style.left = `${btcData.rsi}%`;
-        btcRsiSpan.innerText = btcData.rsi.toFixed(1);
-        btcAdxEmaSpan.innerText = `ADX: ${btcData.adx.toFixed(1)} | EMA: ${btcData.emaTrend}`;
-        btcMultiSpan.innerHTML = `<span class="badge" style="background:#1e293b;">5m RSI: ${multiTF.rsi5m.toFixed(1)}</span>
-                                   <span class="badge" style="background:#1e293b;">15m RSI: ${multiTF.rsi15m.toFixed(1)}</span>`;
-        btcPriceSpan.innerText = `$${btcData.price.toLocaleString(undefined, {minimumFractionDigits:2})}`;
-
-        let bullStrength = 0, bearStrength = 0;
-        if (btcData.emaTrend === 'BULL') {
-            bullStrength = Math.min(100, 50 + (btcData.rsi - 50) * 1.5 + (btcData.adx / 2));
-            bearStrength = Math.min(100, 50 - (btcData.rsi - 50) * 0.8);
-        } else {
-            bearStrength = Math.min(100, 50 + (50 - btcData.rsi) * 1.5 + (btcData.adx / 2));
-            bullStrength = Math.min(100, 50 - (50 - btcData.rsi) * 0.8);
-        }
-        bullStrength = Math.min(100, Math.max(10, bullStrength));
-        bearStrength = Math.min(100, Math.max(10, bearStrength));
-        bullScoreSpan.innerText = Math.round(bullStrength);
-        bearScoreSpan.innerText = Math.round(bearStrength);
-        const winner = bullStrength > bearStrength ? 'BULL' : 'BEAR';
-        signalEmoji.innerText = winner === 'BULL' ? '🟢' : '🔴';
-        signalText.innerText = winner;
-        signalText.style.color = winner === 'BULL' ? '#22c55e' : '#ef4444';
-        if (winner === 'BULL') {
-            bullScoreBox.classList.add('winner');
-            bearScoreBox.classList.remove('winner');
-        } else {
-            bearScoreBox.classList.add('winner');
-            bullScoreBox.classList.remove('winner');
-        }
-    }
-
-    async function fetchAllPairs() {
-        if (isFetching) return;
-        isFetching = true;
-        fetchProgress = 0;
-        pairData = {};
-        tradeDecisionDiv.style.display = 'none';
-
-        for (let i = 0; i < ALL_SYMBOLS.length; i++) {
-            const sym = ALL_SYMBOLS[i];
-            const data = await analyzeSymbol(sym);
-            if (data) pairData[sym] = data;
-            else pairData[sym] = null;
-            fetchProgress = i + 1;
-            fetchCounterSpan.innerText = `${fetchProgress} / ${ALL_SYMBOLS.length}`;
-            fetchBar.style.width = `${(fetchProgress / ALL_SYMBOLS.length) * 100}%`;
-            fetchDetail.innerText = `Analyzing ${sym}...`;
-            if ((i+1) % 8 === 0) await new Promise(r => setTimeout(r, 50));
-        }
-        await updateBTC();
-        computeConsensusAndLock();
-        isFetching = false;
-        fetchDetail.innerText = `✅ Done. ${consensus.total} pairs analyzed. Next auto-refresh in 30s.`;
-    }
-
-    function computeConsensusAndLock() {
-        let bull = 0, bear = 0, strong = 0, totalRsi = 0, valid = 0;
-        for (const [sym, d] of Object.entries(pairData)) {
-            if (d && d.rsi) {
-                valid++;
-                if (d.signal === 'BULL') bull++;
-                else if (d.signal === 'BEAR') bear++;
-                if (d.adx > 25) strong++;
-                totalRsi += d.rsi;
+            if (!signalLocked && signalsEnabled) {
+                confPctSpan.innerText = Math.round(currentScore.confidence) + '%';
+                confBar.style.width = currentScore.confidence + '%';
+                if (currentScore.direction === 'BULLISH') {
+                    signalEmoji.innerText = '🟢';
+                    signalText.innerText = 'BULLISH BIAS';
+                    signalText.style.color = '#4ade80';
+                } else if (currentScore.direction === 'BEARISH') {
+                    signalEmoji.innerText = '🔴';
+                    signalText.innerText = 'BEARISH BIAS';
+                    signalText.style.color = '#f87171';
+                } else {
+                    signalEmoji.innerText = '⚪';
+                    signalText.innerText = 'NEUTRAL';
+                    signalText.style.color = '#facc15';
+                }
+                signalReasonSpan.innerText = currentScore.reason;
             }
-        }
-        const avgRsi = valid ? totalRsi / valid : 50;
-        consensus = { bull, bear, strong, avgRsi, total: valid };
-        const totalDir = bull + bear;
-        const bullPercent = totalDir ? (bull / totalDir) * 100 : 50;
-        bullBearBar.style.width = `${bullPercent}%`;
-        if (bullPercent > 55) bullBearBar.style.background = '#22c55e';
-        else if (bullPercent < 45) bullBearBar.style.background = '#ef4444';
-        else bullBearBar.style.background = '#eab308';
+            pendingUIUpdate = false;
+        }, UI_UPDATE_INTERVAL);
+    }
 
-        bullCountEl.innerText = bull;
-        bearCountEl.innerText = bear;
-        strongCountEl.innerText = strong;
-        avgRsiEl.innerText = avgRsi.toFixed(1);
-        pairCountBadge.innerText = `${valid} Pairs`;
-
-        let direction = bull > bear ? 'BULLISH' : (bear > bull ? 'BEARISH' : 'NEUTRAL');
-        consensusDirEl.innerHTML = direction === 'BULLISH' ? '🟢 BULLISH' : (direction === 'BEARISH' ? '🔴 BEARISH' : '⚖️ NEUTRAL');
-        consensusSub.innerText = `${bull} Bull / ${bear} Bear | Strong trend: ${strong}`;
-
-        let shouldTrade = false;
-        let decisionText = '';
-        if (bullPercent >= 55 && btcData.adx > 20) {
-            shouldTrade = true;
-            decisionText = `✅ TRADE BULLISH – ${bullPercent.toFixed(0)}% BULL, ADX ${btcData.adx.toFixed(1)}`;
-        } else if (bullPercent <= 45 && btcData.adx > 20) {
-            shouldTrade = true;
-            decisionText = `✅ TRADE BEARISH – ${(100-bullPercent).toFixed(0)}% BEAR, ADX ${btcData.adx.toFixed(1)}`;
-        } else {
-            decisionText = `❌ SKIP – Consensus ${bullPercent.toFixed(0)}% BULL, ADX ${btcData.adx.toFixed(1)}`;
-        }
-        tradeDecisionDiv.innerText = decisionText;
-        tradeDecisionDiv.className = `trade-decision ${shouldTrade ? 'trade-yes' : 'trade-no'}`;
-        tradeDecisionDiv.style.display = 'block';
-
-        const historyEntry = {
-            time: new Date().toLocaleTimeString(),
-            direction: direction,
-            bullPercent: bullPercent.toFixed(0),
-            avgRsi: avgRsi.toFixed(1),
-            adx: btcData.adx.toFixed(1)
+    // WebSocket with 30s heartbeat
+    function connectWebSocket() {
+        if (ws && ws.readyState === WebSocket.OPEN) return;
+        ws = new WebSocket(WS_URL);
+        ws.onopen = () => {
+            wsHealthSpan.innerText = '● ACTIVE';
+            wsHealthSpan.style.color = '#4ade80';
+            document.getElementById('wsStatus').innerHTML = '🟢 LIVE';
+            ws.send(JSON.stringify({ action: "subscribe", params: { symbols: SYMBOL } }));
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            heartbeatInterval = setInterval(() => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    lastHeartbeatSent = Date.now();
+                    ws.send(JSON.stringify({ action: "heartbeat" }));
+                }
+            }, 30000); // 30 seconds
         };
-        history.unshift(historyEntry);
-        if (history.length > 20) history.pop();
-        renderHistory();
-        localStorage.setItem('ved_history', JSON.stringify(history));
-        renderPairsGrid();
-        if (shouldTrade && soundUnlocked) playAlertSound();
-        lastUpdateSpan.innerText = `Updated: ${new Date().toLocaleTimeString()}`;
+        ws.onmessage = (ev) => {
+            try {
+                const msg = JSON.parse(ev.data);
+                if (msg.event === "price" && msg.symbol === SYMBOL) {
+                    const price = parseFloat(msg.price);
+                    const timestamp = msg.timestamp || Date.now();
+                    processTick(price, timestamp);
+                }
+                if (msg.event === "heartbeat" && lastHeartbeatSent) {
+                    const rtt = Date.now() - lastHeartbeatSent;
+                    currentLatency = Math.min(500, rtt);
+                    latencyValueSpan.innerText = currentLatency + " ms";
+                    let percent = Math.min(100, (currentLatency / 200) * 100);
+                    latencyBar.style.width = percent + "%";
+                    const cls = currentLatency < 100 ? 'latency-good' : (currentLatency < 200 ? 'latency-ok' : 'latency-bad');
+                    latencyValueSpan.className = `metric-value ${cls}`;
+                    // Check threshold
+                    if (currentLatency > LATENCY_THRESHOLD) {
+                        if (signalsEnabled) {
+                            signalsEnabled = false;
+                            latencyStatusSpan.innerHTML = '⚠️ HIGH LATENCY (>200ms) – SIGNALS DISABLED';
+                            latencyStatusSpan.className = 'warning';
+                            // Force signal box to disabled state
+                            signalBox.classList.add('signal-disabled');
+                            signalEmoji.innerText = '⚠️';
+                            signalText.innerText = 'DISABLED';
+                            signalText.style.color = '#facc15';
+                            signalReasonSpan.innerText = `Latency ${currentLatency}ms > ${LATENCY_THRESHOLD}ms. Trading disabled.`;
+                            lockStatusSpan.innerText = '🔴 SIGNALS DISABLED DUE TO LATENCY';
+                        }
+                    } else {
+                        if (!signalsEnabled) {
+                            signalsEnabled = true;
+                            latencyStatusSpan.innerHTML = '✅ Latency OK – Signals Enabled';
+                            latencyStatusSpan.className = '';
+                            signalBox.classList.remove('signal-disabled');
+                            signalEmoji.innerText = '⏳';
+                            signalText.innerText = 'COLLECTING DATA';
+                            signalText.style.color = '#facc15';
+                            lockStatusSpan.innerText = '🔓 Signal locks at 10 seconds remaining';
+                            resetCycle();  // fresh start
+                        }
+                    }
+                }
+            } catch(e) { console.warn(e); }
+        };
+        ws.onerror = () => {
+            wsHealthSpan.innerText = '⚠️ ERROR';
+            wsHealthSpan.style.color = '#f87171';
+            document.getElementById('wsStatus').innerHTML = '🔴 ERROR';
+        };
+        ws.onclose = () => {
+            wsHealthSpan.innerText = '● RECONNECTING';
+            wsHealthSpan.style.color = '#facc15';
+            document.getElementById('wsStatus').innerHTML = '🔌 RECONNECT';
+            setTimeout(connectWebSocket, 3000);
+        };
     }
 
-    function renderPairsGrid() {
-        let filtered = Object.entries(pairData).filter(([,d]) => d !== null);
-        if (currentFilter === 'BULL') filtered = filtered.filter(([,d]) => d.signal === 'BULL');
-        else if (currentFilter === 'BEAR') filtered = filtered.filter(([,d]) => d.signal === 'BEAR');
-        else if (currentFilter === 'STRONG') filtered = filtered.filter(([,d]) => d.adx > 25);
+    // Optimized tick processing (no console.log, throttled UI)
+    function processTick(price, timestamp) {
+        const now = new Date();
+        const sec = now.getSeconds();
+        if (lastSecond !== sec) {
+            tickVolumePerSecond.push(currentSecondVol);
+            if (tickVolumePerSecond.length > 60) tickVolumePerSecond.shift();
+            currentSecondVol = 0;
+            lastSecond = sec;
+        }
+        currentSecondVol++;
+        const totalVol60 = tickVolumePerSecond.reduce((a,b)=>a+b,0);
+        // Update tick volume (not throttled, cheap)
+        tickVolSpan.innerText = totalVol60;
 
-        pairsGrid.innerHTML = filtered.map(([sym, d]) => {
-            const short = sym.replace('USDT', '');
-            const color = d.signal === 'BULL' ? '#22c55e' : '#ef4444';
-            const strongBadge = d.adx > 25 ? '⚡' : '';
-            return `<div class="pair-card">
-                        <div><strong>${short}</strong> ${strongBadge}</div>
-                        <div style="font-size: 18px; font-weight: 800; color: ${color};">${d.rsi.toFixed(1)}</div>
-                        <div style="font-size: 11px;">${d.signal} | ADX:${d.adx.toFixed(0)}</div>
-                    </div>`;
-        }).join('');
-        if (!filtered.length) pairsGrid.innerHTML = '<div style="padding: 20px; text-align:center;">No pairs match filter</div>';
+        let direction = 'NEUTRAL';
+        if (lastPrice !== null && price !== lastPrice) {
+            direction = price > lastPrice ? 'BUY' : 'SELL';
+            tickDirection.push(direction);
+            if (tickDirection.length > 150) tickDirection.shift();
+            if (direction === 'BUY') cumulativeCVD++;
+            else cumulativeCVD--;
+            cvdHistory.push(cumulativeCVD);
+            if (cvdHistory.length > 60) cvdHistory.shift();
+        }
+
+        priceHistory.push(price);
+        if (priceHistory.length > 60) priceHistory.shift();
+        lastPrice = price;
+        lastPriceSpan.innerText = price.toFixed(5);
+        lastTickTimeSpan.innerText = new Date(timestamp).toLocaleTimeString();
+
+        // Calculate metrics (lightweight)
+        const recentTicks = tickDirection.slice(-30);
+        const buyCnt = recentTicks.filter(d => d === 'BUY').length;
+        const sellCnt = recentTicks.filter(d => d === 'SELL').length;
+        const total = buyCnt + sellCnt;
+        let imbalance = total === 0 ? 0.5 : buyCnt / total;
+
+        let volSum = 0;
+        for (let i = Math.max(0, tickVolumePerSecond.length-20); i < tickVolumePerSecond.length; i++) volSum += tickVolumePerSecond[i];
+        let avgVol = volSum / Math.min(20, tickVolumePerSecond.length);
+        let currVol = tickVolumePerSecond[tickVolumePerSecond.length-1] || 1;
+        let rvol = avgVol === 0 ? 1 : currVol / avgVol;
+
+        // Store latest metrics for throttled UI
+        latestMetrics = { imbalance, rvol, cvd: cumulativeCVD };
+
+        // Update composite score (only if signals enabled)
+        if (signalsEnabled && !signalLocked) {
+            updateCompositeSignal(imbalance, rvol, cumulativeCVD);
+        }
+
+        // Throttle UI updates
+        throttledUIUpdate();
+
+        // Draw chart (debounced via requestAnimationFrame)
+        if (!window.drawPending) {
+            window.drawPending = true;
+            requestAnimationFrame(() => {
+                drawTrends();
+                window.drawPending = false;
+            });
+        }
     }
 
-    function renderHistory() {
-        if (!history.length) {
-            historyList.innerHTML = 'No signals yet.';
+    function updateCompositeSignal(imb, rvol, cvd) {
+        let bull = 0, bear = 0;
+        if (imb > 0.55) bull += 40;
+        else if (imb < 0.45) bear += 40;
+        else { bull += 20; bear += 20; }
+
+        if (cvd > 5) bull += 30;
+        else if (cvd < -5) bear += 30;
+        else { bull += 15; bear += 15; }
+
+        if (rvol > 1.5) {
+            if (bull > bear) bull += 20;
+            else if (bear > bull) bear += 20;
+            else { bull += 10; bear += 10; }
+        } else if (rvol > 1.2) {
+            if (bull > bear) bull += 10;
+            else if (bear > bull) bear += 10;
+        }
+
+        if (priceHistory.length >= 2) {
+            const last = priceHistory[priceHistory.length-1];
+            const prev = priceHistory[priceHistory.length-2];
+            if (last > prev) bull += 10;
+            else if (last < prev) bear += 10;
+            else { bull += 5; bear += 5; }
+        }
+
+        let total = bull + bear;
+        if (total === 0) total = 1;
+        let confidence = (Math.max(bull, bear) / total) * 100;
+        confidence = Math.min(98, Math.max(2, confidence));
+        let direction = bull > bear ? 'BULLISH' : (bear > bull ? 'BEARISH' : 'NEUTRAL');
+        let reason = `Imb:${imb.toFixed(2)} CVD:${cvd} RVOL:${rvol.toFixed(2)}`;
+
+        currentScore = { bull, bear, confidence, direction, reason };
+    }
+
+    function resetCycle() {
+        signalLocked = false;
+        tickDirection = [];
+        currentScore = { bull: 20, bear: 20, confidence: 50, direction: 'NEUTRAL', reason: 'Cycle reset – collecting fresh ticks' };
+        signalBox.classList.remove('signal-bull', 'signal-bear', 'signal-neu', 'signal-disabled');
+        if (!signalsEnabled) {
+            signalBox.classList.add('signal-disabled');
+            signalEmoji.innerText = '⚠️';
+            signalText.innerText = 'DISABLED';
+        } else {
+            signalBox.classList.remove('signal-disabled');
+            signalEmoji.innerText = '⏳';
+            signalText.innerText = 'COLLECTING DATA';
+        }
+        signalText.style.color = '#facc15';
+        signalReasonSpan.innerText = 'New cycle – waiting for ticks';
+        confPctSpan.innerText = '50%';
+        confBar.style.width = '50%';
+        lockStatusSpan.innerText = signalsEnabled ? '🔓 Signal locks at 10 seconds remaining' : '🔴 SIGNALS DISABLED';
+    }
+
+    function lockSignal() {
+        if (signalLocked) return;
+        if (!signalsEnabled) {
+            lockStatusSpan.innerText = '🔴 SIGNALS DISABLED DUE TO HIGH LATENCY';
             return;
         }
-        historyList.innerHTML = history.map(h => `
-            <div class="history-item" style="border-left-color: ${h.direction === 'BULLISH' ? '#22c55e' : '#ef4444'}">
-                <div><strong>${h.direction}</strong> ${h.bullPercent}% Bull</div>
-                <div>RSI ${h.avgRsi}</div>
-                <div>ADX ${h.adx}</div>
-                <div style="font-size: 11px;">${h.time}</div>
-            </div>
-        `).join('');
-    }
-
-    function playAlertSound() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        audioCtx.resume().then(() => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.value = 880;
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.5);
-        });
-    }
-
-    function unlockSound() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        audioCtx.resume().then(() => {
-            soundUnlocked = true;
-            alert('🔊 Sound unlocked! Alerts will play on strong signals.');
-        });
-    }
-
-    // Update 5-minute cycle display (independent of page refresh)
-    function updateCycleTimer() {
-        const now = new Date();
-        const seconds = now.getSeconds();
-        const minutes = now.getMinutes();
-        const totalSeconds = (minutes % 5) * 60 + seconds;
-        const remaining = CYCLE_SEC - totalSeconds;
-        if (remaining <= 0 || remaining > CYCLE_SEC) {
-            timerSpan.innerText = `5:00`;
-            cycleFill.style.width = '100%';
+        signalLocked = true;
+        lockStatusSpan.innerText = '🔒 SIGNAL LOCKED – valid until cycle end';
+        let finalDir = currentScore.direction;
+        let finalConf = currentScore.confidence;
+        let finalReason = currentScore.reason;
+        if (finalDir === 'BULLISH') {
+            signalBox.className = 'signal-box signal-bull';
+            signalEmoji.innerText = '🟢';
+            signalText.innerText = 'BUY / LONG';
+            signalText.style.color = '#bbf7d0';
+        } else if (finalDir === 'BEARISH') {
+            signalBox.className = 'signal-box signal-bear';
+            signalEmoji.innerText = '🔴';
+            signalText.innerText = 'SELL / SHORT';
+            signalText.style.color = '#fecaca';
         } else {
-            const minsLeft = Math.floor(remaining / 60);
-            const secsLeft = remaining % 60;
-            timerSpan.innerText = `${minsLeft}:${secsLeft.toString().padStart(2,'0')}`;
-            cycleFill.style.width = `${(remaining / CYCLE_SEC) * 100}%`;
+            signalBox.className = 'signal-box signal-neu';
+            signalEmoji.innerText = '⚪';
+            signalText.innerText = 'NO TRADE';
+            signalText.style.color = '#fef08a';
+        }
+        signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}%`;
+        confPctSpan.innerText = Math.round(finalConf) + '%';
+        confBar.style.width = finalConf + '%';
+    }
+
+    function startCycleTimer() {
+        setInterval(() => {
+            const now = new Date();
+            const sec = now.getSeconds();
+            let remaining = 30 - (sec % 30);
+            if (remaining === 0) remaining = 30;
+            timerSpan.innerText = remaining;
+            cycleFill.style.width = ((remaining / 30) * 100) + '%';
+            if (lastRemaining === 1 && remaining === 30) resetCycle();
+            if (remaining === 10 && !signalLocked && signalsEnabled) lockSignal();
+            lastRemaining = remaining;
+            let nextLock = remaining > 10 ? remaining - 10 : 0;
+            nextLockSecSpan.innerText = nextLock;
+        }, 200);
+    }
+
+    function drawTrends() {
+        if (!canvas || priceHistory.length < 2) return;
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        canvas.width = w;
+        canvas.height = h;
+        ctx.clearRect(0, 0, w, h);
+        const prices = priceHistory;
+        const minP = Math.min(...prices);
+        const maxP = Math.max(...prices);
+        const range = maxP - minP;
+        ctx.beginPath();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        for (let i=0; i<prices.length; i++) {
+            let x = (i / (prices.length-1)) * w;
+            let y = h - ((prices[i] - minP) / range) * h;
+            if (i===0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        if (cvdHistory.length > 1) {
+            const minC = Math.min(...cvdHistory);
+            const maxC = Math.max(...cvdHistory);
+            const cRange = maxC - minC;
+            ctx.beginPath();
+            ctx.strokeStyle = '#f97316';
+            ctx.lineWidth = 1.5;
+            for (let i=0; i<cvdHistory.length; i++) {
+                let x = (i / (cvdHistory.length-1)) * w;
+                let y = cRange === 0 ? h/2 : h - ((cvdHistory[i] - minC) / cRange) * h;
+                if (i===0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
         }
     }
 
-    // Filters
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.getAttribute('data-filter');
-            renderPairsGrid();
-        });
-    });
+    // Zoom and clock
+    let zoom=1; const cont = document.querySelector('.container');
+    document.getElementById('zoomIn').onclick = () => { zoom = Math.min(1.6, zoom+0.1); cont.style.transform = `scale(${zoom})`; cont.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
+    document.getElementById('zoomOut').onclick = () => { zoom = Math.max(0.6, zoom-0.1); cont.style.transform = `scale(${zoom})`; cont.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
 
-    document.getElementById('clearHistoryBtn').addEventListener('click', () => {
-        history = [];
-        localStorage.removeItem('ved_history');
-        renderHistory();
-    });
-
-    // Zoom
-    let zoom = 1;
-    const container = document.querySelector('.container');
-    document.getElementById('zoomIn').onclick = () => { zoom = Math.min(1.6, zoom + 0.1); container.style.transform = `scale(${zoom})`; container.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
-    document.getElementById('zoomOut').onclick = () => { zoom = Math.max(0.6, zoom - 0.1); container.style.transform = `scale(${zoom})`; container.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
-
-    // Load history and start fetching
-    try {
-        const saved = localStorage.getItem('ved_history');
-        if (saved) history = JSON.parse(saved);
-        renderHistory();
-    } catch(e) {}
-    
-    fetchAllPairs();  // initial fetch
-    setInterval(updateCycleTimer, 200);  // update timer display
-    setInterval(() => {
-        // Additional safety: if somehow fetch didn't happen, but page refresh handles it.
-    }, 1000);
-
-    // Clock
     function updateClock() {
-        const d = new Date(new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'}));
+        const d = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
         document.getElementById('clock').innerText = 'IST ' + d.toTimeString().slice(0,8);
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Unlock sound on click
-    document.body.addEventListener('click', (e) => {
-        if (!soundUnlocked && e.target.tagName !== 'BUTTON') unlockSound();
-    });
+    connectWebSocket();
+    startCycleTimer();
+    window.addEventListener('resize', () => drawTrends());
+    resetCycle();
 </script>
 </body>
 </html>
