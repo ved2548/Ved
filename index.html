@@ -1,556 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VED Pro Max v3 – Cycle‑Resetting Signals + Volume Profile</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: radial-gradient(circle at 20% 30%, #030712, #000000);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: #f1f5f9;
-            padding: 24px;
-            min-height: 100vh;
-        }
-        .container { max-width: 1600px; margin: 0 auto; }
-        .card {
-            background: rgba(15, 25, 45, 0.65);
-            backdrop-filter: blur(16px);
-            border-radius: 32px;
-            padding: 24px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-        }
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
-        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
-        .logo { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #a855f7, #f97316); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .badge { background: rgba(30, 41, 59, 0.8); padding: 6px 16px; border-radius: 40px; font-size: 13px; font-weight: 500; font-family: monospace; border: 1px solid rgba(255,255,255,0.08); }
-        .signal-box { text-align: center; padding: 28px; border-radius: 48px; background: rgba(0,0,0,0.4); margin-bottom: 16px; transition: all 0.3s; }
-        .signal-emoji { font-size: 80px; }
-        .signal-text { font-size: 48px; font-weight: 800; letter-spacing: 2px; margin-top: 8px; }
-        .signal-bull { background: linear-gradient(135deg, #14532d, #064e3b); border: 2px solid #4ade80; }
-        .signal-bear { background: linear-gradient(135deg, #7f1d1d, #450a0a); border: 2px solid #f87171; }
-        .signal-neu { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #facc15; }
-        .metric-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .metric-label { font-size: 13px; color: #94a3b8; font-weight: 500; }
-        .metric-value { font-size: 24px; font-weight: 700; font-family: monospace; }
-        .progress-bar { height: 8px; background: #334155; border-radius: 12px; overflow: hidden; margin: 12px 0; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #a855f7); border-radius: 12px; transition: width 0.2s; }
-        .trend-canvas { background: rgba(0,0,0,0.3); border-radius: 24px; padding: 12px; margin-top: 8px; }
-        canvas { width: 100%; height: 180px; display: block; border-radius: 16px; }
-        .sm-level { background: #0f172a; border-radius: 20px; padding: 12px; margin-top: 12px; font-family: monospace; font-size: 12px; max-height: 120px; overflow-y: auto; }
-        .zoom-controls { position: fixed; bottom: 24px; right: 24px; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 8px 16px; border-radius: 60px; display: flex; gap: 16px; z-index: 100; }
-        button { background: #3b82f6; border: none; padding: 6px 14px; border-radius: 30px; color: white; font-weight: 600; cursor: pointer; }
-        .timer-highlight { font-size: 48px; font-weight: 800; font-family: monospace; }
-        .lock-timer { font-size: 14px; font-family: monospace; color: #facc15; }
-        @media (max-width: 800px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .signal-text { font-size: 32px; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twelve Data API Monitor</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,Tahoma,sans-serif;
+}
+
+body{
+background:#050b16;
+color:#fff;
+overflow-x:hidden;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.title{
+font-size:28px;
+font-weight:700;
+}
+
+.refresh{
+font-size:14px;
+color:#9aa4b2;
+}
+
+/* Slider Container */
+.slider-container{
+width:100%;
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+display:flex;
+scroll-behavior:smooth;
+}
+
+.slider-container::-webkit-scrollbar{
+display:none;
+}
+
+.slide{
+min-width:100%;
+scroll-snap-align:start;
+padding:0 20px 20px;
+}
+
+/* Summary Cards */
+.summary{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:15px;
+margin-bottom:25px;
+}
+
+.summary-card{
+background:linear-gradient(145deg,#081420,#0d1f2f);
+padding:18px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,.08);
+}
+
+.summary-card h3{
+font-size:13px;
+color:#8f9bab;
+margin-bottom:10px;
+letter-spacing:1px;
+}
+
+.summary-card span{
+font-size:28px;
+font-weight:700;
+color:#00ffb3;
+}
+
+/* API Cards Grid */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:20px;
+}
+
+.card{
+background:linear-gradient(145deg,#081420,#0d1f2f);
+border-radius:24px;
+padding:30px 25px;
+border:1px solid rgba(255,255,255,.08);
+box-shadow:0 0 20px rgba(0,255,180,.08);
+text-align:center;
+}
+
+.resource-label{
+font-size:12px;
+letter-spacing:2px;
+color:#9aa4b2;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+margin-bottom:10px;
+}
+
+.resource-name{
+font-size:26px;
+font-weight:800;
+word-break:break-word;
+margin-bottom:20px;
+}
+
+.status-circle{
+width:90px;
+height:90px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:45px;
+margin:0 auto 15px;
+font-weight:bold;
+}
+
+.operational{
+background:#00d084;
+box-shadow:0 0 30px #00d084;
+}
+
+.invalid{
+background:#ff4d4d;
+box-shadow:0 0 30px #ff4d4d;
+}
+
+.error{
+background:#ff9800;
+box-shadow:0 0 30px #ff9800;
+}
+
+.state-label{
+font-size:12px;
+letter-spacing:2px;
+color:#9aa4b2;
+margin-bottom:5px;
+}
+
+.state{
+font-size:32px;
+font-weight:800;
+margin-bottom:25px;
+}
+
+.divider{
+height:1px;
+background:rgba(255,255,255,.1);
+margin:20px 0;
+}
+
+.info-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px;
+}
+
+.info-label{
+font-size:12px;
+letter-spacing:1px;
+color:#9aa4b2;
+}
+
+.info-value{
+font-size:28px;
+font-weight:700;
+}
+
+.uptime{
+color:#00ffb3;
+}
+
+.email-small{
+font-size:13px;
+color:#8f9bab;
+margin-top:15px;
+word-break:break-word;
+}
+
+/* Website Slide */
+.website-iframe{
+width:100%;
+height:70vh;
+border:none;
+border-radius:24px;
+background:#0d1f2f;
+}
+
+.slide-indicator{
+display:flex;
+justify-content:center;
+gap:10px;
+margin:15px 0;
+}
+
+.dot{
+width:10px;
+height:10px;
+border-radius:50%;
+background:rgba(255,255,255,.2);
+transition:0.3s;
+}
+
+.dot.active{
+background:#00ffb3;
+box-shadow:0 0 10px #00ffb3;
+}
+
+.slide-hint{
+text-align:center;
+color:#9aa4b2;
+font-size:13px;
+margin-bottom:10px;
+}
+</style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="logo">🔬 VED PRO MAX v3 – RESETTING SIGNALS + VOLUME PROFILE</div>
-        <div class="badge" id="clock">IST --:--:--</div>
-        <div class="badge" id="wsStatus">🔌 CONNECTING</div>
-    </div>
 
-    <!-- Main Signal Card -->
-    <div class="card">
-        <div class="signal-box" id="signalBox">
-            <div class="signal-emoji" id="signalEmoji">⏳</div>
-            <div class="signal-text" id="signalText">INITIALIZING</div>
-            <div id="signalReason" class="metric-label" style="margin-top: 8px;">Waiting for live ticks...</div>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">📊 Composite Confidence</span>
-            <span class="metric-value" id="confPct">0%</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" id="confBar"></div></div>
-        <div class="metric-row">
-            <span class="metric-label">Last Price (EUR/USD)</span>
-            <span class="metric-value" id="lastPrice">--</span>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">Tick Volume (last 60s)</span>
-            <span class="metric-value" id="tickVol">0</span>
-        </div>
-    </div>
-
-    <!-- Advanced Metrics -->
-    <div class="grid-3">
-        <div class="card">
-            <div class="metric-label">📈 Cumulative Volume Delta (CVD)</div>
-            <div class="metric-value" id="cvdValue" style="font-size: 28px;">0</div>
-            <div class="progress-bar"><div class="progress-fill" id="cvdBar" style="background:#22c55e;"></div></div>
-            <div class="metric-label">Aggressive flow strength</div>
-        </div>
-        <div class="card">
-            <div class="metric-label">⚖️ Tick Imbalance Ratio</div>
-            <div class="metric-value" id="imbalanceRatio">0.00</div>
-            <div class="progress-bar"><div class="progress-fill" id="imbBar" style="background:#facc15;"></div></div>
-            <div class="metric-label">Buy ticks / total (30s)</div>
-        </div>
-        <div class="card">
-            <div class="metric-label">📊 Relative Volume (RVOL)</div>
-            <div class="metric-value" id="rvolValue">0.00x</div>
-            <div class="progress-bar"><div class="progress-fill" id="rvolBar" style="background:#a855f7;"></div></div>
-            <div class="metric-label">Current vol / 20‑period avg</div>
-        </div>
-    </div>
-
-    <!-- Volume Profile + Divergence + S/R -->
-    <div class="grid-2">
-        <div class="card">
-            <div class="metric-label">📊 Volume Profile (Point of Control)</div>
-            <div id="volumeProfile" class="sm-level">Collecting ticks...</div>
-            <div class="metric-row" style="margin-top: 8px;">
-                <span>🔄 CVD vs Price Divergence</span>
-                <span id="divergenceMsg" class="metric-value" style="font-size: 16px;">--</span>
-            </div>
-        </div>
-        <div class="card">
-            <div class="metric-label">📉 Price + CVD Trend (Real‑time)</div>
-            <div class="trend-canvas">
-                <canvas id="trendCanvas" width="600" height="180" style="width:100%; height:180px"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cycle Timer & Support/Resistance -->
-    <div class="grid-2">
-        <div class="card">
-            <div class="metric-label">🎯 30‑Second Cycle Signal Lock</div>
-            <div class="metric-value timer-highlight" id="timer">30</div>
-            <div class="progress-bar"><div class="progress-fill" id="cycleFill" style="background:#f97316;"></div></div>
-            <div class="lock-timer" id="lockStatus">🔓 Signal locks at 20 seconds remaining</div>
-            <div class="metric-label" style="margin-top: 8px;">⏱️ Next update: every second, lock at ⏳ <span id="nextLockSec">20</span>s</div>
-        </div>
-        <div class="card">
-            <div class="metric-label">📐 Dynamic Support / Resistance</div>
-            <div id="srLevels" class="sm-level">Waiting for price action...</div>
-        </div>
-    </div>
-
-    <!-- Data Health -->
-    <div class="card">
-        <div class="metric-label">📡 Data Health</div>
-        <div class="metric-row"><span>WebSocket</span><span id="wsHealth" style="color:#4ade80;">● ACTIVE</span></div>
-        <div class="metric-row"><span>Last tick time</span><span id="lastTickTime">--</span></div>
-        <div class="metric-row"><span>API Key</span><span>Twelve Data (real)</span></div>
-    </div>
+<div class="header">
+<div class="title">MONITOR DASHBOARD</div>
+<div class="refresh" id="lastRefresh">Last Refresh: --</div>
 </div>
-<div class="zoom-controls">
-    <button id="zoomOut">−</button>
-    <span id="zoomLevel">100%</span>
-    <button id="zoomIn">+</button>
+
+<div class="slide-hint">← Right to left swipe karo →</div>
+
+<div class="slide-indicator">
+<div class="dot active" id="dot1"></div>
+<div class="dot" id="dot2"></div>
+</div>
+
+<div class="slider-container" id="slider">
+
+<!-- SLIDE 1: API Keys Status -->
+<div class="slide">
+<div class="summary">
+<div class="summary-card">
+<h3>TOTAL ACCOUNTS</h3>
+<span id="totalAccounts">9</span>
+</div>
+<div class="summary-card">
+<h3>ACTIVE</h3>
+<span id="activeCount">0</span>
+</div>
+<div class="summary-card">
+<h3>INVALID</h3>
+<span id="invalidCount">0</span>
+</div>
+<div class="summary-card">
+<h3>NEXT CHECK</h3>
+<span id="globalCountdown">30s</span>
+</div>
+</div>
+<div class="grid" id="cards"></div>
+</div>
+
+<!-- SLIDE 2: Website Status -->
+<div class="slide">
+<div class="summary">
+<div class="summary-card" style="grid-column:1/-1;">
+<h3>MONITORED WEBSITE</h3>
+<span style="font-size:20px;">ved2548.github.io</span>
+</div>
+</div>
+<iframe src="https://ved2548-github-io-oxxrj.isitup.cloud/" class="website-iframe" id="websiteFrame"></iframe>
+</div>
+
 </div>
 
 <script>
-    // ============================================================
-    // VED PRO MAX v3 – CYCLE RESET, VOLUME PROFILE, REAL SIGNALS
-    // Every cycle starts fresh – no stale bias.
-    // Signal locks at exactly 20 seconds remaining.
-    // ============================================================
-    const API_KEY = "7d8ec8ca7bf8483b81ff4490c76dfe88";
-    const SYMBOL = "EUR/USD";
-    const WS_URL = `wss://ws.twelvedata.com/v1/quotes/price?apikey=${API_KEY}`;
+// =======================
+// ACCOUNTS DATA
+// =======================
+const accounts = [
+{name:"Account 1", email:"jayvedprakash2@gmail.com", apiKey:"7d8ec8ca7bf8483b81ff4490c76dfe88"},
+{name:"Account 2", email:"h7862937@gmail.com", apiKey:"246618a38ee84e1abdb9511a378c46d4"},
+{name:"Account 3", email:"saumi8261@gmail.com", apiKey:"33073d9ef38b4f25860738b1a1eae5bf"},
+{name:"Account 4", email:"ythi9211@gmail.com", apiKey:"fbecb3e6b46845deb7fab1f5e728ccc7"},
+{name:"Account 5", email:"saumijay361@gmail.com", apiKey:"8120e5ab512040cba8a775b8e1c14434"},
+{name:"Account 6", email:"gg1949577@gmail.com", apiKey:"efc7db6d64cb4e4ab6ae9d1095960980"},
+{name:"Account 7", email:"saumichoudhary81@gmail.com", apiKey:"04763c31155d46fb867d97e0141557ca"},
+{name:"Account 8", email:"vedsaumi@gmail.com", apiKey:"bc0bc3890bc1496a8a3fa23ce1cb8c1e"},
+{name:"Account 9", email:"shree98689@gmail.com", apiKey:"c0abbc33813e4b4fbf1254a0a3650db2"}
+];
 
-    let ws = null;
-    let lastPrice = null;
-    let priceHistory = [];           // last 60 prices
-    let tickDirection = [];          // 'BUY' or 'SELL' for each tick (based on price change)
-    let cumulativeCVD = 0;
-    let cvdHistory = [];
-    let tickVolumePerSecond = [];
-    let currentSecondVol = 0;
-    let lastSecond = -1;
+let countdown = 30;
+const slider = document.getElementById('slider');
+const dot1 = document.getElementById('dot1');
+const dot2 = document.getElementById('dot2');
 
-    // Volume Profile: map price -> tick count (rounded to 5 decimals)
-    let priceVolumeMap = new Map();
-    let pointOfControl = null;       // price with highest tick volume
+// =======================
+// SLIDER INDICATOR
+// =======================
+slider.addEventListener('scroll',()=>{
+const slideIndex = Math.round(slider.scrollLeft / window.innerWidth);
+if(slideIndex === 0){
+dot1.classList.add('active');
+dot2.classList.remove('active');
+}else{
+dot1.classList.remove('active');
+dot2.classList.add('active');
+}
+});
 
-    // For support/resistance: swing highs/lows
-    let swingHighs = [], swingLows = [];
+// =======================
+// CHECK API KEY
+// =======================
+async function checkKey(account){
+try{
+const url = `https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&apikey=${account.apiKey}`;
+const response = await fetch(url);
+const data = await response.json();
 
-    // Signal state
-    let signalLocked = false;
-    let currentScore = { bull: 0, bear: 0, confidence: 50, direction: 'NEUTRAL', reason: '' };
-    let cycleStartTime = 0;
+if(data.code){
+return {...account, status:"INVALID", icon:"!", className:"invalid", uptime:"0.00%"};
+}
+return {...account, status:"OPERATIONAL", icon:"✓", className:"operational", uptime:"100.00%"};
+}catch(error){
+return {...account, status:"ERROR", icon:"⚠", className:"error", uptime:"0.00%"};
+}
+}
 
-    // DOM elements
-    const signalBox = document.getElementById('signalBox');
-    const signalEmoji = document.getElementById('signalEmoji');
-    const signalText = document.getElementById('signalText');
-    const signalReasonSpan = document.getElementById('signalReason');
-    const confPctSpan = document.getElementById('confPct');
-    const confBar = document.getElementById('confBar');
-    const lastPriceSpan = document.getElementById('lastPrice');
-    const tickVolSpan = document.getElementById('tickVol');
-    const cvdValueSpan = document.getElementById('cvdValue');
-    const cvdBar = document.getElementById('cvdBar');
-    const imbalanceRatioSpan = document.getElementById('imbalanceRatio');
-    const imbBar = document.getElementById('imbBar');
-    const rvolValueSpan = document.getElementById('rvolValue');
-    const rvolBar = document.getElementById('rvolBar');
-    const timerSpan = document.getElementById('timer');
-    const cycleFill = document.getElementById('cycleFill');
-    const lockStatusSpan = document.getElementById('lockStatus');
-    const wsHealthSpan = document.getElementById('wsHealth');
-    const lastTickTimeSpan = document.getElementById('lastTickTime');
-    const volumeProfileDiv = document.getElementById('volumeProfile');
-    const divergenceMsgSpan = document.getElementById('divergenceMsg');
-    const srLevelsDiv = document.getElementById('srLevels');
-    const nextLockSecSpan = document.getElementById('nextLockSec');
+// =======================
+// LOAD API DASHBOARD
+// =======================
+async function loadDashboard(){
+let active = 0;
+let invalid = 0;
+const container = document.getElementById("cards");
+container.innerHTML = "";
 
-    const canvas = document.getElementById('trendCanvas');
-    const ctx = canvas.getContext('2d');
+for(const account of accounts){
+const result = await checkKey(account);
+if(result.status === "OPERATIONAL"){ active++; } else { invalid++; }
 
-    function formatNum(n, d=5) { return n.toFixed(d); }
+container.innerHTML += `
+<div class="card">
+<div class="resource-label">
+<svg width="14" height="14" fill="#9aa4b2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+MONITORED RESOURCE
+</div>
+<div class="resource-name">${result.name}</div>
+<div class="status-circle ${result.className}">${result.icon}</div>
+<div class="state-label">CURRENT STATE</div>
+<div class="state">${result.status}</div>
+<div class="divider"></div>
+<div class="info-row">
+<div class="info-label">ACTIVE INCIDENTS</div>
+<div class="info-value">${result.status === "OPERATIONAL" ? "0" : "1"}</div>
+</div>
+<div class="info-row">
+<div class="info-label">UPTIME SCORE</div>
+<div class="info-value uptime">${result.uptime}</div>
+</div>
+<div class="email-small">${result.email}</div>
+</div>
+`;
+}
 
-    // --- WebSocket connection ---
-    function connectWebSocket() {
-        if (ws && ws.readyState === WebSocket.OPEN) return;
-        ws = new WebSocket(WS_URL);
-        ws.onopen = () => {
-            wsHealthSpan.innerText = '● ACTIVE';
-            wsHealthSpan.style.color = '#4ade80';
-            document.getElementById('wsStatus').innerHTML = '🟢 LIVE';
-            ws.send(JSON.stringify({ action: "subscribe", params: { symbols: SYMBOL } }));
-            if (window.heartbeatInterval) clearInterval(window.heartbeatInterval);
-            window.heartbeatInterval = setInterval(() => {
-                if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ action: "heartbeat" }));
-            }, 25000);
-        };
-        ws.onmessage = (ev) => {
-            try {
-                const msg = JSON.parse(ev.data);
-                if (msg.event === "price" && msg.symbol === SYMBOL) {
-                    const price = parseFloat(msg.price);
-                    const timestamp = msg.timestamp || Date.now();
-                    processTick(price, timestamp);
-                }
-            } catch(e) { console.warn(e); }
-        };
-        ws.onerror = () => {
-            wsHealthSpan.innerText = '⚠️ ERROR';
-            wsHealthSpan.style.color = '#f87171';
-            document.getElementById('wsStatus').innerHTML = '🔴 ERROR';
-        };
-        ws.onclose = () => {
-            wsHealthSpan.innerText = '● RECONNECTING';
-            wsHealthSpan.style.color = '#facc15';
-            document.getElementById('wsStatus').innerHTML = '🔌 RECONNECT';
-            setTimeout(connectWebSocket, 3000);
-        };
-    }
+document.getElementById("activeCount").textContent = active;
+document.getElementById("invalidCount").textContent = invalid;
+document.getElementById("lastRefresh").textContent = "Last Refresh: " + new Date().toLocaleTimeString();
+countdown = 30;
+}
 
-    // --- Process each tick ---
-    function processTick(price, timestamp) {
-        const now = new Date();
-        const sec = now.getSeconds();
-        if (lastSecond !== sec) {
-            tickVolumePerSecond.push(currentSecondVol);
-            if (tickVolumePerSecond.length > 60) tickVolumePerSecond.shift();
-            currentSecondVol = 0;
-            lastSecond = sec;
-        }
-        currentSecondVol++;
-        const totalVolume60 = tickVolumePerSecond.reduce((a,b)=>a+b,0);
-        tickVolSpan.innerText = totalVolume60;
+// =======================
+// REFRESH WEBSITE FRAME
+// =======================
+function refreshWebsite(){
+document.getElementById("websiteFrame").src = 
+"https://ved2548-github-io-oxxrj.isitup.cloud/?t=" + new Date().getTime();
+}
 
-        // Determine tick direction
-        let direction = 'NEUTRAL';
-        if (lastPrice !== null && price !== lastPrice) {
-            direction = price > lastPrice ? 'BUY' : 'SELL';
-            tickDirection.push(direction);
-            if (tickDirection.length > 150) tickDirection.shift();
+// =======================
+// START
+// =======================
+loadDashboard();
+refreshWebsite();
 
-            // Update CVD
-            if (direction === 'BUY') cumulativeCVD++;
-            else cumulativeCVD--;
-            cvdValueSpan.innerText = cumulativeCVD;
-            const cvdNorm = Math.min(100, Math.max(0, 50 + cumulativeCVD * 1.5));
-            cvdBar.style.width = cvdNorm + '%';
-            cvdBar.style.background = cumulativeCVD >= 0 ? '#22c55e' : '#ef4444';
-            cvdHistory.push(cumulativeCVD);
-            if (cvdHistory.length > 60) cvdHistory.shift();
+// API Keys: Every 30 seconds
+setInterval(loadDashboard, 30000);
 
-            // Volume Profile: increment count for this price (rounded)
-            const priceKey = price.toFixed(5);
-            priceVolumeMap.set(priceKey, (priceVolumeMap.get(priceKey) || 0) + 1);
-            // Update Point of Control
-            let maxCount = 0;
-            let poc = null;
-            for (let [p, cnt] of priceVolumeMap.entries()) {
-                if (cnt > maxCount) { maxCount = cnt; poc = p; }
-            }
-            pointOfControl = poc;
-            if (pointOfControl) {
-                volumeProfileDiv.innerHTML = `🔥 POC: ${pointOfControl}<br>Total levels: ${priceVolumeMap.size}`;
-            }
-        }
+// Website: Every 3 minutes = 180000ms
+setInterval(refreshWebsite, 180000);
 
-        // Update price history
-        priceHistory.push(price);
-        if (priceHistory.length > 60) priceHistory.shift();
-        lastPrice = price;
-        lastPriceSpan.innerText = price.toFixed(5);
-        lastTickTimeSpan.innerText = new Date(timestamp).toLocaleTimeString();
-
-        // Calculate Tick Imbalance (last 30 seconds)
-        const recentTicks = tickDirection.slice(-30);
-        const buyCount = recentTicks.filter(d => d === 'BUY').length;
-        const sellCount = recentTicks.filter(d => d === 'SELL').length;
-        const totalTicks = buyCount + sellCount;
-        let imbalance = 0.5;
-        if (totalTicks > 0) imbalance = buyCount / totalTicks;
-        imbalanceRatioSpan.innerText = imbalance.toFixed(3);
-        imbBar.style.width = (imbalance * 100) + '%';
-        imbBar.style.background = imbalance > 0.6 ? '#22c55e' : (imbalance < 0.4 ? '#ef4444' : '#facc15');
-
-        // RVOL (20-second average)
-        let volSum = 0;
-        for (let i = Math.max(0, tickVolumePerSecond.length-20); i < tickVolumePerSecond.length; i++) volSum += tickVolumePerSecond[i];
-        let avgVol = volSum / Math.min(20, tickVolumePerSecond.length);
-        let currentVol = tickVolumePerSecond[tickVolumePerSecond.length-1] || 1;
-        let rvol = avgVol === 0 ? 1 : currentVol / avgVol;
-        rvolValueSpan.innerText = rvol.toFixed(2) + 'x';
-        let rvolNorm = Math.min(100, (rvol / 3) * 100);
-        rvolBar.style.width = rvolNorm + '%';
-
-        // Divergence detection: compare CVD direction with price direction over last 10 candles
-        if (priceHistory.length >= 10 && cvdHistory.length >= 10) {
-            let priceDir = priceHistory[priceHistory.length-1] > priceHistory[priceHistory.length-11] ? 1 : -1;
-            let cvdDir = cvdHistory[cvdHistory.length-1] > cvdHistory[cvdHistory.length-11] ? 1 : -1;
-            if (priceDir === 1 && cvdDir === -1) divergenceMsgSpan.innerText = '🔻 Bearish Divergence (price up, CVD down)';
-            else if (priceDir === -1 && cvdDir === 1) divergenceMsgSpan.innerText = '🟢 Bullish Divergence (price down, CVD up)';
-            else divergenceMsgSpan.innerText = '✅ No divergence';
-        }
-
-        // Dynamic Support/Resistance (simple swing points)
-        if (priceHistory.length >= 5) {
-            let last5 = priceHistory.slice(-5);
-            let isSwingHigh = last5[4] > last5[3] && last5[3] > last5[2] && last5[2] > last5[1] && last5[1] > last5[0];
-            let isSwingLow = last5[4] < last5[3] && last5[3] < last5[2] && last5[2] < last5[1] && last5[1] < last5[0];
-            if (isSwingHigh) swingHighs.push(last5[4]);
-            if (isSwingLow) swingLows.push(last5[4]);
-            if (swingHighs.length > 10) swingHighs.shift();
-            if (swingLows.length > 10) swingLows.shift();
-            let recentRes = swingHighs.length ? swingHighs.slice(-3).map(p => p.toFixed(5)).join(', ') : '--';
-            let recentSup = swingLows.length ? swingLows.slice(-3).map(p => p.toFixed(5)).join(', ') : '--';
-            srLevelsDiv.innerHTML = `🔴 Resistance: ${recentRes}<br>🟢 Support: ${recentSup}`;
-        }
-
-        // Update composite signal only if not locked
-        if (!signalLocked) updateCompositeSignal(imbalance, rvol, cumulativeCVD);
-        drawTrends();
-    }
-
-    // --- Composite Scoring (resets each cycle via resetCycle) ---
-    function updateCompositeSignal(imb, rvol, cvd) {
-        let bullScore = 0, bearScore = 0;
-
-        // 1. Tick Imbalance (40%)
-        if (imb > 0.55) bullScore += 40;
-        else if (imb < 0.45) bearScore += 40;
-        else { bullScore += 20; bearScore += 20; }
-
-        // 2. CVD (30%)
-        if (cvd > 5) bullScore += 30;
-        else if (cvd < -5) bearScore += 30;
-        else { bullScore += 15; bearScore += 15; }
-
-        // 3. RVOL (20%) – adds to the leading side
-        if (rvol > 1.5) {
-            if (bullScore > bearScore) bullScore += 20;
-            else if (bearScore > bullScore) bearScore += 20;
-            else { bullScore += 10; bearScore += 10; }
-        } else if (rvol > 1.2) {
-            if (bullScore > bearScore) bullScore += 10;
-            else if (bearScore > bullScore) bearScore += 10;
-        }
-
-        // 4. Momentum (10%)
-        if (priceHistory.length >= 2) {
-            const last = priceHistory[priceHistory.length-1];
-            const prev = priceHistory[priceHistory.length-2];
-            if (last > prev) bullScore += 10;
-            else if (last < prev) bearScore += 10;
-            else { bullScore += 5; bearScore += 5; }
-        }
-
-        let total = bullScore + bearScore;
-        if (total === 0) total = 1;
-        let confidence = (Math.max(bullScore, bearScore) / total) * 100;
-        confidence = Math.min(98, Math.max(2, confidence));
-        let direction = bullScore > bearScore ? 'BULLISH' : (bearScore > bullScore ? 'BEARISH' : 'NEUTRAL');
-        let reason = `Imb:${imb.toFixed(2)} CVD:${cvd} RVOL:${rvol.toFixed(2)}`;
-
-        currentScore = { bull: bullScore, bear: bearScore, confidence, direction, reason };
-
-        // Update UI immediately (real-time bias)
-        confPctSpan.innerText = Math.round(confidence) + '%';
-        confBar.style.width = confidence + '%';
-        if (direction === 'BULLISH') {
-            signalEmoji.innerText = '🟢';
-            signalText.innerText = 'BULLISH BIAS';
-            signalText.style.color = '#4ade80';
-            signalReasonSpan.innerText = reason;
-        } else if (direction === 'BEARISH') {
-            signalEmoji.innerText = '🔴';
-            signalText.innerText = 'BEARISH BIAS';
-            signalText.style.color = '#f87171';
-            signalReasonSpan.innerText = reason;
-        } else {
-            signalEmoji.innerText = '⚪';
-            signalText.innerText = 'NEUTRAL';
-            signalText.style.color = '#facc15';
-            signalReasonSpan.innerText = reason;
-        }
-    }
-
-    // --- Reset cycle at 0 seconds ---
-    function resetCycle() {
-        signalLocked = false;
-        // Reset short-term buffers but keep long-term CVD and volume profile? 
-        // For clean cycle, we reset tickDirection and imbalance but keep cumulative CVD (shows long-term trend)
-        // However, to avoid stale bias, we reset currentScore to neutral with 50% confidence.
-        tickDirection = [];
-        // Do NOT reset cumulativeCVD – keep long-term
-        // Reset currentScore to neutral
-        currentScore = { bull: 20, bear: 20, confidence: 50, direction: 'NEUTRAL', reason: 'Cycle reset – collecting fresh ticks' };
-        // Update UI to neutral
-        signalBox.className = 'signal-box';
-        signalEmoji.innerText = '⏳';
-        signalText.innerText = 'COLLECTING DATA';
-        signalText.style.color = '#facc15';
-        signalReasonSpan.innerText = 'New cycle – waiting for ticks';
-        confPctSpan.innerText = '50%';
-        confBar.style.width = '50%';
-        lockStatusSpan.innerText = '🔓 Signal will lock at 20 seconds remaining';
-        // Also reset the UI for the final signal box (no lock yet)
-        document.getElementById('signalBox').classList.remove('signal-bull', 'signal-bear', 'signal-neu');
-        // Remove any leftover locked styling
-    }
-
-    // --- Lock signal at 20 seconds remaining ---
-    function lockSignal() {
-        if (signalLocked) return;
-        signalLocked = true;
-        lockStatusSpan.innerText = '🔒 SIGNAL LOCKED – valid until cycle end';
-        let finalDir = currentScore.direction;
-        let finalConf = currentScore.confidence;
-        let finalReason = currentScore.reason;
-        if (finalDir === 'BULLISH') {
-            signalBox.className = 'signal-box signal-bull';
-            signalEmoji.innerText = '🟢';
-            signalText.innerText = 'BUY / LONG';
-            signalText.style.color = '#bbf7d0';
-            signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}%`;
-        } else if (finalDir === 'BEARISH') {
-            signalBox.className = 'signal-box signal-bear';
-            signalEmoji.innerText = '🔴';
-            signalText.innerText = 'SELL / SHORT';
-            signalText.style.color = '#fecaca';
-            signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}%`;
-        } else {
-            signalBox.className = 'signal-box signal-neu';
-            signalEmoji.innerText = '⚪';
-            signalText.innerText = 'NO TRADE';
-            signalText.style.color = '#fef08a';
-            signalReasonSpan.innerText = `${finalReason} | Confidence ${Math.round(finalConf)}% (balanced market)`;
-        }
-        // Also update confidence display one last time
-        confPctSpan.innerText = Math.round(finalConf) + '%';
-        confBar.style.width = finalConf + '%';
-    }
-
-    // --- Timer and cycle management (updates every second) ---
-    let lastRemaining = -1;
-    function startCycleTimer() {
-        setInterval(() => {
-            const now = new Date();
-            const sec = now.getSeconds();
-            let remaining = 30 - (sec % 30);
-            if (remaining === 0) remaining = 30; // display 30 instead of 0
-            timerSpan.innerText = remaining;
-            cycleFill.style.width = ((remaining / 30) * 100) + '%';
-            // At the start of a new cycle (when remaining jumps from 1 to 30), reset everything
-            if (lastRemaining === 1 && remaining === 30) {
-                resetCycle();
-            }
-            // When remaining becomes 20, lock signal (only once)
-            if (remaining === 20 && !signalLocked) {
-                lockSignal();
-            }
-            lastRemaining = remaining;
-            // Update next lock indicator
-            let nextLock = remaining > 20 ? remaining - 20 : 0;
-            nextLockSecSpan.innerText = nextLock;
-        }, 200);
-    }
-
-    // --- Canvas drawing ---
-    function drawTrends() {
-        if (!canvas || priceHistory.length < 2) return;
-        const w = canvas.clientWidth;
-        const h = canvas.clientHeight;
-        canvas.width = w;
-        canvas.height = h;
-        ctx.clearRect(0, 0, w, h);
-        // Price line
-        const prices = priceHistory;
-        const minP = Math.min(...prices);
-        const maxP = Math.max(...prices);
-        const range = maxP - minP;
-        ctx.beginPath();
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 2;
-        for (let i=0; i<prices.length; i++) {
-            let x = (i / (prices.length-1)) * w;
-            let y = h - ((prices[i] - minP) / range) * h;
-            if (i===0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-        // CVD line
-        if (cvdHistory.length > 1) {
-            const minC = Math.min(...cvdHistory);
-            const maxC = Math.max(...cvdHistory);
-            const cRange = maxC - minC;
-            ctx.beginPath();
-            ctx.strokeStyle = '#f97316';
-            ctx.lineWidth = 1.5;
-            for (let i=0; i<cvdHistory.length; i++) {
-                let x = (i / (cvdHistory.length-1)) * w;
-                let y = cRange === 0 ? h/2 : h - ((cvdHistory[i] - minC) / cRange) * h;
-                if (i===0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        }
-    }
-
-    // --- Zoom & Clock ---
-    let zoom=1; const cont = document.querySelector('.container');
-    document.getElementById('zoomIn').onclick = () => { zoom = Math.min(1.6, zoom+0.1); cont.style.transform = `scale(${zoom})`; cont.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
-    document.getElementById('zoomOut').onclick = () => { zoom = Math.max(0.6, zoom-0.1); cont.style.transform = `scale(${zoom})`; cont.style.transformOrigin = 'top center'; document.getElementById('zoomLevel').innerText = `${Math.round(zoom*100)}%`; };
-
-    function updateClock() {
-        const d = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
-        document.getElementById('clock').innerText = 'IST ' + d.toTimeString().slice(0,8);
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Start everything
-    connectWebSocket();
-    startCycleTimer();
-    setInterval(() => drawTrends(), 300);
-    window.addEventListener('resize', () => drawTrends());
-    resetCycle(); // initial state
+// Countdown Timer
+setInterval(()=>{
+countdown--;
+if(countdown < 0){ countdown = 30; }
+document.getElementById("globalCountdown").textContent = countdown + "s";
+},1000);
 </script>
+
 </body>
 </html>
