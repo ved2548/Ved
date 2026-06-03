@@ -1,411 +1,1070 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Twelve Data API Monitor</title>
-
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Segoe UI,Tahoma,sans-serif;
-}
-
-body{
-background:#050b16;
-color:#fff;
-overflow-x:hidden;
-}
-
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px;
-flex-wrap:wrap;
-gap:10px;
-}
-
-.title{
-font-size:28px;
-font-weight:700;
-}
-
-.refresh{
-font-size:14px;
-color:#9aa4b2;
-}
-
-/* Slider Container */
-.slider-container{
-width:100%;
-overflow-x:auto;
-scroll-snap-type:x mandatory;
-display:flex;
-scroll-behavior:smooth;
-}
-
-.slider-container::-webkit-scrollbar{
-display:none;
-}
-
-.slide{
-min-width:100%;
-scroll-snap-align:start;
-padding:0 20px 20px;
-}
-
-/* Summary Cards */
-.summary{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-gap:15px;
-margin-bottom:25px;
-}
-
-.summary-card{
-background:linear-gradient(145deg,#081420,#0d1f2f);
-padding:18px;
-border-radius:18px;
-border:1px solid rgba(255,255,255,.08);
-}
-
-.summary-card h3{
-font-size:13px;
-color:#8f9bab;
-margin-bottom:10px;
-letter-spacing:1px;
-}
-
-.summary-card span{
-font-size:28px;
-font-weight:700;
-color:#00ffb3;
-}
-
-/* API Cards Grid */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:20px;
-}
-
-.card{
-background:linear-gradient(145deg,#081420,#0d1f2f);
-border-radius:24px;
-padding:30px 25px;
-border:1px solid rgba(255,255,255,.08);
-box-shadow:0 0 20px rgba(0,255,180,.08);
-text-align:center;
-}
-
-.resource-label{
-font-size:12px;
-letter-spacing:2px;
-color:#9aa4b2;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:6px;
-margin-bottom:10px;
-}
-
-.resource-name{
-font-size:26px;
-font-weight:800;
-word-break:break-word;
-margin-bottom:20px;
-}
-
-.status-circle{
-width:90px;
-height:90px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:45px;
-margin:0 auto 15px;
-font-weight:bold;
-}
-
-.operational{
-background:#00d084;
-box-shadow:0 0 30px #00d084;
-}
-
-.invalid{
-background:#ff4d4d;
-box-shadow:0 0 30px #ff4d4d;
-}
-
-.error{
-background:#ff9800;
-box-shadow:0 0 30px #ff9800;
-}
-
-.state-label{
-font-size:12px;
-letter-spacing:2px;
-color:#9aa4b2;
-margin-bottom:5px;
-}
-
-.state{
-font-size:32px;
-font-weight:800;
-margin-bottom:25px;
-}
-
-.divider{
-height:1px;
-background:rgba(255,255,255,.1);
-margin:20px 0;
-}
-
-.info-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:18px;
-}
-
-.info-label{
-font-size:12px;
-letter-spacing:1px;
-color:#9aa4b2;
-}
-
-.info-value{
-font-size:28px;
-font-weight:700;
-}
-
-.uptime{
-color:#00ffb3;
-}
-
-.email-small{
-font-size:13px;
-color:#8f9bab;
-margin-top:15px;
-word-break:break-word;
-}
-
-/* Website Slide */
-.website-iframe{
-width:100%;
-height:70vh;
-border:none;
-border-radius:24px;
-background:#0d1f2f;
-}
-
-.slide-indicator{
-display:flex;
-justify-content:center;
-gap:10px;
-margin:15px 0;
-}
-
-.dot{
-width:10px;
-height:10px;
-border-radius:50%;
-background:rgba(255,255,255,.2);
-transition:0.3s;
-}
-
-.dot.active{
-background:#00ffb3;
-box-shadow:0 0 10px #00ffb3;
-}
-
-.slide-hint{
-text-align:center;
-color:#9aa4b2;
-font-size:13px;
-margin-bottom:10px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>VED v9.3 · Final Dual Signal · Binance BTC/USDT + Twelve Data BTC/USD</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --g:#16a34a;--r:#dc2626;--y:#ca8a04;--c:#0891b2;--p:#7c3aed;
+      --bg:#060b14;--card:#0d1a2d;--muted:#94a3b8;--line:rgba(255,255,255,.07)
+    }
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:radial-gradient(circle at top,#0b1830,#060b14 45%,#030712);color:#e2e8f0;overflow-x:hidden;min-height:100vh}
+    button,input{font:inherit}
+    button{cursor:pointer;border:0;border-radius:12px;padding:6px 10px;background:#172554;color:#dbeafe;font-weight:800}
+    input{background:#020617;border:1px solid var(--line);color:#e2e8f0;border-radius:12px;padding:8px 10px;outline:none;min-width:230px}
+    .card{background:linear-gradient(180deg,rgba(13,26,45,.96),rgba(8,17,32,.94));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 14px 35px rgba(0,0,0,.25);backdrop-filter:blur(6px)}
+    .sec-title{font-size:11px;font-weight:900;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;font-family:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+    @media(max-width:900px){.grid2{grid-template-columns:1fr}.timer-num{font-size:54px!important}.signal-txt{font-size:28px!important}#finalConsensusCard>div:nth-child(2){grid-template-columns:1fr!important;text-align:center}#finalSignal{font-size:30px!important}#finalAction{min-width:0!important;width:100%}}
+    .rsi-bar-outer{height:26px;background:linear-gradient(90deg,#1d4ed8,#3b82f6,#16a34a,#0891b2,#64748b,#ea580c,#dc2626);border-radius:20px;position:relative;margin:12px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+    .rsi-needle{position:absolute;top:-8px;width:5px;height:38px;background:#fff;border-radius:4px;transform:translateX(-50%);transition:left .12s linear;box-shadow:0 0 12px white}
+    .signal-card{text-align:center}
+    .signal-emoji{font-size:52px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.35))}
+    .signal-txt{font-family:Orbitron,Inter,sans-serif;font-size:34px;font-weight:1000;letter-spacing:2px}
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+    .score-box{padding:8px 4px;border-radius:16px;background:rgba(255,255,255,.035);text-align:center;border:1px solid rgba(255,255,255,.035)}
+    .sc-val{font-size:18px;font-weight:1000;font-family:"Space Mono",ui-monospace,monospace}
+    .str-bar{height:7px;background:#1e293b;border-radius:8px;overflow:hidden}
+    .str-fill{height:100%;transition:width .35s,background-color .35s}
+    .lock-badge{background:#16a34a30;border-radius:40px;padding:5px 12px;font-size:10px;font-family:"Space Mono",ui-monospace,monospace;display:inline-block;margin-top:10px;border:1px solid rgba(255,255,255,.06)}
+    .ws-health{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+    .ws-badge{padding:8px 14px;border-radius:40px;background:#0f172a;border-left:4px solid #334155;display:flex;align-items:center;gap:10px;font-size:12px;min-height:38px}
+    .ws-badge.good{border-left-color:var(--g)}.ws-badge.warn{border-left-color:var(--y)}.ws-badge.bad{border-left-color:var(--r)}
+    .ws-led{width:10px;height:10px;border-radius:50%;background:#64748b;flex:0 0 auto}.ws-led.on{background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse .9s infinite alternate}.ws-led.warn{background:#facc15;box-shadow:0 0 8px #facc15}.ws-led.bad{background:#f87171;box-shadow:0 0 8px #f87171}
+    @keyframes pulse{from{opacity:.55}to{opacity:1}}
+    .timer-num{font-family:Orbitron,Inter,sans-serif;font-size:68px;font-weight:1000;text-align:center;color:#7dd3fc;text-shadow:0 0 18px rgba(125,211,252,.22)}
+    .trade-decision{padding:14px;border-radius:20px;border:2px solid;margin-top:14px;text-align:center}.do-trade{border-color:#16a34a;background:#16a34a20}.no-trade{border-color:#dc2626;background:#dc262610}.watch-trade{border-color:#ca8a04;background:#ca8a0414}
+    .phase-step{padding:6px 12px;border-radius:30px;background:#1e293b;font-size:11px;font-weight:900;transition:.25s}
+    .hist-item{display:grid;grid-template-columns:1.1fr 1.5fr .75fr;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);padding:8px 0;font-size:12px}
+    .horn-tag{cursor:pointer;background:#ea580c30;padding:5px 14px;border-radius:40px;font-size:12px;white-space:nowrap}.digit-preview{background:#00000066;border-radius:28px;padding:12px;text-align:center;margin-top:12px;border:1px solid rgba(255,255,255,.04)}
+    .metric-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.metric{background:#02061766;border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:8px;text-align:center}.metric .lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:900;letter-spacing:.8px}.metric .val{font-family:"Space Mono",monospace;font-size:12px;font-weight:900;margin-top:2px}.price-line{display:flex;justify-content:space-between;gap:10px;font-family:"Space Mono",ui-monospace,monospace;font-size:12px;color:#cbd5e1;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 8px;font-size:10px;background:#0f172a;border:1px solid rgba(255,255,255,.06);margin:2px}.chip.g{color:#86efac}.chip.r{color:#fca5a5}.chip.y{color:#fde68a}.chip.c{color:#7dd3fc}.warn-note{font-size:10px;color:#fde68a;background:#ca8a0411;border:1px solid #ca8a0430;padding:8px 10px;border-radius:14px;margin-top:10px;line-height:1.35}.wrap{padding:20px;max-width:1440px;margin:0 auto;transition:transform .12s;transform-origin:top center}.zoom-controls{position:fixed;bottom:20px;right:20px;background:#000000aa;border-radius:40px;padding:6px 12px;display:flex;gap:8px;align-items:center;backdrop-filter:blur(8px);z-index:50}.zoom-controls button{width:30px;height:28px;padding:0;border-radius:999px}.topbar{display:flex;justify-content:space-between;padding:12px 24px;background:#0b1120cc;border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:20;backdrop-filter:blur(10px)}.logo{font-family:Orbitron,Inter,sans-serif;font-size:22px;font-weight:1000;background:linear-gradient(135deg,#06b6d4,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.header-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.phase-badge{background:#ca8a0422;border:1px solid #ca8a04;padding:5px 12px;border-radius:40px;font-size:11px;font-weight:800}.mini{font-size:9px;background:#00000070;padding:2px 6px;border-radius:20px;color:#cbd5e1}.error-text{color:#fca5a5;font-size:10px}.ok-text{color:#86efac}.muted{color:#94a3b8}.mono{font-family:"Space Mono",ui-monospace,monospace}.reason-list{margin-top:7px;display:flex;justify-content:center;gap:4px;flex-wrap:wrap}
+  </style>
 </head>
 <body>
+<div id="hornFlash" style="position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0;transition:.1s"></div>
+<header class="topbar">
+  <div class="logo">VED v9.3 · FINAL SIGNAL</div>
+  <div class="header-controls">
+    <span class="phase-badge">⚡ 30s CYCLE · LOCK @15s</span>
+    <span class="horn-tag" id="hornTag">🔊 UNLOCK SOUND</span>
+    <span id="clock" class="mono" style="font-size:13px">IST --:--:--</span>
+  </div>
+</header>
 
-<div class="header">
-<div class="title">MONITOR DASHBOARD</div>
-<div class="refresh" id="lastRefresh">Last Refresh: --</div>
+<div class="wrap">
+  <div class="card" id="finalConsensusCard" style="margin-bottom:20px;border:2px solid #334155;background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(8,13,28,.96));">
+    <div class="sec-title">🏁 TOP FINAL SIGNAL · BOTH PAIRS CONFIRMATION</div>
+    <div style="display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;">
+      <div id="finalEmoji" style="font-size:54px;line-height:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));">⏳</div>
+      <div>
+        <div id="finalSignal" style="font-family:Orbitron,Inter,sans-serif;font-size:42px;font-weight:1000;letter-spacing:2px;color:#ca8a04;line-height:1.05;">WAITING LOCK</div>
+        <div id="finalReason" style="font-size:13px;color:#cbd5e1;margin-top:8px;line-height:1.35;">15s remaining par dono pairs lock honge. Same signal hua to final signal show hoga; different hua to SKIP.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+          <span class="chip c" id="finalUsdtChip">BTC/USDT: --</span>
+          <span class="chip c" id="finalUsdChip">BTC/USD: --</span>
+          <span class="chip y" id="finalModeChip">MODE: LIVE PREVIEW</span>
+        </div>
+      </div>
+      <div id="finalAction" style="min-width:210px;text-align:center;border-radius:22px;padding:18px 16px;background:#ca8a0418;border:2px solid #ca8a04;color:#fde68a;font-size:26px;font-weight:1000;">WAIT</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="sec-title">🔌 LIVE WEBSOCKET HEALTH · BTC/USDT BINANCE + BTC/USD TWELVE DATA</div>
+    <div class="ws-health">
+      <div class="ws-badge" id="wsBtcUsdt"><span class="ws-led" id="wsLedUsdt"></span> Binance Spot · BTC/USDT <span id="wsUsdtMsg" class="muted">connecting</span></div>
+      <div class="ws-badge" id="wsBtcUsd"><span class="ws-led" id="wsLedUsd"></span> Twelve Data · BTC/USD <span id="wsUsdMsg" class="muted">connecting</span><span class="mini" id="tdKeyMask">key: ****</span></div>
+    </div>
+    <div class="warn-note">
+      ✅ BTC/USDT Binance public trade WebSocket se aa raha hai. ✅ BTC/USD Twelve Data WebSocket se subscribe hota hai: <span class="mono">BTC/USD</span>.
+      v9.3 fix: top final signal card added. Cycle wall-clock synced hai — every :00/:30 start, lock exactly jab 15s remaining ho (:15/:45). RSI ab fake fallback 50.0 nahi dikhata; Twelve Data ke sparse ticks ke liye adaptive tick-series + optional REST warm-up use hota hai. Agar BTC/USD live nahi hota, Twelve Data key/plan/symbol permission check karein. Browser frontend me API key visible hoti hai; production ke liye proxy backend use karein.
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
+      <input id="tdKeyInput" type="password" placeholder="Twelve Data API key override (optional)" autocomplete="off" />
+      <button id="saveTdKey">Save TD Key</button>
+      <input id="tdSymbolInput" type="text" placeholder="TD symbol e.g. BTC/USD or BTC/USD:COINBASE" autocomplete="off" />
+      <button id="saveTdSymbol">Save TD Symbol</button>
+      <button id="reconnectWs">Reconnect WS</button>
+      <span class="muted" style="font-size:11px">Default key code me set hai; yahan override localStorage me save hoga.</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" id="cardUsdt">
+      <div class="sec-title">💰 BTC/USDT · BINANCE SPOT LIVE RSI + ACCURACY FILTERS</div>
+      <div class="price-line"><span>Price: <b id="priceUsdt">--</b></span><span>Tick age: <b id="ageUsdt">--</b></span></div>
+      <div class="rsi-bar-outer"><div class="rsi-needle" id="rsiNeedleUsdt" style="left:50%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div id="rsiUsdtVal" style="font-size:44px;font-weight:1000">--</div><div id="dirUsdt" style="font-size:12px">▲</div></div>
+      <div class="signal-card">
+        <div class="signal-emoji" id="emojiUsdt">⌛</div><div class="signal-txt" id="signalUsdt">WAIT</div>
+        <div class="score-grid">
+          <div class="score-box" style="color:#16a34a"><div>🟢</div><div class="sc-val" id="greenUsdt">0</div></div>
+          <div class="score-box" style="color:#dc2626"><div>🔴</div><div class="sc-val" id="redUsdt">0</div></div>
+          <div class="score-box" style="color:#0891b2"><div>🔵</div><div class="sc-val" id="bigUsdt">0</div></div>
+          <div class="score-box" style="color:#7c3aed"><div>🟣</div><div class="sc-val" id="smallUsdt">0</div></div>
+        </div>
+        <div class="str-bar"><div class="str-fill" id="strUsdt" style="width:0%;background:#ca8a04"></div></div>
+        <div class="metric-grid">
+          <div class="metric"><div class="lbl">EMA</div><div class="val" id="emaUsdt">--</div></div>
+          <div class="metric"><div class="lbl">MACD</div><div class="val" id="macdUsdt">--</div></div>
+          <div class="metric"><div class="lbl">ATR%</div><div class="val" id="atrUsdt">--</div></div>
+          <div class="metric"><div class="lbl">Quality</div><div class="val" id="qualityUsdt">--</div></div>
+          <div class="metric"><div class="lbl">Confl.</div><div class="val" id="conflUsdt">--</div></div>
+        </div>
+        <div class="lock-badge" id="lockBadgeUsdt">⚡ LOCK PENDING @15s</div>
+      </div>
+      <div id="decisionUsdt" class="trade-decision" style="display:none"></div>
+    </div>
+
+    <div class="card" id="cardUsd">
+      <div class="sec-title">💵 BTC/USD · TWELVE DATA LIVE RSI + ACCURACY FILTERS</div>
+      <div class="price-line"><span>Price: <b id="priceUsd">--</b></span><span>Tick age: <b id="ageUsd">--</b></span></div>
+      <div class="rsi-bar-outer"><div class="rsi-needle" id="rsiNeedleUsd" style="left:50%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div id="rsiUsdVal" style="font-size:44px;font-weight:1000">--</div><div id="dirUsd" style="font-size:12px">▲</div></div>
+      <div class="signal-card">
+        <div class="signal-emoji" id="emojiUsd">⌛</div><div class="signal-txt" id="signalUsd">WAIT</div>
+        <div class="score-grid">
+          <div class="score-box" style="color:#16a34a"><div>🟢</div><div class="sc-val" id="greenUsd">0</div></div>
+          <div class="score-box" style="color:#dc2626"><div>🔴</div><div class="sc-val" id="redUsd">0</div></div>
+          <div class="score-box" style="color:#0891b2"><div>🔵</div><div class="sc-val" id="bigUsd">0</div></div>
+          <div class="score-box" style="color:#7c3aed"><div>🟣</div><div class="sc-val" id="smallUsd">0</div></div>
+        </div>
+        <div class="str-bar"><div class="str-fill" id="strUsd" style="width:0%;background:#ca8a04"></div></div>
+        <div class="metric-grid">
+          <div class="metric"><div class="lbl">EMA</div><div class="val" id="emaUsd">--</div></div>
+          <div class="metric"><div class="lbl">MACD</div><div class="val" id="macdUsd">--</div></div>
+          <div class="metric"><div class="lbl">ATR%</div><div class="val" id="atrUsd">--</div></div>
+          <div class="metric"><div class="lbl">Quality</div><div class="val" id="qualityUsd">--</div></div>
+          <div class="metric"><div class="lbl">Confl.</div><div class="val" id="conflUsd">--</div></div>
+        </div>
+        <div class="lock-badge" id="lockBadgeUsd">⚡ LOCK PENDING @15s</div>
+      </div>
+      <div id="decisionUsd" class="trade-decision" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:0">
+    <div class="card">
+      <div class="sec-title">⏱ 30-SEC CYCLE · LOCK @ 15 SECONDS</div>
+      <div class="timer-num" id="timerNum">30</div>
+      <div id="timerSub" style="text-align:center;margin-top:4px">Next lock in 15s</div>
+      <div style="height:6px;background:#1e293b;border-radius:6px;margin:12px 0;overflow:hidden"><div id="timerFill" style="width:100%;height:100%;background:#06b6d4;transition:width .25s"></div></div>
+      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap"><div class="phase-step" id="stepFetch">⚡ LIVE DATA</div><div class="phase-step" id="stepLock">🔒 15s LOCK</div><div class="phase-step" id="stepFilter">🧠 FILTERS ON</div></div>
+      <div class="digit-preview">
+        <div style="font-size:12px;font-family:'Space Mono',monospace">🔮 LIVE DIGIT PREVIEW (BTC/USDT RSI/10)</div>
+        <div style="font-size:48px;font-weight:1000" id="liveDigitPreview">--</div>
+        <div style="font-size:9px;color:#94a3b8">RSI + trend filters se confidence improve hota hai</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">📜 SIGNAL HISTORY (15s locks · both pairs)</div>
+      <div id="histList" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>
+    </div>
+  </div>
 </div>
 
-<div class="slide-hint">← Right to left swipe karo →</div>
-
-<div class="slide-indicator">
-<div class="dot active" id="dot1"></div>
-<div class="dot" id="dot2"></div>
-</div>
-
-<div class="slider-container" id="slider">
-
-<!-- SLIDE 1: API Keys Status -->
-<div class="slide">
-<div class="summary">
-<div class="summary-card">
-<h3>TOTAL ACCOUNTS</h3>
-<span id="totalAccounts">9</span>
-</div>
-<div class="summary-card">
-<h3>ACTIVE</h3>
-<span id="activeCount">0</span>
-</div>
-<div class="summary-card">
-<h3>INVALID</h3>
-<span id="invalidCount">0</span>
-</div>
-<div class="summary-card">
-<h3>NEXT CHECK</h3>
-<span id="globalCountdown">30s</span>
-</div>
-</div>
-<div class="grid" id="cards"></div>
-</div>
-
-<!-- SLIDE 2: Website Status -->
-<div class="slide">
-<div class="summary">
-<div class="summary-card" style="grid-column:1/-1;">
-<h3>MONITORED WEBSITE</h3>
-<span style="font-size:20px;">ved2548.github.io</span>
-</div>
-</div>
-<iframe src="https://ved2548-github-io-oxxrj.isitup.cloud/" class="website-iframe" id="websiteFrame"></iframe>
-</div>
-
-</div>
+<div class="zoom-controls"><button id="zoomOut">−</button><span id="zoomLvl">100%</span><button id="zoomIn">+</button></div>
 
 <script>
-// =======================
-// ACCOUNTS DATA
-// =======================
-const accounts = [
-{name:"Account 1", email:"jayvedprakash2@gmail.com", apiKey:"7d8ec8ca7bf8483b81ff4490c76dfe88"},
-{name:"Account 2", email:"h7862937@gmail.com", apiKey:"246618a38ee84e1abdb9511a378c46d4"},
-{name:"Account 3", email:"saumi8261@gmail.com", apiKey:"33073d9ef38b4f25860738b1a1eae5bf"},
-{name:"Account 4", email:"ythi9211@gmail.com", apiKey:"fbecb3e6b46845deb7fab1f5e728ccc7"},
-{name:"Account 5", email:"saumijay361@gmail.com", apiKey:"8120e5ab512040cba8a775b8e1c14434"},
-{name:"Account 6", email:"gg1949577@gmail.com", apiKey:"efc7db6d64cb4e4ab6ae9d1095960980"},
-{name:"Account 7", email:"saumichoudhary81@gmail.com", apiKey:"04763c31155d46fb867d97e0141557ca"},
-{name:"Account 8", email:"vedsaumi@gmail.com", apiKey:"bc0bc3890bc1496a8a3fa23ce1cb8c1e"},
-{name:"Account 9", email:"shree98689@gmail.com", apiKey:"c0abbc33813e4b4fbf1254a0a3650db2"}
-];
+'use strict';
 
-let countdown = 30;
-const slider = document.getElementById('slider');
-const dot1 = document.getElementById('dot1');
-const dot2 = document.getElementById('dot2');
+// ======================== CONFIG =========================
+// NOTE: Frontend/browser code me API key visible hoti hai. Production me backend proxy use karein.
+const DEFAULT_TWELVE_DATA_API_KEY = 'bc0bc3890bc1496a8a3fa23ce1cb8c1e';
+const CONFIG = {
+  BINANCE_USDT_WS: 'wss://stream.binance.com:9443/ws/btcusdt@trade',
+  BINANCE_KLINES_URL: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=120',
+  TWELVE_WS_BASE: 'wss://ws.twelvedata.com/v1/quotes/price?apikey=',
+  TWELVE_REST_TIME_SERIES: 'https://api.twelvedata.com/time_series',
+  TD_DEFAULT_SYMBOL: 'BTC/USD',
+  ENABLE_REST_WARMUP: true,          // live stream WebSocket hi rahega; REST sirf indicator history seed ke liye hai
+  CYCLE_SECONDS: 30,
+  LOCK_AT_REMAINING: 15,
+  CANDLE_MS: 1000,
+  RSI_PERIOD: 14,
+  MIN_SAMPLES_BY_KEY: { usdt: 35, usd: 18 }, // Twelve Data sparse hota hai, isliye adaptive threshold
+  MIN_CONFIDENCE: 62,
+  MIN_QUALITY: 55,
+  STALE_MS: 12000
+};
 
-// =======================
-// SLIDER INDICATOR
-// =======================
-slider.addEventListener('scroll',()=>{
-const slideIndex = Math.round(slider.scrollLeft / window.innerWidth);
-if(slideIndex === 0){
-dot1.classList.add('active');
-dot2.classList.remove('active');
-}else{
-dot1.classList.remove('active');
-dot2.classList.add('active');
+const COLORS = {GREEN:'#16a34a', RED:'#dc2626', BIG:'#0891b2', SMALL:'#7c3aed', WAIT:'#ca8a04'};
+const EMOJI = {GREEN:'🟢', RED:'🔴', BIG:'🔵', SMALL:'🟣', WAIT:'⌛'};
+
+function el(id){ return document.getElementById(id); }
+function clamp(v,min,max){ return Math.min(max, Math.max(min, v)); }
+function fmt(n,d=2){ return Number.isFinite(n) ? Number(n).toFixed(d) : '--'; }
+function pctChange(a,b){ return b ? ((a-b)/b)*100 : 0; }
+function nowMs(){ return Date.now(); }
+function safeJsonParse(x){ try { return JSON.parse(x); } catch { return null; } }
+function tdApiKey(){ return (localStorage.getItem('TWELVE_DATA_API_KEY') || DEFAULT_TWELVE_DATA_API_KEY).trim(); }
+function tdSymbol(){ return (localStorage.getItem('TWELVE_DATA_SYMBOL') || CONFIG.TD_DEFAULT_SYMBOL).trim(); }
+function getMinSamples(key){ return CONFIG.MIN_SAMPLES_BY_KEY[key] || 35; }
+function maskKey(k){ if(!k) return '****'; return k.length <= 8 ? k.slice(0,2)+'***' : k.slice(0,6)+'***'+k.slice(-3); }
+
+const markets = {
+  usdt: makeMarket('usdt','BTC/USDT','Binance Spot'),
+  usd: makeMarket('usd','BTC/USD','Twelve Data')
+};
+
+function makeMarket(key, name, source){
+  return {
+    key, name, source,
+    prices: [], ticks: [], candles: [], currentCandle: null, seeded:false,
+    rsi: NaN, prevRsi: NaN, rsiReady:false, dir: 'UP', momentum: 0, lastPrice: NaN, lastTs: 0,
+    scores: {GREEN:0, RED:0, BIG:0, SMALL:0},
+    winner: ['WAIT',0], confidence: 0, quality: 0,
+    indicators: {emaFast:NaN, emaSlow:NaN, macd:NaN, macdSignal:NaN, macdHist:NaN, atrPct:NaN, trend:'WAIT', trendStrength:0, choppy:true, velocity:0, tickRate:0, sampleCount:0, rsiReady:false, dataReady:false},
+    confluence: 0, reasons: [], wsOpen:false, reconnectAttempts:0
+  };
 }
+
+let wsUsdt = null, wsUsd = null;
+let tdHeartbeatTimer = null;
+let reconnectUsdtTimer = null, reconnectUsdTimer = null;
+let historyLogs = [];
+let finalLockedResult = null;
+let soundUnlocked = false, audioCtx = null;
+let remainingSec = CONFIG.CYCLE_SECONDS;
+let lockExecutedThisCycle = false;
+let cycleIntervalId = null;
+let currentCycleId = null;
+let cycleLockState = 'pending'; // pending | done | missed
+let zoom = 1;
+
+// ======================== INDICATORS =========================
+function getAnalysisCandles(m){
+  const arr = m.candles.slice(-220);
+  if(m.currentCandle) arr.push({...m.currentCandle});
+  return arr;
+}
+
+function compactPrices(values){
+  // Twelve Data me repeated/aggregated prices aa sakte hain. Tiny duplicate moves ko compress karte hain,
+  // lekin agar samples kam hain to raw values use karenge.
+  const out = [];
+  let last = NaN;
+  for(const v of values){
+    if(!Number.isFinite(v)) continue;
+    if(!Number.isFinite(last) || Math.abs(v-last) / Math.max(1, last) > 0.000002){
+      out.push(v); last = v;
+    }
+  }
+  return out;
+}
+
+function getAnalysisSeries(m){
+  const candleCloses = getAnalysisCandles(m).map(c => c.c).filter(Number.isFinite);
+  const rawPrices = m.prices.slice(-240).filter(Number.isFinite);
+  const compact = compactPrices(rawPrices);
+  const minForRsi = CONFIG.RSI_PERIOD + 1;
+  // Binance fast feed: candle close series best. Twelve sparse feed: tick/compact prices better.
+  if(m.key === 'usd'){
+    if(compact.length >= minForRsi) return compact.slice(-220);
+    if(rawPrices.length >= minForRsi) return rawPrices.slice(-220);
+  }
+  if(candleCloses.length >= minForRsi) return candleCloses.slice(-220);
+  if(compact.length >= minForRsi) return compact.slice(-220);
+  return rawPrices.slice(-220);
+}
+
+function pseudoCandlesFromCloses(closes){
+  return closes.map((c,i) => {
+    const o = i ? closes[i-1] : c;
+    return {t:i, o, h:Math.max(o,c), l:Math.min(o,c), c, v:0, ticks:1};
+  });
+}
+
+function calcRSI(values, period=14){
+  if(values.length < period + 1) return NaN;
+  const data = values.slice(-160);
+  let gains = 0, losses = 0;
+  for(let i=1;i<=period;i++){
+    const diff = data[i] - data[i-1];
+    if(diff > 0) gains += diff; else if(diff < 0) losses -= diff;
+  }
+  let avgGain = gains / period;
+  let avgLoss = losses / period;
+  for(let i=period+1;i<data.length;i++){
+    const diff = data[i] - data[i-1];
+    const gain = diff > 0 ? diff : 0;
+    const loss = diff < 0 ? -diff : 0;
+    avgGain = ((avgGain * (period - 1)) + gain) / period;
+    avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+  }
+  if(avgLoss === 0 && avgGain === 0) return 50;
+  if(avgLoss === 0) return 100;
+  if(avgGain === 0) return 0;
+  const rs = avgGain / avgLoss;
+  return clamp(100 - (100 / (1 + rs)), 0, 100);
+}
+
+function emaArray(values, period){
+  if(values.length < period) return [];
+  const k = 2 / (period + 1);
+  const out = [];
+  let ema = values.slice(0, period).reduce((a,b)=>a+b,0) / period;
+  out[period-1] = ema;
+  for(let i=period;i<values.length;i++){
+    ema = values[i] * k + ema * (1 - k);
+    out[i] = ema;
+  }
+  return out.filter(Number.isFinite);
+}
+function lastEma(values, period){
+  const arr = emaArray(values, period);
+  return arr.length ? arr[arr.length-1] : NaN;
+}
+function calcMACD(values){
+  // Standard MACD needs 35+ points. For sparse Twelve Data, use fast MACD after 18+ samples.
+  let fast=12, slow=26, sig=9;
+  if(values.length < 35){
+    if(values.length < 18) return {macd:NaN, signal:NaN, hist:NaN, mode:'WAIT'};
+    fast=5; slow=13; sig=4;
+  }
+  const emaFast = emaArray(values, fast);
+  const emaSlow = emaArray(values, slow);
+  const offset = emaFast.length - emaSlow.length;
+  const macdLine = emaSlow.map((v,i)=>emaFast[i+offset]-v).filter(Number.isFinite);
+  const sigArr = emaArray(macdLine, sig);
+  const macd = macdLine[macdLine.length-1];
+  const signal = sigArr[sigArr.length-1];
+  return {macd, signal, hist: macd - signal, mode: slow === 26 ? 'STD' : 'FAST'};
+}
+function calcAtrPct(candles, period=14){
+  if(candles.length < period + 1) return NaN;
+  const recent = candles.slice(-(period+1));
+  let sum = 0;
+  for(let i=1;i<recent.length;i++){
+    const c = recent[i], p = recent[i-1];
+    const tr = Math.max(c.h - c.l, Math.abs(c.h - p.c), Math.abs(c.l - p.c));
+    sum += tr;
+  }
+  const atr = sum / period;
+  const last = recent[recent.length-1].c;
+  return last ? (atr / last) * 100 : NaN;
+}
+function calcTickRate(m){
+  const cut = nowMs() - 10000;
+  return m.ticks.filter(t => t.ts >= cut).length / 10;
+}
+function normalizedDirection(m){
+  const s = m.scores;
+  const bull = Math.max(s.GREEN, s.BIG);
+  const bear = Math.max(s.RED, s.SMALL);
+  if(Math.abs(bull-bear) < 6) return 'NEUTRAL';
+  return bull > bear ? 'BULL' : 'BEAR';
+}
+function confluenceFor(key){
+  const m = markets[key];
+  const other = key === 'usdt' ? markets.usd : markets.usdt;
+  if(!m.indicators.dataReady || !other.indicators.dataReady) return 0;
+  const d1 = normalizedDirection(m), d2 = normalizedDirection(other);
+  if(d1 === 'NEUTRAL' || d2 === 'NEUTRAL') return 0;
+  return d1 === d2 ? 10 : -16;
+}
+
+function updateIndicators(key){
+  const m = markets[key];
+  const closes = getAnalysisSeries(m);
+  const sampleCount = closes.length;
+  const old = {...m.indicators};
+  if(sampleCount < 2){
+    m.indicators = {...old, sampleCount, rsiReady:false, dataReady:false};
+    updateQuality(key); updateScores(key); return;
+  }
+
+  const rsi = calcRSI(closes, CONFIG.RSI_PERIOD);
+  const rsiReady = Number.isFinite(rsi);
+  if(rsiReady){
+    m.prevRsi = Number.isFinite(m.rsi) ? m.rsi : rsi;
+    m.rsi = rsi;
+    m.rsiReady = true;
+  } else {
+    m.rsiReady = false;
+  }
+
+  const last = closes[closes.length-1], prev = closes[closes.length-2];
+  m.dir = last >= prev ? 'UP' : 'DOWN';
+  m.momentum = rsiReady && Number.isFinite(m.prevRsi) ? clamp((m.rsi - m.prevRsi) * 0.45, -6, 6) : 0;
+
+  const emaFastPeriod = sampleCount >= 21 ? 9 : 5;
+  const emaSlowPeriod = sampleCount >= 21 ? 21 : 13;
+  const emaFast = lastEma(closes, emaFastPeriod);
+  const emaSlow = lastEma(closes, emaSlowPeriod);
+  const macd = calcMACD(closes);
+  const atrCandlesRaw = getAnalysisCandles(m);
+  const atrCandles = atrCandlesRaw.length >= 15 ? atrCandlesRaw : pseudoCandlesFromCloses(closes);
+  const atrPct = calcAtrPct(atrCandles, Math.min(14, Math.max(3, atrCandles.length-1)));
+  const c5 = closes.length > 5 ? pctChange(last, closes[closes.length-6]) : 0;
+  const c15 = closes.length > 15 ? pctChange(last, closes[closes.length-16]) : c5;
+  const velocity = (c5 * 0.65) + (c15 * 0.35);
+  const tickRate = calcTickRate(m);
+  const trend = Number.isFinite(emaFast) && Number.isFinite(emaSlow) ? (emaFast >= emaSlow ? 'UP' : 'DOWN') : 'WAIT';
+  const trendStrength = Number.isFinite(emaFast) && Number.isFinite(emaSlow) && last ? Math.abs(emaFast-emaSlow)/last*100 : 0;
+  const macdNorm = Number.isFinite(macd.hist) && last ? (macd.hist/last)*10000 : 0;
+  const neutralRsi = rsiReady ? Math.abs(m.rsi - 50) < 3.2 : true;
+  const flatMomentum = Math.abs(velocity) < (m.key === 'usd' ? 0.002 : 0.004);
+  const noTrend = trend === 'WAIT' || trendStrength < (m.key === 'usd' ? 0.006 : 0.012);
+  const macdFlat = !Number.isFinite(macd.hist) || Math.abs(macdNorm) < (m.key === 'usd' ? 0.35 : 0.7);
+  const choppy = (neutralRsi && macdFlat && noTrend) || (Number.isFinite(atrPct) && atrPct < 0.003 && flatMomentum);
+  const minSamples = getMinSamples(key);
+  const dataReady = rsiReady && sampleCount >= minSamples;
+
+  m.indicators = {emaFast, emaSlow, macd:macd.macd, macdSignal:macd.signal, macdHist:macd.hist, atrPct, trend, trendStrength, choppy, velocity, tickRate, sampleCount, rsiReady, dataReady, macdMode:macd.mode || 'WAIT'};
+  updateQuality(key);
+  updateScores(key);
+}
+
+function updateQuality(key){
+  const m = markets[key];
+  const sampleCount = m.indicators.sampleCount || getAnalysisSeries(m).length;
+  const minSamples = getMinSamples(key);
+  const age = m.lastTs ? nowMs() - m.lastTs : Infinity;
+  const ageScore = age < 3000 ? 35 : age < 7000 ? 26 : age < CONFIG.STALE_MS ? 15 : 0;
+  const sampleScore = clamp((sampleCount / minSamples) * 38, 0, 38);
+  const tickScore = key === 'usd' ? clamp(m.indicators.tickRate * 10, 0, 12) : clamp(m.indicators.tickRate * 7, 0, 17);
+  const wsScore = m.wsOpen ? 10 : 0;
+  const seedScore = m.seeded ? 5 : 0;
+  m.quality = Math.round(clamp(ageScore + sampleScore + tickScore + wsScore + seedScore, 0, 100));
+}
+
+function updateScores(key){
+  const m = markets[key];
+  const i = m.indicators;
+  if(!i.rsiReady){
+    m.scores = {GREEN:0, RED:0, BIG:0, SMALL:0};
+    m.winner = ['WAIT',0];
+    m.confidence = 0;
+    m.confluence = 0;
+    m.reasons = buildReasons(m, key);
+    return;
+  }
+
+  const rsiBull = clamp((m.rsi - 50) * 1.15, -28, 28);
+  const trendBull = i.trend === 'UP' ? 14 : i.trend === 'DOWN' ? -14 : 0;
+  const macdBull = Number.isFinite(i.macdHist) && m.lastPrice ? clamp((i.macdHist / m.lastPrice) * 100000, -13, 13) : 0;
+  const momentumBull = clamp(i.velocity * 620, -16, 16);
+  const candleBull = m.dir === 'UP' ? 5 : -5;
+  const chopPenalty = i.choppy ? (key === 'usd' ? 6 : 10) : 0;
+  const dataPenalty = m.quality < CONFIG.MIN_QUALITY ? 10 : 0;
+
+  let bullCore = 50 + rsiBull + trendBull + macdBull + momentumBull + candleBull - chopPenalty - dataPenalty;
+  let bearCore = 50 - rsiBull - trendBull - macdBull - momentumBull - candleBull - chopPenalty - dataPenalty;
+
+  const conf = confluenceFor(key);
+  m.confluence = conf;
+  if(conf !== 0){
+    if(normalizedDirection(m) === 'BULL') bullCore += conf;
+    if(normalizedDirection(m) === 'BEAR') bearCore += conf;
+  }
+
+  const bigDigitBias = (m.rsi - 50) * 0.55 + (i.velocity * 250) + (i.trend === 'UP' ? 8 : -5) + (Number.isFinite(i.macdHist) && i.macdHist > 0 ? 5 : -3);
+  const smallDigitBias = -bigDigitBias;
+
+  const green = Math.round(clamp(bullCore + (m.dir === 'UP' ? 3 : 0), 0, 100));
+  const red = Math.round(clamp(bearCore + (m.dir === 'DOWN' ? 3 : 0), 0, 100));
+  const big = Math.round(clamp(48 + bigDigitBias - chopPenalty/2 - dataPenalty, 0, 100));
+  const small = Math.round(clamp(48 + smallDigitBias - chopPenalty/2 - dataPenalty, 0, 100));
+  m.scores = {GREEN:green, RED:red, BIG:big, SMALL:small};
+
+  const winner = Object.entries(m.scores).reduce((a,b)=>b[1]>a[1]?b:a, ['WAIT',0]);
+  m.winner = winner;
+  m.confidence = winner[1];
+  m.reasons = buildReasons(m, key);
+}
+
+function buildReasons(m, key){
+  const r = [];
+  const sampleCount = m.indicators.sampleCount || 0;
+  const minSamples = getMinSamples(key);
+  if(!m.indicators.rsiReady) r.push({t:`RSI samples ${sampleCount}/${CONFIG.RSI_PERIOD+1}`, c:'y'});
+  else if(!m.indicators.dataReady) r.push({t:`Warm ${sampleCount}/${minSamples}`, c:'y'});
+  if(m.quality >= 75) r.push({t:'High quality WS', c:'g'}); else if(m.quality < CONFIG.MIN_QUALITY) r.push({t:'Low data quality', c:'r'});
+  if(m.indicators.choppy) r.push({t:'Choppy market', c:'y'});
+  if(m.indicators.trend === 'UP') r.push({t:'EMA up', c:'g'});
+  if(m.indicators.trend === 'DOWN') r.push({t:'EMA down', c:'r'});
+  if(Number.isFinite(m.indicators.macdHist)) r.push({t:(m.indicators.macdHist >= 0 ? 'MACD bull' : 'MACD bear') + (m.indicators.macdMode === 'FAST' ? ' fast' : ''), c:m.indicators.macdHist >= 0 ? 'g':'r'});
+  if(m.confluence > 0) r.push({t:'Dual BTC confirm', c:'c'});
+  if(m.confluence < 0) r.push({t:'Pair conflict', c:'r'});
+  return r.slice(0,6);
+}
+
+// ======================== DATA PIPELINE =========================
+function addTick(key, price, volume=0, ts=nowMs()){
+  if(!Number.isFinite(price) || price <= 0) return;
+  const m = markets[key];
+  m.lastPrice = price;
+  m.lastTs = nowMs();
+  m.prices.push(price); if(m.prices.length > 500) m.prices.shift();
+  m.ticks.push({price, volume, ts: nowMs()}); if(m.ticks.length > 800) m.ticks.shift();
+  updateCandle(m, price, volume, ts);
+  updateIndicators(key);
+  // Recompute other market too to refresh confluence after this tick.
+  const otherKey = key === 'usdt' ? 'usd' : 'usdt';
+  if(markets[otherKey].lastTs) { updateQuality(otherKey); updateScores(otherKey); }
+  updatePairUI('usdt');
+  updatePairUI('usd');
+}
+
+function updateCandle(m, price, volume, ts){
+  const bucket = Math.floor(ts / CONFIG.CANDLE_MS) * CONFIG.CANDLE_MS;
+  if(!m.currentCandle || m.currentCandle.t !== bucket){
+    if(m.currentCandle){
+      m.candles.push(m.currentCandle);
+      if(m.candles.length > 260) m.candles.shift();
+    }
+    m.currentCandle = {t:bucket, o:price, h:price, l:price, c:price, v:volume || 0, ticks:1};
+  } else {
+    m.currentCandle.h = Math.max(m.currentCandle.h, price);
+    m.currentCandle.l = Math.min(m.currentCandle.l, price);
+    m.currentCandle.c = price;
+    m.currentCandle.v += volume || 0;
+    m.currentCandle.ticks += 1;
+  }
+}
+
+function seedMarketCandles(key, candles){
+  const m = markets[key];
+  if(!Array.isArray(candles) || candles.length < 5) return;
+  const clean = candles
+    .filter(c => Number.isFinite(c.o) && Number.isFinite(c.h) && Number.isFinite(c.l) && Number.isFinite(c.c))
+    .sort((a,b)=>a.t-b.t)
+    .slice(-220);
+  if(clean.length < 5) return;
+  m.candles = clean;
+  m.currentCandle = null;
+  m.prices = clean.map(c=>c.c).slice(-240);
+  m.seeded = true;
+  // lastTs ko historical timestamp nahi banate; live tick aate hi freshness score update hoga.
+  m.lastPrice = clean[clean.length-1].c;
+  updateIndicators(key);
+  updatePairUI(key);
+}
+
+async function warmupHistory(){
+  if(!CONFIG.ENABLE_REST_WARMUP) return;
+  // WebSocket live data primary hai. Ye warm-up sirf RSI/EMA/MACD ko 50 fallback se nikaalne ke liye hai.
+  warmupBinanceUsdt().catch(()=>{});
+  warmupTwelveUsd().catch(()=>{});
+}
+async function warmupBinanceUsdt(){
+  const res = await fetch(CONFIG.BINANCE_KLINES_URL, {cache:'no-store'});
+  if(!res.ok) throw new Error('Binance warmup failed');
+  const rows = await res.json();
+  const candles = rows.map(r => ({t:Number(r[0]), o:Number(r[1]), h:Number(r[2]), l:Number(r[3]), c:Number(r[4]), v:Number(r[5]), ticks:1}));
+  seedMarketCandles('usdt', candles);
+}
+async function warmupTwelveUsd(){
+  const params = new URLSearchParams({symbol: tdSymbol(), interval:'1min', outputsize:'120', apikey: tdApiKey()});
+  const res = await fetch(CONFIG.TWELVE_REST_TIME_SERIES + '?' + params.toString(), {cache:'no-store'});
+  if(!res.ok) throw new Error('Twelve Data warmup failed');
+  const json = await res.json();
+  if(json.status === 'error' || !Array.isArray(json.values)) throw new Error(json.message || 'Twelve Data warmup error');
+  const candles = json.values.map(v => ({
+    t: new Date(v.datetime.replace(' ', 'T') + 'Z').getTime(),
+    o: Number(v.open), h: Number(v.high), l: Number(v.low), c: Number(v.close), v: Number(v.volume) || 0, ticks:1
+  })).filter(c => Number.isFinite(c.t)).reverse();
+  seedMarketCandles('usd', candles);
+}
+
+// ======================== UI =========================
+function updatePairUI(key){
+  const isUsdt = key === 'usdt';
+  const m = markets[key];
+  const suf = isUsdt ? 'Usdt' : 'Usd';
+  const rsiVal = Number.isFinite(m.rsi) ? m.rsi : 50;
+  el('rsiNeedle'+suf).style.left = clamp(rsiVal,0,100) + '%';
+  el('rsi'+suf+'Val').textContent = m.indicators.rsiReady ? rsiVal.toFixed(1) : '--';
+  el('dir'+suf).textContent = m.dir === 'UP' ? '▲ RISING' : '▼ FALLING';
+  el('dir'+suf).style.color = m.dir === 'UP' ? '#86efac' : '#fca5a5';
+  el('price'+suf).textContent = Number.isFinite(m.lastPrice) ? m.lastPrice.toLocaleString(undefined,{maximumFractionDigits:2}) : '--';
+  const age = m.lastTs ? (nowMs()-m.lastTs)/1000 : Infinity;
+  el('age'+suf).textContent = Number.isFinite(age) ? age.toFixed(1)+'s' : '--';
+  el('age'+suf).style.color = age < 5 ? '#86efac' : age < 10 ? '#fde68a' : '#fca5a5';
+
+  const winner = m.indicators.dataReady ? m.winner : ['WAIT',0];
+  const signal = winner[0];
+  const warmTxt = m.indicators.rsiReady ? `WARM ${m.indicators.sampleCount}/${getMinSamples(key)}` : `RSI ${m.indicators.sampleCount}/${CONFIG.RSI_PERIOD+1}`;
+  el('emoji'+suf).textContent = EMOJI[signal] || '⌛';
+  el('signal'+suf).textContent = m.indicators.dataReady ? signal : warmTxt;
+  el('signal'+suf).style.color = COLORS[signal] || COLORS.WAIT;
+  el('green'+suf).textContent = m.scores.GREEN;
+  el('red'+suf).textContent = m.scores.RED;
+  el('big'+suf).textContent = m.scores.BIG;
+  el('small'+suf).textContent = m.scores.SMALL;
+  el('str'+suf).style.width = (winner[1] || 0) + '%';
+  el('str'+suf).style.backgroundColor = COLORS[signal] || COLORS.WAIT;
+
+  el('ema'+suf).textContent = m.indicators.trend === 'WAIT' ? '--' : (m.indicators.trend === 'UP' ? 'UP' : 'DOWN');
+  el('ema'+suf).style.color = m.indicators.trend === 'UP' ? '#86efac' : m.indicators.trend === 'DOWN' ? '#fca5a5' : '#cbd5e1';
+  el('macd'+suf).textContent = Number.isFinite(m.indicators.macdHist) ? ((m.indicators.macdHist >= 0 ? 'BULL' : 'BEAR') + (m.indicators.macdMode === 'FAST' ? '*' : '')) : '--';
+  el('macd'+suf).style.color = m.indicators.macdHist >= 0 ? '#86efac' : '#fca5a5';
+  el('atr'+suf).textContent = Number.isFinite(m.indicators.atrPct) ? m.indicators.atrPct.toFixed(3) : '--';
+  el('quality'+suf).textContent = m.quality + '%';
+  el('quality'+suf).style.color = m.quality >= 75 ? '#86efac' : m.quality >= CONFIG.MIN_QUALITY ? '#fde68a' : '#fca5a5';
+  el('confl'+suf).textContent = m.confluence > 0 ? '+'+m.confluence : String(m.confluence || 0);
+  el('confl'+suf).style.color = m.confluence > 0 ? '#7dd3fc' : m.confluence < 0 ? '#fca5a5' : '#cbd5e1';
+
+  if(isUsdt){
+    let digitPreview = Math.floor(clamp(rsiVal,0,99.9)/10);
+    el('liveDigitPreview').textContent = m.indicators.rsiReady ? digitPreview : '--';
+  }
+}
+
+function setWsStatus(key, status, msg){
+  const isUsdt = key === 'usdt';
+  const led = el(isUsdt ? 'wsLedUsdt' : 'wsLedUsd');
+  const badge = el(isUsdt ? 'wsBtcUsdt' : 'wsBtcUsd');
+  const txt = el(isUsdt ? 'wsUsdtMsg' : 'wsUsdMsg');
+  led.className = 'ws-led ' + (status === 'good' ? 'on' : status === 'warn' ? 'warn' : status === 'bad' ? 'bad' : '');
+  badge.className = 'ws-badge ' + status;
+  txt.innerHTML = msg;
+}
+
+function renderReasonChips(reasons){
+  return '<div class="reason-list">' + reasons.map(x => `<span class="chip ${x.c}">${x.t}</span>`).join('') + '</div>';
+}
+
+function renderHistory(){
+  const container = el('histList');
+  if(historyLogs.length === 0){
+    container.innerHTML = '<div style="color:#64748b;text-align:center;padding:20px">No locks yet ...</div>';
+    return;
+  }
+  container.innerHTML = historyLogs.map(h => `
+    <div class="hist-item">
+      <div><b>${h.pair}</b><br><span style="color:${COLORS[h.signal] || '#cbd5e1'}">${h.signal}</span> ${h.action}</div>
+      <div>RSI ${h.rsi} | D${h.digit} | ${h.confidence}% | Q${h.quality}%<br><span class="muted">${h.reason}</span></div>
+      <div style="font-size:10px;text-align:right">${h.time}</div>
+    </div>`).join('');
+}
+
+
+// ======================== TOP FINAL CONSENSUS =========================
+function setFinalCard({mode='LIVE PREVIEW', signal='WAITING LOCK', action='WAIT', reason='', usdt='--', usd='--', color='#ca8a04', bg='#ca8a0418', border='#ca8a04', emoji='⏳'} = {}){
+  el('finalConsensusCard').style.borderColor = border;
+  el('finalEmoji').textContent = emoji;
+  el('finalSignal').textContent = signal;
+  el('finalSignal').style.color = color;
+  el('finalAction').textContent = action;
+  el('finalAction').style.background = bg;
+  el('finalAction').style.borderColor = border;
+  el('finalAction').style.color = color;
+  el('finalReason').textContent = reason;
+  el('finalUsdtChip').textContent = 'BTC/USDT: ' + usdt;
+  el('finalUsdChip').textContent = 'BTC/USD: ' + usd;
+  el('finalModeChip').textContent = 'MODE: ' + mode;
+}
+
+function finalSignalColor(signal){
+  if(signal === 'SKIP') return '#fca5a5';
+  return COLORS[signal] || '#ca8a04';
+}
+function finalSignalEmoji(signal){
+  if(signal === 'SKIP') return '⏸️';
+  return EMOJI[signal] || '⏳';
+}
+function formatLockChip(r){
+  if(!r) return '--';
+  return `${r.signal} ${r.doTrade ? 'TRADE' : 'NO TRADE'} (${r.confidence || 0}%)`;
+}
+function getLivePairSignal(key){
+  const m = markets[key];
+  if(!m.indicators.dataReady) return {signal:'WAIT', doTrade:false, confidence:0, reason:'warming'};
+  const r = evaluateLock(key);
+  return {...r, signal:r.signal || 'WAIT'};
+}
+
+function updateFinalConsensusLive(){
+  if(cycleLockState === 'done' && finalLockedResult) return;
+  const u = getLivePairSignal('usdt');
+  const d = getLivePairSignal('usd');
+  const same = u.signal === d.signal && u.signal !== 'WAIT';
+  if(same){
+    const sig = u.signal;
+    const bothTrade = u.doTrade && d.doTrade;
+    setFinalCard({
+      mode:'LIVE PREVIEW',
+      signal:sig,
+      action: bothTrade ? 'TRADE IF LOCKED' : 'NO TRADE NOW',
+      reason: bothTrade ? 'Live preview: dono pairs same signal aur filters pass. Final decision sirf @15s remaining lock par hoga.' : `Live preview: signal same hai, lekin filters abhi pass nahi hue. USDT: ${u.reason}; USD: ${d.reason}`,
+      usdt:formatLockChip(u), usd:formatLockChip(d),
+      color:finalSignalColor(sig), bg: bothTrade ? '#16a34a22' : '#ca8a0418', border: bothTrade ? '#16a34a' : '#ca8a04', emoji:finalSignalEmoji(sig)
+    });
+  } else {
+    setFinalCard({
+      mode:'LIVE PREVIEW',
+      signal:'SKIP',
+      action:'SKIP',
+      reason:`Live preview: dono signals same nahi hain. BTC/USDT=${u.signal}, BTC/USD=${d.signal}. Final lock @15s remaining par hoga.`,
+      usdt:formatLockChip(u), usd:formatLockChip(d),
+      color:'#fca5a5', bg:'#dc262610', border:'#dc2626', emoji:'⏸️'
+    });
+  }
+}
+
+function updateFinalConsensusLocked(usdtResult, usdResult){
+  const same = usdtResult && usdResult && usdtResult.signal === usdResult.signal && usdtResult.signal !== 'WAIT';
+  let payload;
+  if(same){
+    const sig = usdtResult.signal;
+    const bothTrade = usdtResult.doTrade && usdResult.doTrade;
+    payload = {
+      mode:'FINAL LOCKED',
+      signal:sig,
+      action: bothTrade ? '✅ TRADE' : '⏸️ NO TRADE',
+      reason: bothTrade ? 'Dono pairs ka signal same hai aur dono ke filters pass hain. Trade allowed.' : `Dono pairs ka signal same hai, par trade allowed nahi: USDT=${usdtResult.reason}; USD=${usdResult.reason}`,
+      usdt:formatLockChip(usdtResult), usd:formatLockChip(usdResult),
+      color:finalSignalColor(sig), bg: bothTrade ? '#16a34a24' : '#ca8a0418', border: bothTrade ? '#16a34a' : '#ca8a04', emoji:finalSignalEmoji(sig)
+    };
+  } else {
+    payload = {
+      mode:'FINAL LOCKED',
+      signal:'SKIP',
+      action:'⏸️ SKIP',
+      reason:`Signals match nahi hue, isliye trade skip. BTC/USDT=${usdtResult ? usdtResult.signal : 'WAIT'}, BTC/USD=${usdResult ? usdResult.signal : 'WAIT'}.`,
+      usdt:formatLockChip(usdtResult), usd:formatLockChip(usdResult),
+      color:'#fca5a5', bg:'#dc262610', border:'#dc2626', emoji:'⏸️'
+    };
+  }
+  finalLockedResult = payload;
+  setFinalCard(payload);
+}
+
+function resetFinalConsensus(){
+  finalLockedResult = null;
+  setFinalCard({
+    mode:'LIVE PREVIEW', signal:'WAITING LOCK', action:'WAIT',
+    reason:'15s remaining par dono pairs lock honge. Same signal hua to final signal show hoga; different hua to SKIP.',
+    usdt:'--', usd:'--', color:'#ca8a04', bg:'#ca8a0418', border:'#ca8a04', emoji:'⏳'
+  });
+}
+
+// ======================== WEBSOCKET CONNECTIONS =========================
+function closeSockets(){
+  if(reconnectUsdtTimer) clearTimeout(reconnectUsdtTimer);
+  if(reconnectUsdTimer) clearTimeout(reconnectUsdTimer);
+  if(tdHeartbeatTimer) clearInterval(tdHeartbeatTimer);
+  reconnectUsdtTimer = reconnectUsdTimer = tdHeartbeatTimer = null;
+  try{ if(wsUsdt) wsUsdt.close(); }catch{}
+  try{ if(wsUsd) wsUsd.close(); }catch{}
+  wsUsdt = wsUsd = null;
+}
+
+function connectBinanceUsdt(){
+  if(wsUsdt) { try{ wsUsdt.close(); }catch{} }
+  setWsStatus('usdt','warn','connecting...');
+  wsUsdt = new WebSocket(CONFIG.BINANCE_USDT_WS);
+  wsUsdt.onopen = () => {
+    markets.usdt.wsOpen = true; markets.usdt.reconnectAttempts = 0;
+    setWsStatus('usdt','good','live ✅');
+  };
+  wsUsdt.onmessage = (e) => {
+    const data = safeJsonParse(e.data);
+    const price = data && parseFloat(data.p);
+    const qty = data && parseFloat(data.q);
+    if(Number.isFinite(price)) addTick('usdt', price, Number.isFinite(qty) ? qty : 0, data.T || nowMs());
+  };
+  wsUsdt.onerror = () => setWsStatus('usdt','bad','ws error');
+  wsUsdt.onclose = () => {
+    markets.usdt.wsOpen = false; updateQuality('usdt');
+    const delay = Math.min(30000, 1500 * Math.pow(1.6, markets.usdt.reconnectAttempts++));
+    setWsStatus('usdt','warn','reconnecting '+Math.round(delay/1000)+'s...');
+    reconnectUsdtTimer = setTimeout(connectBinanceUsdt, delay);
+  };
+}
+
+function connectTwelveDataUsd(){
+  if(wsUsd) { try{ wsUsd.close(); }catch{} }
+  if(tdHeartbeatTimer) clearInterval(tdHeartbeatTimer);
+  const key = tdApiKey();
+  const sym = tdSymbol();
+  markets.usd.name = sym.toUpperCase().startsWith('BTC/USD') ? 'BTC/USD' : sym;
+  el('tdKeyMask').textContent = 'key: ' + maskKey(key) + ' · ' + sym;
+  setWsStatus('usd','warn','connecting...');
+  wsUsd = new WebSocket(CONFIG.TWELVE_WS_BASE + encodeURIComponent(key));
+  wsUsd.onopen = () => {
+    markets.usd.wsOpen = true; markets.usd.reconnectAttempts = 0;
+    setWsStatus('usd','good','open · subscribing...');
+    wsUsd.send(JSON.stringify({action:'subscribe', params:{symbols: sym}}));
+    // Twelve Data heartbeat keeps the stream alive.
+    tdHeartbeatTimer = setInterval(() => {
+      if(wsUsd && wsUsd.readyState === WebSocket.OPEN){
+        wsUsd.send(JSON.stringify({action:'heartbeat'}));
+      }
+    }, 10000);
+  };
+  wsUsd.onmessage = (e) => {
+    const data = safeJsonParse(e.data);
+    if(!data) return;
+    if(data.event === 'subscribe-status'){
+      const ok = String(data.status || '').toLowerCase().includes('ok') || String(data.status || '').toLowerCase().includes('success');
+      setWsStatus('usd', ok ? 'good' : 'warn', data.status ? String(data.status) : 'subscribed');
+      return;
+    }
+    if(data.event === 'heartbeat') return;
+    if(data.event === 'price' || data.price){
+      const returned = String(data.symbol || '').toUpperCase();
+      const wanted = sym.toUpperCase();
+      const symbolOk = !returned || returned === wanted || returned.startsWith('BTC/USD') || wanted.startsWith(returned);
+      const price = parseFloat(data.price);
+      const ts = data.timestamp ? Number(data.timestamp) * 1000 : nowMs();
+      if(symbolOk && Number.isFinite(price)){
+        setWsStatus('usd','good','live ✅');
+        addTick('usd', price, Number(data.day_volume) || 0, ts);
+      }
+      return;
+    }
+    if(data.code || data.message || data.status === 'error'){
+      setWsStatus('usd','bad', `<span class="error-text">${data.message || data.code || 'TD error'}</span>`);
+    }
+  };
+  wsUsd.onerror = () => setWsStatus('usd','bad','ws error / key plan?');
+  wsUsd.onclose = () => {
+    markets.usd.wsOpen = false; updateQuality('usd');
+    if(tdHeartbeatTimer) clearInterval(tdHeartbeatTimer);
+    const delay = Math.min(30000, 1800 * Math.pow(1.6, markets.usd.reconnectAttempts++));
+    setWsStatus('usd','warn','reconnecting '+Math.round(delay/1000)+'s...');
+    reconnectUsdTimer = setTimeout(connectTwelveDataUsd, delay);
+  };
+}
+
+function initWebSockets(){
+  closeSockets();
+  warmupHistory();
+  connectBinanceUsdt();
+  connectTwelveDataUsd();
+}
+
+// ======================== LOCK DECISION =========================
+function evaluateLock(key){
+  const m = markets[key];
+  const other = key === 'usdt' ? markets.usd : markets.usdt;
+  const winner = m.indicators.dataReady ? m.winner : ['WAIT',0];
+  const signal = winner[0];
+  const confidence = winner[1] || 0;
+  const digit = m.indicators.rsiReady ? Math.floor(clamp(m.rsi,0,99.9)/10) : '--';
+  const age = m.lastTs ? nowMs() - m.lastTs : Infinity;
+  const direction = normalizedDirection(m);
+  const otherDirection = normalizedDirection(other);
+  const conflict = other.indicators.dataReady && direction !== 'NEUTRAL' && otherDirection !== 'NEUTRAL' && direction !== otherDirection && Math.abs(other.confidence - confidence) < 14;
+
+  const checks = [];
+  if(!m.indicators.rsiReady) checks.push(`need RSI samples ${m.indicators.sampleCount}/${CONFIG.RSI_PERIOD+1}`);
+  else if(!m.indicators.dataReady) checks.push(`warming data ${m.indicators.sampleCount}/${getMinSamples(key)}`);
+  if(age > CONFIG.STALE_MS) checks.push('stale ticks');
+  if(m.quality < CONFIG.MIN_QUALITY) checks.push('low quality');
+  if(m.indicators.dataReady && confidence < CONFIG.MIN_CONFIDENCE) checks.push('confidence < '+CONFIG.MIN_CONFIDENCE);
+  if(m.indicators.dataReady && m.indicators.choppy) checks.push('choppy/neutral');
+  if(conflict) checks.push('dual-pair conflict');
+
+  const doTrade = checks.length === 0;
+  return {signal, confidence, digit, doTrade, reason: checks.length ? checks.join(', ') : 'RSI + EMA + MACD + volatility + confluence OK'};
+}
+
+function lockPairDecision(key){
+  const m = markets[key];
+  const isUsdt = key === 'usdt';
+  const suf = isUsdt ? 'Usdt' : 'Usd';
+  const result = {...evaluateLock(key), key, pair: m.name, quality: m.quality, rsi: m.indicators.rsiReady ? m.rsi : NaN};
+  m.lastLockResult = result;
+  const decisionDiv = el('decision'+suf);
+  const lockBadge = el('lockBadge'+suf);
+  decisionDiv.style.display = 'block';
+
+  if(result.doTrade){
+    decisionDiv.className = 'trade-decision do-trade';
+    decisionDiv.innerHTML = `<div style="font-weight:1000">✅ TRADE: ${result.signal}</div><div style="font-size:11px">RSI ${fmt(m.rsi,1)} · Confidence ${result.confidence}% · Quality ${m.quality}% · Digit ${result.digit}</div>${renderReasonChips(m.reasons)}`;
+    if(soundUnlocked) playHorn(result.signal);
+    flashScreen(result.signal);
+  } else if(result.confidence >= 56 && m.quality >= 45) {
+    decisionDiv.className = 'trade-decision watch-trade';
+    decisionDiv.innerHTML = `<div style="font-weight:1000">👀 WATCH / NO AUTO TRADE: ${result.signal}</div><div style="font-size:11px">${result.reason}</div>${renderReasonChips(m.reasons)}`;
+  } else {
+    decisionDiv.className = 'trade-decision no-trade';
+    decisionDiv.innerHTML = `<div style="font-weight:1000">⏸️ SKIP / HOLD</div><div style="font-size:11px">${result.reason}</div>${renderReasonChips(m.reasons)}`;
+  }
+
+  lockBadge.innerHTML = `🔒 LOCKED @ ${new Date().toLocaleTimeString()} · ${result.signal}`;
+  lockBadge.style.background = result.doTrade ? '#16a34a40' : '#dc262640';
+
+  historyLogs.unshift({
+    time: new Date().toLocaleTimeString(), pair: m.name, signal: result.signal,
+    rsi: m.indicators.rsiReady ? m.rsi.toFixed(1) : '--', digit: result.digit,
+    confidence: result.confidence, quality: m.quality, action: result.doTrade ? 'TRADE' : 'SKIP', reason: result.reason
+  });
+  if(historyLogs.length > 30) historyLogs.pop();
+  renderHistory();
+  return result;
+}
+
+// ======================== SOUND + FLASH =========================
+function playHorn(signal){
+  if(!soundUnlocked || !audioCtx) return;
+  audioCtx.resume();
+  const freqs = (signal === 'GREEN' || signal === 'BIG') ? [262,330,392] : (signal === 'SMALL' ? [196,261,349] : [174,220,277]);
+  const now = audioCtx.currentTime;
+  freqs.forEach((f,i)=>{
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = 'sawtooth'; osc.frequency.value = f;
+    gain.gain.setValueAtTime(0, now + i*.03);
+    gain.gain.linearRampToValueAtTime(.22, now + .05 + i*.03);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .85 + i*.03);
+    osc.start(now + i*.03); osc.stop(now + .9 + i*.03);
+  });
+}
+function flashScreen(signal){
+  const flash = el('hornFlash');
+  const color = signal === 'GREEN' ? '#16a34a80' : signal === 'RED' ? '#dc262680' : signal === 'BIG' ? '#0891b280' : '#7c3aed80';
+  flash.style.background = `radial-gradient(circle, ${color}, transparent 65%)`;
+  flash.style.opacity = '1';
+  setTimeout(()=>flash.style.opacity='0', 350);
+}
+function unlockSound(){
+  if(soundUnlocked) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume().then(()=>{
+    soundUnlocked = true;
+    el('hornTag').textContent = '🔊 HORN ACTIVE';
+    el('hornTag').style.background = '#16a34a40';
+  }).catch(()=>{});
+}
+
+// ======================== CYCLE MANAGER =========================
+// Wall-clock synced 30s cycle:
+// Cycle boundaries: every :00 and :30 second. Lock moment: when 15 seconds remain (:15 and :45).
+// This avoids page-load based mismatch/drift.
+function getCycleSnapshot(t = Date.now()){
+  const cycleMs = CONFIG.CYCLE_SECONDS * 1000;
+  const elapsedMs = ((t % cycleMs) + cycleMs) % cycleMs;
+  const remainingMs = cycleMs - elapsedMs;
+  const remainingSecDisplay = elapsedMs < 50 ? CONFIG.CYCLE_SECONDS : Math.ceil(remainingMs / 1000);
+  const cycleId = Math.floor(t / cycleMs);
+  const lockMs = (CONFIG.CYCLE_SECONDS - CONFIG.LOCK_AT_REMAINING) * 1000;
+  return {cycleMs, elapsedMs, remainingMs, remainingSec: remainingSecDisplay, cycleId, lockMs};
+}
+
+function startCycleManager(){
+  if(cycleIntervalId) clearInterval(cycleIntervalId);
+  const snap = getCycleSnapshot();
+  currentCycleId = snap.cycleId;
+  // Agar page current cycle ke lock point ke baad open hua, late-lock nahi karenge.
+  // Next :00/:30 cycle se exact @15s remaining par lock hoga.
+  cycleLockState = snap.elapsedMs >= snap.lockMs ? 'missed' : 'pending';
+  lockExecutedThisCycle = cycleLockState !== 'pending';
+  resetCycleUi();
+  if(cycleLockState === 'missed') markMissedCycleUi();
+  updateCycleFromClock();
+  cycleIntervalId = setInterval(updateCycleFromClock, 250);
+}
+
+function updateCycleFromClock(){
+  const snap = getCycleSnapshot();
+  if(snap.cycleId !== currentCycleId){
+    currentCycleId = snap.cycleId;
+    cycleLockState = 'pending';
+    lockExecutedThisCycle = false;
+    resetCycleUi();
+  }
+
+  remainingSec = snap.remainingSec;
+
+  if(cycleLockState === 'pending' && snap.elapsedMs >= snap.lockMs){
+    cycleLockState = 'done';
+    lockExecutedThisCycle = true;
+    // LOCK both pairs exactly when cycle end hone me 15 seconds bachte hain.
+    const usdtLock = lockPairDecision('usdt');
+    const usdLock = lockPairDecision('usd');
+    updateFinalConsensusLocked(usdtLock, usdLock);
+    el('stepLock').style.background = '#f9731622';
+    setTimeout(()=>el('stepLock').style.background='', 650);
+  }
+
+  updateTimerDisplay(snap);
+}
+
+function resetCycleUi(){
+  ['Usdt','Usd'].forEach(suf=>{
+    el('decision'+suf).style.display = 'none';
+    el('lockBadge'+suf).textContent = '⚡ LOCK PENDING @15s REMAINING';
+    el('lockBadge'+suf).style.background = '';
+  });
+  resetFinalConsensus();
+}
+
+function markMissedCycleUi(){
+  ['Usdt','Usd'].forEach(suf=>{
+    el('decision'+suf).style.display = 'none';
+    el('lockBadge'+suf).textContent = '⏭️ CURRENT LOCK POINT PASSED · WAIT NEXT CYCLE';
+    el('lockBadge'+suf).style.background = '#ca8a0430';
+  });
+  setFinalCard({mode:'WAIT NEXT CYCLE', signal:'WAITING NEXT CYCLE', action:'WAIT', reason:'Current cycle ka @15s lock point pass ho chuka hai. Next :00/:30 cycle me final signal lock hoga.', usdt:'--', usd:'--', color:'#ca8a04', bg:'#ca8a0418', border:'#ca8a04', emoji:'⏭️'});
+}
+
+function updateTimerDisplay(snap = getCycleSnapshot()){
+  el('timerNum').textContent = snap.remainingSec;
+  el('timerFill').style.width = (snap.remainingMs / snap.cycleMs) * 100 + '%';
+
+  const lockIn = snap.remainingSec - CONFIG.LOCK_AT_REMAINING;
+  if(cycleLockState === 'pending'){
+    if(lockIn > 0){
+      el('timerSub').textContent = `⚡ live WebSocket data · LOCK in ${lockIn}s (@15s remaining)`;
+    } else {
+      el('timerSub').textContent = '🔒 LOCKING now (@15s remaining)';
+    }
+  } else if(cycleLockState === 'done'){
+    el('timerSub').textContent = `🔐 SIGNALS LOCKED · next cycle in ${snap.remainingSec}s`;
+  } else {
+    el('timerSub').textContent = `⏭️ lock point passed · next cycle in ${snap.remainingSec}s`;
+  }
+}
+
+// ======================== HEALTH + EVENTS =========================
+function refreshHealthAges(){
+  ['usdt','usd'].forEach(key=>{
+    const m = markets[key];
+    updateQuality(key); updateScores(key); updatePairUI(key);
+    if(m.wsOpen && m.lastTs){
+      const age = nowMs() - m.lastTs;
+      if(age > CONFIG.STALE_MS) setWsStatus(key, 'warn', 'stale '+Math.round(age/1000)+'s');
+    }
+  });
+  if(cycleLockState !== 'done') updateFinalConsensusLive();
+}
+
+el('hornTag').addEventListener('click', unlockSound);
+el('reconnectWs').addEventListener('click', initWebSockets);
+el('saveTdKey').addEventListener('click', () => {
+  const v = el('tdKeyInput').value.trim();
+  if(v){ localStorage.setItem('TWELVE_DATA_API_KEY', v); el('tdKeyInput').value = ''; }
+  initWebSockets();
 });
+el('saveTdSymbol').addEventListener('click', () => {
+  const v = el('tdSymbolInput').value.trim();
+  if(v){ localStorage.setItem('TWELVE_DATA_SYMBOL', v); el('tdSymbolInput').value = ''; }
+  initWebSockets();
+});
+el('zoomIn').onclick = () => { zoom = Math.min(1.5, zoom+.1); document.querySelector('.wrap').style.transform = `scale(${zoom})`; el('zoomLvl').textContent = Math.round(zoom*100)+'%'; };
+el('zoomOut').onclick = () => { zoom = Math.max(.7, zoom-.1); document.querySelector('.wrap').style.transform = `scale(${zoom})`; el('zoomLvl').textContent = Math.round(zoom*100)+'%'; };
 
-// =======================
-// CHECK API KEY
-// =======================
-async function checkKey(account){
-try{
-const url = `https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&apikey=${account.apiKey}`;
-const response = await fetch(url);
-const data = await response.json();
+setInterval(() => {
+  const d = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  el('clock').textContent = 'IST ' + d.toTimeString().slice(0,8);
+}, 1000);
+setInterval(refreshHealthAges, 1000);
 
-if(data.code){
-return {...account, status:"INVALID", icon:"!", className:"invalid", uptime:"0.00%"};
-}
-return {...account, status:"OPERATIONAL", icon:"✓", className:"operational", uptime:"100.00%"};
-}catch(error){
-return {...account, status:"ERROR", icon:"⚠", className:"error", uptime:"0.00%"};
-}
-}
-
-// =======================
-// LOAD API DASHBOARD
-// =======================
-async function loadDashboard(){
-let active = 0;
-let invalid = 0;
-const container = document.getElementById("cards");
-container.innerHTML = "";
-
-for(const account of accounts){
-const result = await checkKey(account);
-if(result.status === "OPERATIONAL"){ active++; } else { invalid++; }
-
-container.innerHTML += `
-<div class="card">
-<div class="resource-label">
-<svg width="14" height="14" fill="#9aa4b2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-MONITORED RESOURCE
-</div>
-<div class="resource-name">${result.name}</div>
-<div class="status-circle ${result.className}">${result.icon}</div>
-<div class="state-label">CURRENT STATE</div>
-<div class="state">${result.status}</div>
-<div class="divider"></div>
-<div class="info-row">
-<div class="info-label">ACTIVE INCIDENTS</div>
-<div class="info-value">${result.status === "OPERATIONAL" ? "0" : "1"}</div>
-</div>
-<div class="info-row">
-<div class="info-label">UPTIME SCORE</div>
-<div class="info-value uptime">${result.uptime}</div>
-</div>
-<div class="email-small">${result.email}</div>
-</div>
-`;
-}
-
-document.getElementById("activeCount").textContent = active;
-document.getElementById("invalidCount").textContent = invalid;
-document.getElementById("lastRefresh").textContent = "Last Refresh: " + new Date().toLocaleTimeString();
-countdown = 30;
-}
-
-// =======================
-// REFRESH WEBSITE FRAME
-// =======================
-function refreshWebsite(){
-document.getElementById("websiteFrame").src = 
-"https://ved2548-github-io-oxxrj.isitup.cloud/?t=" + new Date().getTime();
-}
-
-// =======================
-// START
-// =======================
-loadDashboard();
-refreshWebsite();
-
-// API Keys: Every 30 seconds
-setInterval(loadDashboard, 30000);
-
-// Website: Every 3 minutes = 180000ms
-setInterval(refreshWebsite, 180000);
-
-// Countdown Timer
-setInterval(()=>{
-countdown--;
-if(countdown < 0){ countdown = 30; }
-document.getElementById("globalCountdown").textContent = countdown + "s";
-},1000);
+// BOOT
+el('tdKeyMask').textContent = 'key: ' + maskKey(tdApiKey()) + ' · ' + tdSymbol();
+el('tdSymbolInput').value = tdSymbol();
+renderHistory();
+resetFinalConsensus();
+initWebSockets();
+startCycleManager();
 </script>
-
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a05bd4111b13dde2',t:'MTc4MDQ1OTYyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
