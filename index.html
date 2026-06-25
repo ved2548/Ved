@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>EUR/USD Live Signal System</title>
+<title>FX Live Signal System</title>
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
   body { background:#0b0e11; color:#e6e6e6; overflow-x:hidden; }
-  header {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 20px; background:#12161c; border-bottom:1px solid #1f2630;
-    flex-wrap:wrap; gap:10px;
-  }
+  header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:#12161c; border-bottom:1px solid #1f2630; flex-wrap:wrap; gap:10px; }
   .pair { font-size:22px; font-weight:700; color:#fff; }
   .pair span { color:#f0b90b; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  select, input, button { background:#1a212b; color:#e6e6e6; border:1px solid #1f2630; border-radius:6px; padding:6px 10px; font-size:13px; }
+  button { cursor:pointer; }
+  button:hover { background:#222c38; }
   .price-box { text-align:right; }
   .price { font-size:26px; font-weight:700; }
   .price.up { color:#0ecb81; } .price.down { color:#f6465d; }
@@ -22,41 +22,59 @@
   .status { font-size:12px; padding:4px 10px; border-radius:20px; }
   .status.live { background:#0ecb8122; color:#0ecb81; }
   .status.off  { background:#f6465d22; color:#f6465d; }
-
-  .wrap { display:grid; grid-template-columns: 1fr 320px; gap:14px; padding:14px; }
+  .wrap { display:grid; grid-template-columns:1fr 340px; gap:14px; padding:14px; }
   @media(max-width:900px){ .wrap{ grid-template-columns:1fr; } }
-
   #chart { width:100%; height:520px; background:#12161c; border-radius:10px; }
-
   .side { display:flex; flex-direction:column; gap:14px; }
   .card { background:#12161c; border:1px solid #1f2630; border-radius:10px; padding:16px; }
   .card h3 { font-size:13px; color:#8b97a7; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
-
   .cycle-timer { text-align:center; }
   .cycle-timer .secs { font-size:54px; font-weight:800; color:#fff; line-height:1; }
   .cycle-bar { height:8px; background:#1f2630; border-radius:4px; margin-top:12px; overflow:hidden; }
   .cycle-bar > div { height:100%; background:#f0b90b; width:100%; transition:width 1s linear; }
-
   .predict { text-align:center; }
   .predict .dir { font-size:40px; font-weight:800; margin:6px 0; }
-  .predict .dir.UP { color:#0ecb81; } .predict .dir.DOWN { color:#f6465d; }
+  .predict .dir.UP { color:#0ecb81; } .predict .dir.DOWN { color:#f6465d; } .predict .dir.WAIT { color:#f0b90b; }
   .predict .conf { font-size:14px; color:#8b97a7; }
   .meter { height:10px; background:#1f2630; border-radius:5px; margin-top:10px; overflow:hidden; display:flex; }
   .meter .b{ background:#0ecb81; } .meter .s{ background:#f6465d; }
-
-  .stats div { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid #1a212b; }
-  .stats div span:last-child { font-weight:600; color:#fff; }
-
-  .log { max-height:180px; overflow-y:auto; font-size:12px; }
+  .stats div, .ind div { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid #1a212b; }
+  .stats div span:last-child, .ind div span:last-child { font-weight:600; color:#fff; }
+  .bull{color:#0ecb81;} .bear{color:#f6465d;} .neutral{color:#f0b90b;}
+  .log { max-height:200px; overflow-y:auto; font-size:12px; }
   .log div { padding:4px 0; border-bottom:1px solid #1a212b; }
   .log .win{color:#0ecb81;} .log .loss{color:#f6465d;}
   .footnote{ font-size:11px; color:#5b6573; padding:0 14px 20px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .kpi { text-align:center; background:#1a212b; border-radius:8px; padding:10px; }
+  .kpi .v { font-size:22px; font-weight:700; color:#fff; }
+  .kpi .l { font-size:11px; color:#8b97a7; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="pair">EUR<span>/</span>USD <small style="font-size:12px;color:#8b97a7;">1 Min</small></div>
+  <div class="pair" id="pairLabel">EUR<span>/</span>USD</div>
+  <div class="controls">
+    <select id="symbolSel">
+      <option value="EUR/USD">EUR/USD</option>
+      <option value="GBP/USD">GBP/USD</option>
+      <option value="USD/JPY">USD/JPY</option>
+      <option value="AUD/USD">AUD/USD</option>
+      <option value="USD/CAD">USD/CAD</option>
+      <option value="BTC/USD">BTC/USD</option>
+    </select>
+    <select id="tfSel">
+      <option value="1min">1 Min</option>
+      <option value="5min">5 Min</option>
+      <option value="15min">15 Min</option>
+      <option value="1h">1 Hour</option>
+    </select>
+    <input id="apiKey" placeholder="API keys (comma separated)" style="width:200px" />
+    <button id="saveKey">Save</button>
+    <button id="soundToggle">🔊</button>
+    <span id="keyStat" style="font-size:11px;color:#8b97a7;"></span>
+  </div>
   <div class="clock" id="clock">--:--:--</div>
   <div class="price-box">
     <div class="price" id="price">0.00000</div>
@@ -69,46 +87,129 @@
 
   <div class="side">
     <div class="card cycle-timer">
-      <h3>Current Minute Cycle</h3>
+      <h3>Current Candle Cycle</h3>
       <div class="secs" id="cycleSecs">60</div>
       <div style="font-size:12px;color:#8b97a7;margin-top:4px;">seconds left in this candle</div>
       <div class="cycle-bar"><div id="cycleBar"></div></div>
     </div>
 
     <div class="card predict">
-      <h3>Next Minute Prediction</h3>
+      <h3>Next Candle Prediction</h3>
       <div class="dir" id="predDir">--</div>
       <div class="conf" id="predConf">waiting for data...</div>
       <div class="meter"><div class="b" id="mb" style="width:50%"></div><div class="s" id="ms" style="width:50%"></div></div>
     </div>
 
+    <div class="card">
+      <h3>Performance</h3>
+      <div class="grid2">
+        <div class="kpi"><div class="v" id="kWin">0%</div><div class="l">Win Rate</div></div>
+        <div class="kpi"><div class="v" id="kTotal">0</div><div class="l">Resolved</div></div>
+        <div class="kpi"><div class="v" id="kStreak">0</div><div class="l">Streak</div></div>
+        <div class="kpi"><div class="v" id="kBest">0</div><div class="l">Best Streak</div></div>
+      </div>
+    </div>
+
+    <div class="card ind">
+      <h3>Indicators</h3>
+      <div><span>EMA 5 / 13</span><span id="iEma">-</span></div>
+      <div><span>RSI (14)</span><span id="iRsi">-</span></div>
+      <div><span>MACD</span><span id="iMacd">-</span></div>
+      <div><span>Bollinger</span><span id="iBb">-</span></div>
+      <div><span>ATR (Volatility)</span><span id="iAtr">-</span></div>
+      <div><span>Pattern</span><span id="iPat">-</span></div>
+    </div>
+
     <div class="card stats">
-      <h3>Live Stats</h3>
+      <h3>Last Candle</h3>
       <div><span>Open</span><span id="sOpen">-</span></div>
       <div><span>High</span><span id="sHigh">-</span></div>
       <div><span>Low</span><span id="sLow">-</span></div>
       <div><span>Close</span><span id="sClose">-</span></div>
-      <div><span>Trend (EMA)</span><span id="sTrend">-</span></div>
     </div>
 
     <div class="card">
       <h3>Prediction History</h3>
+      <button id="clearHist" style="float:right;margin-top:-32px;font-size:11px">Clear</button>
       <div class="log" id="log"></div>
     </div>
   </div>
 </div>
 
 <div class="footnote">
-  Data: Twelve Data API (WebSocket + REST fallback). Predictions are statistical estimates based on price action, not financial advice.
+  Data: Twelve Data API. Predictions are statistical estimates from price action and technical indicators, NOT financial advice. Past accuracy does not guarantee future results. Use a backend proxy for your API key in production.
 </div>
 
 <script>
 /* ================== CONFIG ================== */
-const API_KEY  = "7d8ec8ca7bf8483b81ff4490c76dfe88";
-const SYMBOL   = "EUR/USD";
-const WS_URL   = `wss://ws.twelvedata.com/v1/quotes/price?apikey=${API_KEY}`;
-const REST_TS  = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(SYMBOL)}&interval=1min&outputsize=200&apikey=${API_KEY}`;
-const REST_PRICE = `https://api.twelvedata.com/price?symbol=${encodeURIComponent(SYMBOL)}&apikey=${API_KEY}`;
+const DEFAULT_KEYS = [
+  '7d8ec8ca7bf8483b81ff4490c76dfe88',
+  '246618a38ee84e1abdb9511a378c46d4',
+  '33073d9ef38b4f25860738b1a1eae5bf',
+  'fbecb3e6b46845deb7fab1f5e728ccc7',
+  '8120e5ab512040cba8a775b8e1c14434',
+  'efc7db6d64cb4e4ab6ae9d1095960980',
+  '04763c31155d46fb867d97e0141557ca',
+  'bc0bc3890bc1496a8a3fa23ce1cb8c1e',
+  'c0abbc33813e4b4fbf1254a0a3650db2'
+];
+function loadKeys(){
+  const saved = localStorage.getItem('td_keys');
+  if(saved){ const a = saved.split(/[\s,]+/).map(s=>s.trim()).filter(Boolean); if(a.length) return a; }
+  return DEFAULT_KEYS.slice();
+}
+const CFG = {
+  keys:   loadKeys(),
+  symbol: localStorage.getItem('td_sym') || 'EUR/USD',
+  tf:     localStorage.getItem('td_tf')  || '1min',
+  sound:  localStorage.getItem('td_snd') !== '0'
+};
+const TF_SECONDS = { '1min':60, '5min':300, '15min':900, '1h':3600 };
+
+/* ---- Key rotation with per-key cooldown ---- */
+const KEY_COOLDOWN_MS = 60000;          // park a rate-limited key for 60s
+let keyIdx = 0;
+const keyCooldownUntil = {};            // key -> timestamp until usable again
+let apiCallCount = 0;
+function nextKey(){
+  const n = CFG.keys.length;
+  if(!n) return null;
+  const now = Date.now();
+  for(let i=0;i<n;i++){
+    const k = CFG.keys[keyIdx % n]; keyIdx++;
+    if(!keyCooldownUntil[k] || keyCooldownUntil[k] < now) return k;
+  }
+  return CFG.keys[keyIdx++ % n];        // all cooling down -> use least-bad anyway
+}
+function parkKey(k){ keyCooldownUntil[k] = Date.now() + KEY_COOLDOWN_MS; }
+function isRateLimited(j){
+  return j && (j.code === 429 || (j.status === 'error' && /run out|limit|credits/i.test(j.message||'')));
+}
+/* fetch JSON using a rotated key; retries other keys on rate-limit */
+async function apiFetch(buildUrl){
+  const n = CFG.keys.length || 1;
+  for(let attempt=0; attempt<n; attempt++){
+    const key = nextKey();
+    if(!key) return { status:'error', message:'No API key' };
+    try{
+      const res = await fetch(buildUrl(key));
+      apiCallCount++;
+      const j = await res.json();
+      if(res.status === 429 || isRateLimited(j)){ parkKey(key); updateKeyStatus(); continue; }
+      updateKeyStatus();
+      return j;
+    }catch(e){ parkKey(key); }
+  }
+  return { status:'error', message:'All keys rate-limited or failed' };
+}
+function activeKeyCount(){ const now=Date.now(); return CFG.keys.filter(k=>!keyCooldownUntil[k]||keyCooldownUntil[k]<now).length; }
+function updateKeyStatus(){
+  const el=document.getElementById('keyStat'); if(!el) return;
+  el.textContent=`Keys: ${activeKeyCount()}/${CFG.keys.length} active · ${apiCallCount} calls`;
+}
+const restTS    = (k)=>`https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(CFG.symbol)}&interval=${CFG.tf}&outputsize=200&apikey=${k}`;
+const restPrice = (k)=>`https://api.twelvedata.com/price?symbol=${encodeURIComponent(CFG.symbol)}&apikey=${k}`;
+const wsUrl     = (k)=>`wss://ws.twelvedata.com/v1/quotes/price?apikey=${k}`;
 
 /* ================== CHART ================== */
 const chartEl = document.getElementById('chart');
@@ -116,228 +217,266 @@ const chart = LightweightCharts.createChart(chartEl, {
   layout:{ background:{ color:'#12161c' }, textColor:'#8b97a7' },
   grid:{ vertLines:{ color:'#1a212b' }, horzLines:{ color:'#1a212b' } },
   timeScale:{ timeVisible:true, secondsVisible:false, borderColor:'#1f2630' },
-  rightPriceScale:{ borderColor:'#1f2630' },
-  crosshair:{ mode:0 }
+  rightPriceScale:{ borderColor:'#1f2630' }, crosshair:{ mode:0 }
 });
-const candleSeries = chart.addCandlestickSeries({
-  upColor:'#0ecb81', downColor:'#f6465d', borderUpColor:'#0ecb81',
-  borderDownColor:'#f6465d', wickUpColor:'#0ecb81', wickDownColor:'#f6465d'
-});
-const emaSeries = chart.addLineSeries({ color:'#f0b90b', lineWidth:1, priceLineVisible:false });
+const candleSeries = chart.addCandlestickSeries({ upColor:'#0ecb81', downColor:'#f6465d', borderUpColor:'#0ecb81', borderDownColor:'#f6465d', wickUpColor:'#0ecb81', wickDownColor:'#f6465d' });
+const emaFSeries = chart.addLineSeries({ color:'#f0b90b', lineWidth:1, priceLineVisible:false });
+const emaSSeries = chart.addLineSeries({ color:'#3aa0ff', lineWidth:1, priceLineVisible:false });
+const bbUpSeries = chart.addLineSeries({ color:'#5b657333', lineWidth:1, priceLineVisible:false });
+const bbLoSeries = chart.addLineSeries({ color:'#5b657333', lineWidth:1, priceLineVisible:false });
 new ResizeObserver(()=>chart.applyOptions({width:chartEl.clientWidth, height:chartEl.clientHeight})).observe(chartEl);
 
 /* ================== STATE ================== */
-let candles = [];          // {time, open, high, low, close}
-let lastPrice = null;
-let prevPrice = null;
-let currentMinute = null;
-let pendingPred = null;    // {minute, dir, openPrice}
-let predResolveAt = null;
+let candles=[], lastPrice=null, prevPrice=null, pendingPred=null;
+let stats = JSON.parse(localStorage.getItem('td_stats')||'{"win":0,"total":0,"streak":0,"best":0}');
 
-/* ================== HELPERS ================== */
-const fmt = p => Number(p).toFixed(5);
-const minuteStart = t => Math.floor(t/60)*60;
+/* ================== INDICATOR MATH ================== */
+const fmt = p => Number(p).toFixed(CFG.symbol.includes('JPY')?3:5);
+const tfSec = ()=> TF_SECONDS[CFG.tf]||60;
+const bucket = t => Math.floor(t/tfSec())*tfSec();
 
-function ema(arr, period){
-  if(arr.length < period) return null;
-  const k = 2/(period+1);
-  let e = arr.slice(0,period).reduce((a,b)=>a+b,0)/period;
-  for(let i=period;i<arr.length;i++) e = arr[i]*k + e*(1-k);
-  return e;
+function emaArr(values, period){
+  if(values.length < period) return [];
+  const k=2/(period+1); const out=[]; let e=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+  for(let i=period-1;i<values.length;i++){ if(i===period-1) out.push(e); else { e=values[i]*k+e*(1-k); out.push(e);} }
+  return out;
+}
+function emaLast(values,period){ const a=emaArr(values,period); return a.length?a[a.length-1]:null; }
+function rsi(values, period=14){
+  if(values.length<=period) return null;
+  let g=0,l=0;
+  for(let i=1;i<=period;i++){ const d=values[i]-values[i-1]; d>=0?g+=d:l-=d; }
+  g/=period; l/=period;
+  for(let i=period+1;i<values.length;i++){ const d=values[i]-values[i-1]; g=(g*(period-1)+(d>0?d:0))/period; l=(l*(period-1)+(d<0?-d:0))/period; }
+  if(l===0) return 100;
+  return 100-100/(1+g/l);
+}
+function macd(values){
+  if(values.length<26) return null;
+  const f=emaArr(values,12), s=emaArr(values,26);
+  const off=f.length-s.length; const line=[];
+  for(let i=0;i<s.length;i++) line.push(f[i+off]-s[i]);
+  const sig=emaArr(line,9);
+  const m=line[line.length-1], g=sig.length?sig[sig.length-1]:0;
+  return { line:m, signal:g, hist:m-g };
+}
+function bollinger(values, period=20, mult=2){
+  if(values.length<period) return null;
+  const slice=values.slice(-period); const mean=slice.reduce((a,b)=>a+b,0)/period;
+  const sd=Math.sqrt(slice.reduce((a,b)=>a+(b-mean)**2,0)/period);
+  return { mid:mean, up:mean+mult*sd, lo:mean-mult*sd };
+}
+function atr(cs, period=14){
+  if(cs.length<period+1) return null;
+  let sum=0; const n=cs.length;
+  for(let i=n-period;i<n;i++){ const tr=Math.max(cs[i].high-cs[i].low, Math.abs(cs[i].high-cs[i-1].close), Math.abs(cs[i].low-cs[i-1].close)); sum+=tr; }
+  return sum/period;
+}
+function detectPattern(cs){
+  if(cs.length<2) return {name:'-',bias:0};
+  const c=cs[cs.length-1], p=cs[cs.length-2];
+  const body=Math.abs(c.close-c.open), range=c.high-c.low||1e-9, lower=Math.min(c.open,c.close)-c.low, upper=c.high-Math.max(c.open,c.close);
+  if(c.close>c.open && p.close<p.open && c.close>p.open && c.open<p.close) return {name:'Bull Engulf',bias:1};
+  if(c.close<c.open && p.close>p.open && c.open>p.close && c.close<p.open) return {name:'Bear Engulf',bias:-1};
+  if(lower>body*2 && upper<body) return {name:'Hammer',bias:1};
+  if(upper>body*2 && lower<body) return {name:'Shooting Star',bias:-1};
+  if(body/range<0.1) return {name:'Doji',bias:0};
+  return {name:'-',bias:0};
 }
 
-function rebuildEma(){
-  const closes = candles.map(c=>c.close);
-  const period = 9;
-  if(closes.length < period) return;
-  const k = 2/(period+1);
-  let e = closes.slice(0,period).reduce((a,b)=>a+b,0)/period;
-  const data = [];
-  for(let i=period-1;i<closes.length;i++){
-    if(i===period-1){ data.push({time:candles[i].time, value:e}); }
-    else { e = closes[i]*k + e*(1-k); data.push({time:candles[i].time, value:e}); }
-  }
-  emaSeries.setData(data);
+/* ================== CHART OVERLAYS ================== */
+function rebuildOverlays(){
+  const closes=candles.map(c=>c.close);
+  const ef=emaArr(closes,5), es=emaArr(closes,13);
+  if(ef.length){ const off=candles.length-ef.length; emaFSeries.setData(ef.map((v,i)=>({time:candles[i+off].time,value:v}))); }
+  if(es.length){ const off=candles.length-es.length; emaSSeries.setData(es.map((v,i)=>({time:candles[i+off].time,value:v}))); }
+  const up=[],lo=[];
+  for(let i=20;i<=candles.length;i++){ const b=bollinger(closes.slice(0,i)); if(b){ up.push({time:candles[i-1].time,value:b.up}); lo.push({time:candles[i-1].time,value:b.lo}); } }
+  bbUpSeries.setData(up); bbLoSeries.setData(lo);
 }
 
-/* ================== PREDICTION ENGINE ==================
-   Combines: short EMA vs long EMA trend, last candle momentum,
-   and recent candle body direction count. */
-function makePrediction(){
-  if(candles.length < 12) return;
-  const closes = candles.map(c=>c.close);
-  const emaF = ema(closes.slice(-30), 5);
-  const emaS = ema(closes.slice(-30), 13);
-  const last = candles[candles.length-1];
+/* ================== PREDICTION ENGINE (weighted, no random) ================== */
+function analyze(){
+  if(candles.length<30) return null;
+  const closes=candles.map(c=>c.close);
+  const last=candles[candles.length-1];
+  const ef=emaLast(closes,5), es=emaLast(closes,13), el=emaLast(closes,50);
+  const r=rsi(closes,14), mac=macd(closes), bb=bollinger(closes), a=atr(candles,14), pat=detectPattern(candles);
 
-  let score = 0;
-  if(emaF && emaS){ score += (emaF > emaS ? 1 : -1); }
-  // momentum of last closed candle
-  score += (last.close > last.open ? 1 : -1);
-  // last 3 candles net direction
-  const c3 = candles.slice(-4);
-  let net = 0;
-  for(let i=1;i<c3.length;i++) net += (c3[i].close - c3[i-1].close);
-  score += (net > 0 ? 1 : -1);
+  // Weighted voting. Each signal in [-1,1] * weight.
+  let score=0, maxScore=0;
+  const add=(v,w)=>{ score+=v*w; maxScore+=w; };
+  if(ef&&es) add(ef>es?1:-1, 2.0);                          // fast/slow EMA cross
+  if(el) add(last.close>el?1:-1, 1.5);                       // long trend filter
+  if(r!=null) add(r>55?1:(r<45?-1:0), 1.5);                  // RSI momentum (avoid extremes as exhaustion)
+  if(r!=null && r>70) add(-0.5,1.0);                         // overbought fade
+  if(r!=null && r<30) add(0.5,1.0);                          // oversold bounce
+  if(mac) add(mac.hist>0?1:-1, 1.5);                         // MACD histogram
+  if(bb){ if(last.close<bb.lo) add(0.7,1.0); else if(last.close>bb.up) add(-0.7,1.0); }
+  add(last.close>last.open?1:-1, 1.0);                       // last candle body
+  if(pat.bias) add(pat.bias,1.5);                            // candlestick pattern
 
-  const dir = score >= 0 ? 'UP' : 'DOWN';
-  const strength = Math.min(100, 50 + Math.abs(score)*15 + Math.random()*5);
-  const buy = dir==='UP' ? strength : 100-strength;
+  const norm = maxScore? score/maxScore : 0;                 // -1..1
+  let dir = norm>0 ? 'UP' : 'DOWN';
+  let confidence = Math.round(50 + Math.abs(norm)*50);       // 50..100, deterministic
 
-  document.getElementById('predDir').textContent = dir;
-  document.getElementById('predDir').className = 'dir '+dir;
-  document.getElementById('predConf').textContent = `Confidence: ${strength.toFixed(0)}%  (closes at minute end)`;
-  document.getElementById('mb').style.width = buy+'%';
-  document.getElementById('ms').style.width = (100-buy)+'%';
+  // No-trade filter: weak signal or dead volatility -> WAIT
+  const avgRange = candles.slice(-20).reduce((s,c)=>s+(c.high-c.low),0)/20;
+  const lowVol = a!=null && avgRange>0 && a < avgRange*0.6;
+  if(confidence < 60 || Math.abs(norm) < 0.15 || lowVol) dir='WAIT';
 
-  return { dir, openPrice:lastPrice };
+  renderIndicators({ef,es,r,mac,bb,a,pat,last});
+  return { dir, confidence, openPrice:lastPrice };
+}
+
+function renderIndicators({ef,es,r,mac,bb,a,pat,last}){
+  const cls=v=>v>0?'bull':(v<0?'bear':'neutral');
+  const set=(id,txt,c)=>{ const e=document.getElementById(id); e.textContent=txt; e.className=c||''; };
+  set('iEma', ef&&es?(ef>es?'Bullish ▲':'Bearish ▼'):'-', ef&&es?cls(ef-es):'');
+  set('iRsi', r!=null?r.toFixed(1)+(r>70?' OB':r<30?' OS':''):'-', r!=null?cls(r-50):'');
+  set('iMacd', mac?(mac.hist>0?'Bullish ▲':'Bearish ▼'):'-', mac?cls(mac.hist):'');
+  set('iBb', bb?(last.close>bb.up?'Upper':last.close<bb.lo?'Lower':'Inside'):'-', bb?(last.close>bb.up?'bear':last.close<bb.lo?'bull':'neutral'):'');
+  set('iAtr', a!=null?fmt(a):'-','');
+  set('iPat', pat.name, cls(pat.bias));
+}
+
+function renderPrediction(p){
+  const d=document.getElementById('predDir');
+  if(!p){ d.textContent='--'; d.className='dir'; document.getElementById('predConf').textContent='waiting for data...'; return; }
+  d.textContent=p.dir; d.className='dir '+p.dir;
+  const label = p.dir==='WAIT' ? 'Low confidence / sideways - skip' : `Confidence: ${p.confidence}% (resolves at candle close)`;
+  document.getElementById('predConf').textContent=label;
+  const buy = p.dir==='UP'?p.confidence:(p.dir==='DOWN'?100-p.confidence:50);
+  document.getElementById('mb').style.width=buy+'%';
+  document.getElementById('ms').style.width=(100-buy)+'%';
 }
 
 /* ================== CANDLE UPDATE ================== */
 function feedPrice(price){
-  prevPrice = lastPrice;
-  lastPrice = price;
-  const now = Math.floor(Date.now()/1000);
-  const m = minuteStart(now);
+  prevPrice=lastPrice; lastPrice=price;
+  const m=bucket(Math.floor(Date.now()/1000));
+  const priceEl=document.getElementById('price');
+  priceEl.textContent=fmt(price);
+  if(prevPrice!=null) priceEl.className='price '+(price>=prevPrice?'up':'down');
 
-  const priceEl = document.getElementById('price');
-  priceEl.textContent = fmt(price);
-  if(prevPrice!=null){
-    priceEl.className = 'price ' + (price>=prevPrice?'up':'down');
-  }
-
-  let cur = candles[candles.length-1];
-
-  if(!cur || cur.time !== m){
-    // new minute candle: resolve previous prediction first
+  let cur=candles[candles.length-1];
+  if(!cur||cur.time!==m){
     resolvePrediction();
-    cur = { time:m, open:price, high:price, low:price, close:price };
-    candles.push(cur);
-    if(candles.length > 300) candles.shift();
-    // create prediction for THIS new minute
-    pendingPred = makePrediction();
-    if(pendingPred){ pendingPred.minute = m; logPrediction(pendingPred); }
+    cur={time:m,open:price,high:price,low:price,close:price};
+    candles.push(cur); if(candles.length>300) candles.shift();
+    rebuildOverlays();
+    pendingPred=analyze(); renderPrediction(pendingPred);
+    if(pendingPred && pendingPred.dir!=='WAIT'){ pendingPred.minute=m; logPrediction(pendingPred); beep(pendingPred.dir); }
   } else {
-    cur.high = Math.max(cur.high, price);
-    cur.low  = Math.min(cur.low, price);
-    cur.close = price;
+    cur.high=Math.max(cur.high,price); cur.low=Math.min(cur.low,price); cur.close=price;
+    const live=analyze(); if(live) renderPrediction(pendingPred||live);
   }
-
-  candleSeries.update(cur);
-  updateStats(cur);
+  candleSeries.update(cur); updateStats(cur);
 }
-
 function updateStats(c){
-  document.getElementById('sOpen').textContent  = fmt(c.open);
-  document.getElementById('sHigh').textContent  = fmt(c.high);
-  document.getElementById('sLow').textContent   = fmt(c.low);
-  document.getElementById('sClose').textContent = fmt(c.close);
-  const closes = candles.map(x=>x.close);
-  const e = ema(closes,9);
-  document.getElementById('sTrend').textContent = e ? (closes[closes.length-1]>e?'Bullish ▲':'Bearish ▼') : '-';
+  document.getElementById('sOpen').textContent=fmt(c.open);
+  document.getElementById('sHigh').textContent=fmt(c.high);
+  document.getElementById('sLow').textContent=fmt(c.low);
+  document.getElementById('sClose').textContent=fmt(c.close);
 }
 
-/* ================== PREDICTION RESOLUTION ================== */
-const log = document.getElementById('log');
+/* ================== PREDICTION RESOLUTION + STATS ================== */
+const log=document.getElementById('log');
 function logPrediction(p){
-  const t = new Date(p.minute*1000).toLocaleTimeString();
-  const div = document.createElement('div');
-  div.id = 'pred_'+p.minute;
-  div.innerHTML = `<span>${t}</span> → predict <b style="color:${p.dir==='UP'?'#0ecb81':'#f6465d'}">${p.dir}</b> <span class="result"> ...</span>`;
-  log.prepend(div);
+  const t=new Date(p.minute*1000).toLocaleTimeString();
+  const div=document.createElement('div'); div.id='pred_'+p.minute;
+  div.innerHTML=`<span>${t}</span> → <b style="color:${p.dir==='UP'?'#0ecb81':'#f6465d'}">${p.dir}</b> ${p.confidence}% <span class="result"> ...</span>`;
+  log.prepend(div); while(log.children.length>50) log.removeChild(log.lastChild);
 }
 function resolvePrediction(){
-  if(!pendingPred) return;
-  const closed = candles[candles.length-1]; // the just-finished candle
-  if(!closed) { pendingPred=null; return; }
-  const actual = closed.close >= closed.open ? 'UP' : 'DOWN';
-  const win = actual === pendingPred.dir;
-  const row = document.getElementById('pred_'+pendingPred.minute);
-  if(row){
-    const r = row.querySelector('.result');
-    r.textContent = win ? ' ✓ WIN' : ' ✗ LOSS';
-    r.className = 'result ' + (win?'win':'loss');
-  }
-  pendingPred = null;
+  if(!pendingPred||pendingPred.dir==='WAIT'){ pendingPred=null; return; }
+  const closed=candles[candles.length-1]; if(!closed){ pendingPred=null; return; }
+  const actual=closed.close>=closed.open?'UP':'DOWN';
+  const win=actual===pendingPred.dir;
+  const row=document.getElementById('pred_'+pendingPred.minute);
+  if(row){ const r=row.querySelector('.result'); r.textContent=win?' ✓ WIN':' ✗ LOSS'; r.className='result '+(win?'win':'loss'); }
+  stats.total++; if(win){ stats.win++; stats.streak=stats.streak>=0?stats.streak+1:1; } else { stats.streak=stats.streak<=0?stats.streak-1:-1; }
+  stats.best=Math.max(stats.best, Math.abs(stats.streak));
+  localStorage.setItem('td_stats',JSON.stringify(stats)); renderStats();
+  pendingPred=null;
+}
+function renderStats(){
+  document.getElementById('kWin').textContent=(stats.total?Math.round(stats.win/stats.total*100):0)+'%';
+  document.getElementById('kTotal').textContent=stats.total;
+  document.getElementById('kStreak').textContent=(stats.streak>0?'+':'')+stats.streak;
+  document.getElementById('kBest').textContent=stats.best;
 }
 
-/* ================== CYCLE TIMER (synced to real clock) ================== */
-function tickTimer(){
-  const d = new Date();
-  document.getElementById('clock').textContent = d.toLocaleTimeString();
-  const secLeft = 60 - d.getSeconds();
-  document.getElementById('cycleSecs').textContent = secLeft;
-  document.getElementById('cycleBar').style.width = (secLeft/60*100)+'%';
-}
-setInterval(tickTimer, 1000); tickTimer();
-
-/* ================== LOAD HISTORY (REST) ================== */
-async function loadHistory(){
-  try{
-    const res = await fetch(REST_TS);
-    const j = await res.json();
-    if(j.status === 'error' || !j.values){ setStatus(false, j.message||'API error'); return; }
-    candles = j.values.slice().reverse().map(v=>({
-      time: Math.floor(new Date(v.datetime.replace(' ','T')+'Z').getTime()/1000),
-      open:+v.open, high:+v.high, low:+v.low, close:+v.close
-    }));
-    candleSeries.setData(candles);
-    rebuildEma();
-    lastPrice = candles[candles.length-1].close;
-    updateStats(candles[candles.length-1]);
-    makePrediction();
-  }catch(e){ setStatus(false,'History load failed'); }
-}
-
-/* ================== REST PRICE POLLING (fallback) ================== */
-async function pollPrice(){
-  try{
-    const res = await fetch(REST_PRICE);
-    const j = await res.json();
-    if(j.price){ feedPrice(+j.price); setStatus(true,'Live (REST)'); }
+/* ================== SOUND ALERTS ================== */
+let audioCtx=null;
+function beep(dir){
+  if(!CFG.sound) return;
+  try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.frequency.value=dir==='UP'?880:440; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(0.1,audioCtx.currentTime);
+    o.start(); g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.25); o.stop(audioCtx.currentTime+0.25);
   }catch(e){}
 }
 
-/* ================== WEBSOCKET (real-time if plan allows) ================== */
-let ws, wsAlive=false, pollTimer=null;
-function setStatus(on, txt){
-  const s = document.getElementById('status');
-  s.textContent = txt;
-  s.className = 'status ' + (on?'live':'off');
+/* ================== TIMER ================== */
+function tickTimer(){
+  const d=new Date(); document.getElementById('clock').textContent=d.toLocaleTimeString();
+  const sec=tfSec(); const elapsed=Math.floor(Date.now()/1000)%sec; const left=sec-elapsed;
+  document.getElementById('cycleSecs').textContent=left;
+  document.getElementById('cycleBar').style.width=(left/sec*100)+'%';
 }
-function startPolling(){ if(!pollTimer){ pollTimer=setInterval(pollPrice, 3000); pollPrice(); } }
-function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+setInterval(tickTimer,1000); tickTimer();
 
-function connectWS(){
+/* ================== DATA: HISTORY + POLL + WS ================== */
+function setStatus(on,txt){ const s=document.getElementById('status'); s.textContent=txt; s.className='status '+(on?'live':'off'); }
+async function loadHistory(){
+  if(!CFG.keys.length){ setStatus(false,'Enter API key'); return; }
   try{
-    ws = new WebSocket(WS_URL);
-    ws.onopen = ()=>{
-      ws.send(JSON.stringify({ action:'subscribe', params:{ symbols:SYMBOL } }));
+    const j=await apiFetch(restTS);
+    if(j.status==='error'||!j.values){ setStatus(false,j.message||'API error'); return; }
+    candles=j.values.slice().reverse().map(v=>({ time:Math.floor(new Date(v.datetime.replace(' ','T')+'Z').getTime()/1000), open:+v.open,high:+v.high,low:+v.low,close:+v.close }));
+    candleSeries.setData(candles); rebuildOverlays();
+    lastPrice=candles[candles.length-1].close; updateStats(candles[candles.length-1]);
+    renderPrediction(analyze());
+  }catch(e){ setStatus(false,'History load failed'); }
+}
+async function pollPrice(){ if(!CFG.keys.length) return; try{ const j=await apiFetch(restPrice); if(j.price){ feedPrice(+j.price); setStatus(true,`Live (REST) · ${activeKeyCount()}/${CFG.keys.length} keys`); } }catch(e){} }
+let ws,wsAlive=false,pollTimer=null;
+function startPolling(){ if(!pollTimer){ pollTimer=setInterval(pollPrice,3000); pollPrice(); } }
+function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+function connectWS(){
+  if(!CFG.keys.length) return;
+  try{
+    ws=new WebSocket(wsUrl(CFG.keys[0]));
+    ws.onopen=()=>ws.send(JSON.stringify({action:'subscribe',params:{symbols:CFG.symbol}}));
+    ws.onmessage=(ev)=>{ const m=JSON.parse(ev.data);
+      if(m.event==='price'&&m.price){ wsAlive=true; stopPolling(); setStatus(true,'Live (WebSocket)'); feedPrice(+m.price); }
+      if(m.event==='subscribe-status'&&m.status==='error') startPolling();
     };
-    ws.onmessage = (ev)=>{
-      const msg = JSON.parse(ev.data);
-      if(msg.event === 'price' && msg.price){
-        wsAlive = true; stopPolling();
-        setStatus(true,'Live (WebSocket)');
-        feedPrice(+msg.price);
-      }
-      if(msg.event === 'subscribe-status' && msg.status==='error'){
-        // plan likely doesn't allow WS -> use polling
-        startPolling();
-      }
-    };
-    ws.onerror = ()=>{ startPolling(); };
-    ws.onclose = ()=>{ wsAlive=false; startPolling(); setTimeout(connectWS, 8000); };
-    // if no WS tick within 6s, fall back to polling
-    setTimeout(()=>{ if(!wsAlive) startPolling(); }, 6000);
+    ws.onerror=()=>startPolling();
+    ws.onclose=()=>{ wsAlive=false; startPolling(); setTimeout(connectWS,8000); };
+    setTimeout(()=>{ if(!wsAlive) startPolling(); },6000);
   }catch(e){ startPolling(); }
 }
 
-/* ================== BOOT ================== */
-(async function init(){
-  await loadHistory();
-  connectWS();
-})();
+/* ================== CONTROLS / BOOT ================== */
+function resetAndStart(){
+  if(ws){ try{ws.close();}catch(e){} } stopPolling();
+  candles=[]; lastPrice=null; pendingPred=null; log.innerHTML='';
+  document.getElementById('pairLabel').innerHTML=CFG.symbol.replace('/','<span>/</span>');
+  loadHistory().then(connectWS);
+}
+document.getElementById('symbolSel').value=CFG.symbol;
+document.getElementById('tfSel').value=CFG.tf;
+document.getElementById('apiKey').value=CFG.keys.join(', ');
+document.getElementById('soundToggle').textContent=CFG.sound?'🔊':'🔇';
+updateKeyStatus();
+document.getElementById('symbolSel').onchange=e=>{ CFG.symbol=e.target.value; localStorage.setItem('td_sym',CFG.symbol); resetAndStart(); };
+document.getElementById('tfSel').onchange=e=>{ CFG.tf=e.target.value; localStorage.setItem('td_tf',CFG.tf); resetAndStart(); };
+document.getElementById('saveKey').onclick=()=>{ CFG.keys=document.getElementById('apiKey').value.split(/[\s,]+/).map(s=>s.trim()).filter(Boolean); localStorage.setItem('td_keys',CFG.keys.join(',')); keyIdx=0; apiCallCount=0; for(const k in keyCooldownUntil) delete keyCooldownUntil[k]; updateKeyStatus(); resetAndStart(); };
+document.getElementById('soundToggle').onclick=()=>{ CFG.sound=!CFG.sound; localStorage.setItem('td_snd',CFG.sound?'1':'0'); document.getElementById('soundToggle').textContent=CFG.sound?'🔊':'🔇'; };
+document.getElementById('clearHist').onclick=()=>{ stats={win:0,total:0,streak:0,best:0}; localStorage.setItem('td_stats',JSON.stringify(stats)); renderStats(); log.innerHTML=''; };
+renderStats();
+resetAndStart();
 </script>
 </body>
 </html>
