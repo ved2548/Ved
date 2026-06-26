@@ -138,6 +138,8 @@
       <div><span>RSI (14)</span><span id="iRsi">-</span></div>
       <div><span>MACD</span><span id="iMacd">-</span></div>
       <div><span>Bollinger</span><span id="iBb">-</span></div>
+      <div><span>Stochastic</span><span id="iStoch">-</span></div>
+      <div><span>ADX (Trend)</span><span id="iAdx">-</span></div>
       <div><span>ATR (Volatility)</span><span id="iAtr">-</span></div>
       <div><span>Pattern</span><span id="iPat">-</span></div>
     </div>
@@ -251,6 +253,23 @@ function detectPattern(cs){ if(cs.length<2) return {name:'-',bias:0}; const c=cs
   if(upper>body*2&&lower<body) return {name:'Shooting Star',bias:-1};
   if(body/range<0.1) return {name:'Doji',bias:0};
   return {name:'-',bias:0}; }
+function stochastic(cs,kP=14,dP=3){ if(cs.length<kP+dP) return null; const ks=[];
+  for(let i=cs.length-kP-dP+1;i<=cs.length-1;i++){ const sl=cs.slice(i-kP+1,i+1); if(sl.length<kP) continue;
+    const hh=Math.max(...sl.map(c=>c.high)),ll=Math.min(...sl.map(c=>c.low)),cl=cs[i].close;
+    ks.push(hh===ll?50:(cl-ll)/(hh-ll)*100); }
+  if(!ks.length) return null; const k=ks[ks.length-1]; const d=ks.slice(-dP).reduce((a,b)=>a+b,0)/Math.min(dP,ks.length);
+  return {k,d}; }
+function adx(cs,p=14){ if(cs.length<p*2) return null; let trs=[],pdm=[],ndm=[];
+  for(let i=1;i<cs.length;i++){ const up=cs[i].high-cs[i-1].high, dn=cs[i-1].low-cs[i].low;
+    pdm.push(up>dn&&up>0?up:0); ndm.push(dn>up&&dn>0?dn:0);
+    trs.push(Math.max(cs[i].high-cs[i].low,Math.abs(cs[i].high-cs[i-1].close),Math.abs(cs[i].low-cs[i-1].close))); }
+  const sm=arr=>{ let s=arr.slice(0,p).reduce((a,b)=>a+b,0); const o=[s]; for(let i=p;i<arr.length;i++){ s=s-s/p+arr[i]; o.push(s);} return o; };
+  const tr14=sm(trs),pdm14=sm(pdm),ndm14=sm(ndm); const dx=[];
+  for(let i=0;i<tr14.length;i++){ const pdi=100*pdm14[i]/(tr14[i]||1e-9), ndi=100*ndm14[i]/(tr14[i]||1e-9);
+    dx.push(100*Math.abs(pdi-ndi)/((pdi+ndi)||1e-9)); }
+  if(dx.length<p) return null; const adxv=dx.slice(-p).reduce((a,b)=>a+b,0)/p;
+  const lastTr=tr14[tr14.length-1]||1e-9; const pdiL=100*pdm14[pdm14.length-1]/lastTr, ndiL=100*ndm14[ndm14.length-1]/lastTr;
+  return {adx:adxv, plusDI:pdiL, minusDI:ndiL}; }
 
 /* ================== CHART OVERLAYS ================== */
 function rebuildOverlays(){
@@ -266,35 +285,42 @@ function rebuildOverlays(){
 
 /* ================== PREDICTION ENGINE (weighted, no random) ================== */
 function analyze(){
-  if(candles.length<30) return null;
+  if(candles.length<40) return null;
   const closes=candles.map(c=>c.close); const last=candles[candles.length-1];
-  const ef=emaLast(closes,5),es=emaLast(closes,13),el=emaLast(closes,50);
+  const ef=emaLast(closes,5),es=emaLast(closes,13),el=emaLast(closes,50),e200=emaLast(closes,200);
   const r=rsi(closes,14),mac=macd(closes),bb=bollinger(closes),a=atr(candles,14),pat=detectPattern(candles);
+  const st=stochastic(candles,14,3),ad=adx(candles,14);
   let score=0,maxScore=0; const add=(v,w)=>{ score+=v*w; maxScore+=w; };
-  if(ef&&es) add(ef>es?1:-1,2.0);
-  if(el) add(last.close>el?1:-1,1.5);
-  if(r!=null) add(r>55?1:(r<45?-1:0),1.5);
+  if(ef&&es) add(ef>es?1:-1,2.0);                                  // EMA cross
+  if(el) add(last.close>el?1:-1,1.5);                              // mid trend
+  if(e200) add(last.close>e200?1:-1,2.0);                          // macro trend filter
+  if(r!=null) add(r>55?1:(r<45?-1:0),1.5);                         // RSI momentum
   if(r!=null&&r>70) add(-0.5,1.0);
   if(r!=null&&r<30) add(0.5,1.0);
-  if(mac) add(mac.hist>0?1:-1,1.5);
+  if(mac) add(mac.hist>0?1:-1,1.5);                                // MACD
   if(bb){ if(last.close<bb.lo) add(0.7,1.0); else if(last.close>bb.up) add(-0.7,1.0); }
-  add(last.close>last.open?1:-1,1.0);
-  if(pat.bias) add(pat.bias,1.5);
+  if(st){ if(st.k<20) add(0.6,1.2); else if(st.k>80) add(-0.6,1.2); add(st.k>st.d?0.4:-0.4,1.0); } // Stochastic
+  if(ad){ add(ad.plusDI>ad.minusDI?1:-1, Math.min(2.0, ad.adx/25)); } // DI direction weighted by trend strength
+  add(last.close>last.open?1:-1,1.0);                              // last candle body
+  if(pat.bias) add(pat.bias,1.5);                                  // pattern
   const norm=maxScore?score/maxScore:0;
   let dir=norm>0?'UP':'DOWN'; let confidence=Math.round(50+Math.abs(norm)*50);
   const avgRange=candles.slice(-20).reduce((s,c)=>s+(c.high-c.low),0)/20;
   const lowVol=a!=null&&avgRange>0&&a<avgRange*0.6;
-  if(confidence<60||Math.abs(norm)<0.15||lowVol) dir='WAIT';
-  renderIndicators({ef,es,r,mac,bb,a,pat,last});
+  const noTrend=ad!=null&&ad.adx<18;                               // ADX<18 => choppy, skip
+  if(confidence<62||Math.abs(norm)<0.18||lowVol||noTrend) dir='WAIT';
+  renderIndicators({ef,es,r,mac,bb,a,pat,last,st,ad});
   return {dir,confidence,openPrice:lastPrice};
 }
-function renderIndicators({ef,es,r,mac,bb,a,pat,last}){
+function renderIndicators({ef,es,r,mac,bb,a,pat,last,st,ad}){
   const cls=v=>v>0?'bull':(v<0?'bear':'neutral');
   const set=(id,txt,c)=>{ const e=document.getElementById(id); if(e){ e.textContent=txt; e.className=c||''; } };
   set('iEma', ef&&es?(ef>es?'Bullish ▲':'Bearish ▼'):'-', ef&&es?cls(ef-es):'');
   set('iRsi', r!=null?r.toFixed(1)+(r>70?' OB':r<30?' OS':''):'-', r!=null?cls(r-50):'');
   set('iMacd', mac?(mac.hist>0?'Bullish ▲':'Bearish ▼'):'-', mac?cls(mac.hist):'');
   set('iBb', bb?(last.close>bb.up?'Upper':last.close<bb.lo?'Lower':'Inside'):'-', bb?(last.close>bb.up?'bear':last.close<bb.lo?'bull':'neutral'):'');
+  set('iStoch', st?st.k.toFixed(0)+'/'+st.d.toFixed(0)+(st.k<20?' OS':st.k>80?' OB':''):'-', st?cls(st.k-st.d):'');
+  set('iAdx', ad?ad.adx.toFixed(0)+(ad.adx<18?' weak':ad.adx>25?' strong':''):'-', ad?(ad.adx<18?'neutral':cls(ad.plusDI-ad.minusDI)):'');
   set('iAtr', a!=null?fmt(a):'-','');
   set('iPat', pat.name, cls(pat.bias));
 }
@@ -320,17 +346,23 @@ function feedPrice(price){
 
   let cur=candles[candles.length-1];
   if(!cur || m>cur.time){
-    // close previous candle, resolve prediction, open a fresh live candle
-    if(cur) resolvePrediction(cur);
+    // a new candle has started -> the previous candle just CLOSED.
+    if(cur){
+      // 1) resolve the prediction that was made for this now-closed candle
+      resolvePrediction(cur);
+    }
+    // 2) open the fresh live candle
     cur={ time:m, open:price, high:price, low:price, close:price };
     candles.push(cur); if(candles.length>400) candles.shift();
     rebuildOverlays();
-    pendingPred=analyze(); renderPrediction(pendingPred);
-    if(pendingPred && pendingPred.dir!=='WAIT'){ pendingPred.minute=m; logPrediction(pendingPred); beep(pendingPred.dir); }
+    // 3) make a NEW prediction FOR this just-opened candle, log it now
+    const pred=analyze(); renderPrediction(pred);
+    if(pred && pred.dir!=='WAIT'){ pendingPred={ dir:pred.dir, confidence:pred.confidence, minute:m, open:price }; logPrediction(pendingPred); beep(pred.dir); }
+    else { pendingPred=null; }
   } else if(m===cur.time){
-    // update the in-progress live candle (this is what makes it move like a terminal)
+    // update the in-progress live candle (terminal-style movement)
     cur.high=Math.max(cur.high,price); cur.low=Math.min(cur.low,price); cur.close=price;
-    const live=analyze(); if(live) renderPrediction(pendingPred||live);
+    const live=analyze(); renderPrediction(pendingPred?{dir:pendingPred.dir,confidence:pendingPred.confidence}:live);
   } else { return; } // stale tick older than current candle: ignore
 
   candleSeries.update(cur);   // single-point update keeps history intact (fixes disappearing candles)
@@ -360,6 +392,7 @@ function logPrediction(p){
 function resolvePrediction(closedCandle){
   if(!pendingPred||pendingPred.dir==='WAIT'){ pendingPred=null; return; }
   if(!closedCandle){ pendingPred=null; return; }
+  // prediction was made for THIS candle at its open; judge by its full open->close move
   const actual=closedCandle.close>=closedCandle.open?'UP':'DOWN';
   const win=actual===pendingPred.dir;
   const row=document.getElementById('pred_'+pendingPred.minute);
