@@ -367,7 +367,7 @@ svg.chart { width: 100%; height: 100%; overflow: visible; }
       Waiting for ticks…
     </div>
     <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:var(--font-m)">
-      Rules: No-duplicate · 50ms-gap · &gt;0.1pip · &lt;50pip · No-6x-spike
+      Rules: No-duplicate · 200ms-gap · &gt;0.2pip · &lt;5pip · No-4x-spike · No-uniform-delta
     </div>
   </div>
 </div>
@@ -409,11 +409,11 @@ let ftTotalRaw      = 0;     // total raw ticks received
 let ftTotalFake     = 0;     // total fake ticks rejected
 let ftTotalReal     = 0;     // total real ticks accepted
 
-// EUR/USD realistic thresholds
-const FT_MIN_CHANGE  = 0.00001; // 0.1 pip min — chhota = duplicate/flat fake
-const FT_MAX_CHANGE  = 0.0050;  // 50 pip max  — bada  = spike/error fake
-const FT_MIN_MS      = 50;      // 50ms interval min — server duplicate filter
-const FT_SPIKE_MULT  = 6.0;     // avg delta se 6x bada = outlier spike
+// EUR/USD 100% Real Tick Thresholds (strict)
+const FT_MIN_CHANGE  = 0.00002; // 0.2 pip min — 0.1 pip noise/padding = fake
+const FT_MAX_CHANGE  = 0.0005;  // 5 pip max per tick — isse bada = spike/error
+const FT_MIN_MS      = 200;     // 200ms min — real EUR/USD max ~5 ticks/sec
+const FT_SPIKE_MULT  = 4.0;     // avg delta se 4x bada = outlier spike (strict)
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    IST CLOCK
@@ -528,12 +528,23 @@ function filterTick(price, nowMs) {
       }
     }
 
+    // Rule 6: Uniform delta — synthetic/interpolated tick stream detect
+    // Agar last 4 deltas bilkul ek jaisi hain = machine-generated
+    if (ftRecentDeltas.length >= 4) {
+      const last4 = ftRecentDeltas.slice(-4);
+      const allSame = last4.every(d => Math.abs(d - delta) < 0.000005);
+      if (allSame) {
+        ftTotalFake++;
+        return { real: false, reason: 'UNIFORM_DELTA' };
+      }
+    }
+
     // Update rolling delta window (last 20)
     ftRecentDeltas.push(delta);
     if (ftRecentDeltas.length > 20) ftRecentDeltas.shift();
   }
 
-  // All rules passed — REAL tick
+  // All 6 rules passed — 100% REAL tick
   ftLastAccepted = price;
   ftLastTime     = nowMs;
   ftTotalReal++;
@@ -550,7 +561,7 @@ function updateFilterUi() {
       ' | Real: ' + ftTotalReal +
       ' | Fake: ' + ftTotalFake +
       ' | Purity: ' + pct + '%';
-    el.style.color = pct >= 85 ? 'var(--green)' : pct >= 60 ? 'var(--yellow)' : 'var(--red)';
+    el.style.color = pct >= 90 ? 'var(--green)' : pct >= 75 ? 'var(--yellow)' : 'var(--red)';
   }
 }
 
@@ -618,6 +629,11 @@ function onCycleReset(currentSec) {
   currWindow = [];
   locked = null;
 
+  // Filter delta history bhi reset (naye cycle ka clean baseline)
+  ftRecentDeltas = [];
+  ftLastAccepted = null;  // naye cycle mein first tick fresh accept hoga
+  ftLastTime     = 0;
+
   document.getElementById("sigMain").textContent  = "WAIT";
   document.getElementById("sigMain").className    = "sig-main WAIT";
   document.getElementById("signalCard").className = "card signal-card";
@@ -656,16 +672,16 @@ setInterval(() => {
     document.getElementById("sigPhase").textContent  = "WATCHING MARKET";
     document.getElementById("sigPhase").className    = "sig-phase";
 
-    if (locked === null) {
-      document.getElementById("sigMain").textContent  = "WAIT";
-      document.getElementById("sigMain").className    = "sig-main WAIT";
-      document.getElementById("signalCard").className = "card signal-card";
-    }
+    // Watch phase mein HAMESHA WAIT — locked ka koi role nahi yahan
+    document.getElementById("sigMain").textContent  = "WAIT";
+    document.getElementById("sigMain").className    = "sig-main WAIT";
+    document.getElementById("signalCard").className = "card signal-card";
+    locked = null; // watch phase mein lock kabhi nahi hoga
 
     const hint = `Watch phase · prev ticks: ${prevWindow.length} · curr ticks: ${currWindow.length}`;
     document.getElementById("sigHint").textContent = hint;
 
-    // live bias sirf currWindow se (during watch)
+    // live bias sirf currWindow se (during watch) — display only, signal nahi
     calcAndShowBias(currWindow);
 
   } else {
