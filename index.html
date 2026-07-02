@@ -2,359 +2,755 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VED – Fresh Water Engine (Live)</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VED – Fresh Water Engine</title>
 <style>
-:root{
-  --yellow:#f5b301;
-  --green:#22c55e;
-  --red:#ef4444;
-  --text:#eaf6ff;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg:       #020c18;
+  --surface:  #071428;
+  --border:   rgba(14,165,233,0.18);
+  --sky:      #0ea5e9;
+  --sky-dim:  #0369a1;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --yellow:   #f5b301;
+  --text:     #e0f2fe;
+  --muted:    #7dd3fc;
+  --font-d:   'Space Grotesk', system-ui;
+  --font-m:   'JetBrains Mono', monospace;
 }
-body{
-  margin:0;
-  font-family:system-ui;
-  color:var(--text);
-  background:
-    radial-gradient(circle at top, rgba(255,255,255,0.15), transparent 40%),
-    linear-gradient(180deg,#0ea5e9 0%, #0369a1 40%, #020617 100%);
-  min-height:100vh;
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-d);
+  min-height: 100vh;
+  padding: 16px;
 }
-header{
-  padding:16px 24px;
-  display:flex;
-  justify-content:space-between;
-  font-weight:900;
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
 }
-.clock{color:#7dd3fc;font-size:18px}
-.wrap{padding:20px}
-.grid{
-  display:grid;
-  grid-template-columns:1.4fr 1.8fr 1.8fr;
-  gap:20px;
+.logo {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--sky);
 }
-.card{
-  border:1px solid rgba(255,255,255,0.25);
-  border-radius:22px;
-  padding:22px;
-  backdrop-filter:blur(6px);
+.logo span { color: var(--yellow); }
+.ist-clock {
+  font-family: var(--font-m);
+  font-size: 17px;
+  color: var(--muted);
 }
-.brand{
-  background:linear-gradient(160deg,#facc15,#f59e0b);
-  color:#020617;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:40px;
-  font-weight:900;
+
+/* ── GRID ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
 }
-.circle{
-  --deg:0deg;
-  width:140px;height:140px;
-  border-radius:50%;
-  background:
-    conic-gradient(var(--yellow) var(--deg),rgba(255,255,255,.2) 0);
-  display:flex;align-items:center;justify-content:center;margin:auto;
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 20px;
 }
-.circle span{
-  width:96px;height:96px;border-radius:50%;
-  background:#020617;
-  display:flex;align-items:center;justify-content:center;
-  font-size:26px;font-weight:900;
+
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
 }
-.barWrap{height:18px;border-radius:12px;background:rgba(255,255,255,.25)}
-.bar{height:100%;width:0%;background:var(--green);border-radius:12px;transition:width .4s}
-.signalBox{text-align:center}
-.timer{font-size:56px;font-weight:900;color:#7dd3fc}
-.signal{font-size:52px;font-weight:900}
-.big{color:var(--green)}
-.small{color:var(--red)}
-.skip{color:#fde047}
-.phase{font-size:20px;font-weight:900;letter-spacing:1px}
-.watching{color:#7dd3fc}
-.locking{color:#fde047}
-.filter{
-  position:absolute;top:16px;right:16px;
-  padding:8px 16px;border-radius:14px;
-  font-size:13px;font-weight:900;
+
+/* ── LIVE PRICE ── */
+.price-big {
+  font-family: var(--font-m);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text);
+  transition: color .3s;
 }
-.safe{background:#22c55e;color:#020617}
-.biasBig{font-size:48px;font-weight:900;text-align:center}
-.bottom{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:20px;margin-top:20px;
+.price-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  font-family: var(--font-m);
 }
-.priceBig{font-size:34px;font-weight:900}
+
+/* ── CHART ── */
+.chart-card {
+  grid-column: 1 / -1;
+  padding: 18px 20px 10px;
+}
+.chart-wrap {
+  height: 110px;
+  position: relative;
+}
+svg.chart { width: 100%; height: 100%; overflow: visible; }
+
+/* ── WINDOW BUFFER VISUAL ── */
+.window-card { grid-column: 1 / -1; }
+.window-track {
+  display: flex;
+  gap: 2px;
+  height: 22px;
+  align-items: flex-end;
+  margin-top: 10px;
+}
+.tick-bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  transition: height .2s, background .3s;
+  min-height: 3px;
+}
+
+/* ── SIGNAL BOX ── */
+.signal-card {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.signal-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .5s;
+  border-radius: 18px;
+}
+.signal-card.UP::before   { background: radial-gradient(ellipse at center, rgba(34,197,94,.12), transparent 70%); opacity: 1; }
+.signal-card.DOWN::before { background: radial-gradient(ellipse at center, rgba(239,68,68,.12), transparent 70%); opacity: 1; }
+
+.sig-phase {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--muted);
+}
+.sig-phase.locking { color: var(--yellow); }
+
+.sig-countdown {
+  font-family: var(--font-m);
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--sky);
+  line-height: 1;
+}
+
+.sig-main {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  transition: color .4s;
+}
+.sig-main.WAIT { color: var(--yellow); }
+.sig-main.UP   { color: var(--green); }
+.sig-main.DOWN { color: var(--red); }
+.sig-main.SKIP { color: rgba(255,255,255,.35); }
+
+.sig-hint {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  font-family: var(--font-m);
+  min-height: 18px;
+}
+
+/* ── DATA WINDOW STATUS ── */
+.window-status {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  font-family: var(--font-m);
+}
+.ws-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.ws-pill.prev  { background: rgba(245,179,1,.2);   color: var(--yellow); }
+.ws-pill.curr  { background: rgba(14,165,233,.2);  color: var(--sky);   }
+
+/* ── BIAS ── */
+.bias-val {
+  font-size: 38px;
+  font-weight: 900;
+}
+.bias-bar-wrap {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.1);
+  margin-top: 10px;
+}
+.bias-bar {
+  height: 100%;
+  border-radius: 6px;
+  width: 50%;
+  transition: width .4s, background .4s;
+}
+
+/* ── CONFIDENCE ── */
+.conf-ring-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+.conf-ring {
+  --pct: 0%;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: conic-gradient(var(--sky) var(--pct), rgba(255,255,255,.1) 0);
+  display: flex; align-items: center; justify-content: center;
+}
+.conf-inner {
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-m);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* ── API STATUS ── */
+.api-pill {
+  position: absolute;
+  top: 14px; right: 14px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+.api-pill.live   { background: var(--green);  color: #020617; }
+.api-pill.wait   { background: var(--yellow); color: #020617; }
+.api-pill.error  { background: var(--red);    color: #fff; }
+
+/* ── BOTTOM ROW ── */
+.bottom { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .chart-card, .window-card, .signal-card { grid-column: 1 / -1; }
+  .bottom { grid-template-columns: 1fr 1fr; }
+  .sig-countdown { font-size: 48px; }
+  .sig-main { font-size: 40px; }
+}
 </style>
 </head>
-
 <body>
 
-<header>
-  <div class="clock" id="clock">IST --:--:--</div>
-  <div id="date">-- --- ----</div>
-</header>
+<div class="header">
+  <div class="logo">VED <span>·</span> FRESH WATER ENGINE</div>
+  <div class="ist-clock" id="clock">IST --:--:--</div>
+</div>
 
-<div class="wrap">
+<!-- ── MAIN GRID ── -->
 <div class="grid">
 
-  <div class="card brand">VED</div>
-
+  <!-- Live Price -->
   <div class="card">
-    <h3>Confidence</h3>
-    <div class="circle" id="accCircle"><span id="accVal">--%</span></div>
+    <div class="card-label">Live Price · EUR/USD</div>
+    <div class="price-big" id="livePrice">-.-----</div>
+    <div class="price-sub" id="priceTime">Waiting for tick…</div>
   </div>
 
+  <!-- Bias -->
   <div class="card">
-    <h3>Signal Confidence</h3>
-    <div style="font-size:46px;font-weight:900" id="confText">--%</div>
-    <div class="barWrap"><div class="bar" id="confBar"></div></div>
+    <div class="card-label">Combined Window Bias</div>
+    <div class="bias-val" id="biasLabel">--</div>
+    <div class="bias-bar-wrap"><div class="bias-bar" id="biasBar"></div></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:6px;font-family:var(--font-m)" id="biasNum">--</div>
   </div>
 
-  <div class="card" style="grid-column:1/-1">
-    <h3>Live Price Flow (EUR/USD)</h3>
-    <div class="trendWrap" style="height:160px;overflow:hidden">
-      <svg viewBox="0 0 300 120" style="width:100%;height:100%">
-        <path id="priceLine" style="fill:none;stroke:var(--green);stroke-width:2.5;stroke-linecap:round"/>
-      </svg>
+  <!-- Confidence ring -->
+  <div class="card">
+    <div class="card-label">Signal Confidence</div>
+    <div class="conf-ring-wrap">
+      <div class="conf-ring" id="confRing">
+        <div class="conf-inner" id="confVal">--%</div>
+      </div>
     </div>
   </div>
 
-  <div class="card signalBox" style="grid-column:1/-1;position:relative">
-    <div class="filter safe" id="apiFilter">CONNECTING…</div>
-    <h3>1 Minute Signal</h3>
-    <div class="timer" id="timer">60</div>
-    <div class="phase watching" id="phase">WATCHING MARKET</div>
-    <div class="signal skip" id="signal">WAIT</div>
-    <div style="opacity:.7">Watch first 40s · Final signal in last 20s</div>
+  <!-- Price Chart -->
+  <div class="card chart-card">
+    <div class="card-label">Price Flow (last 60 ticks)</div>
+    <div class="chart-wrap">
+      <svg class="chart">
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.7"/>
+            <stop offset="33%" stop-color="var(--sky)"/>
+            <stop offset="100%" stop-color="var(--green)"/>
+          </linearGradient>
+        </defs>
+        <path id="priceLine" fill="none" stroke="url(#lineGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- divider at 20-tick mark -->
+        <line id="divLine" x1="0" y1="0" x2="0" y2="110" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+      </svg>
+    </div>
+    <!-- legend -->
+    <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;font-family:var(--font-m);color:var(--muted)">
+      <span>🟡 Prev cycle last 20s</span>
+      <span>🔵 Current cycle 40s watch</span>
+    </div>
+  </div>
+
+  <!-- Combined window tick bars -->
+  <div class="card window-card">
+    <div class="card-label" style="display:flex;align-items:center;gap:8px">
+      Combined 60-Tick Window
+      <span class="ws-pill prev" id="prevPill">PREV 20s: 0</span>
+      <span class="ws-pill curr" id="currPill">CURR 40s: 0</span>
+    </div>
+    <div class="window-track" id="tickTrack"></div>
+  </div>
+
+  <!-- Signal -->
+  <div class="card signal-card" id="signalCard">
+    <div class="api-pill wait" id="apiPill">CONNECTING</div>
+    <div class="sig-phase" id="sigPhase">WATCHING MARKET</div>
+    <div class="sig-countdown" id="sigCountdown">60</div>
+    <div class="sig-main WAIT" id="sigMain">WAIT</div>
+    <div class="sig-hint" id="sigHint">Watch: 0–40s · Lock: 40–60s · Bias&gt;50%=UP · Bias≤50%=DOWN</div>
+    <div class="window-status">
+      <div id="wStatus">Combined ticks: prev=<b id="wPrev">0</b> · curr=<b id="wCurr">0</b> · total=<b id="wTotal">0</b></div>
+    </div>
   </div>
 
 </div>
 
+<!-- ── BOTTOM ── -->
 <div class="bottom">
   <div class="card">
-    <h3>API Health</h3>
-    <div id="apiHealth" style="font-size:30px;font-weight:900">WAIT</div>
+    <div class="card-label">WebSocket</div>
+    <div style="font-size:22px;font-weight:900" id="wsStatus">WAIT</div>
   </div>
-
   <div class="card">
-    <h3>Market Bias (Live)</h3>
-    <div id="biasText" class="biasBig">--</div>
-    <div class="barWrap"><div class="bar" id="biasBar"></div></div>
+    <div class="card-label">Cycle Move (bp)</div>
+    <div style="font-size:22px;font-weight:900;font-family:var(--font-m)" id="moveVal">--</div>
   </div>
-
   <div class="card">
-    <h3>Live Price</h3>
-    <div class="priceBig" id="livePrice">--</div>
-    <div style="opacity:.7" id="priceTime">--:--:--</div>
+    <div class="card-label">Ticks this Minute</div>
+    <div style="font-size:22px;font-weight:900;font-family:var(--font-m)" id="tickCount">0</div>
   </div>
-</div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONFIG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const TWELVE_KEY = "7d8ec8ca7bf8483b81ff4490c76dfe88";
 const SYMBOL     = "EUR/USD";
-const CYCLE      = 60;   // seconds (1 minute)
-const WATCH      = 40;   // watch first 40s
-// last 20s (40 -> 60) = final signal + auto momentum capture
+const WATCH_SEC  = 40;   // 0..39 = watch phase
+const TOTAL_SEC  = 60;   // full cycle
+const SIGNAL_SEC = 20;   // last 20s = lock window
 
-/* ================= CLOCK ================= */
-setInterval(()=>{
-  const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
-  clock.textContent="IST "+d.toTimeString().slice(0,8);
-  date.textContent=d.toDateString();
-},1000);
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CORE STATE
+   
+   Ek combined buffer — MAX 60 ticks rakhega:
+   • prevWindow  → pichle cycle ke last 20s ke ticks   (index 0..N-1)
+   • currWindow  → is cycle ke pehle 40s ke ticks      (index N..end)
+   
+   Signal decide hone ke time (elapsed >= 40s):
+   dono windows ke price ticks ek saath analyze hote hain.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-/* ================= LIVE STATE ================= */
-let ws=null;
-let cyclePrices=[];        // current cycle ke live prices (0..40s watch)
-let carryPrices=[];        // pichle cycle ke last-20s prices
-let capturingCarry=false;  // last 20s me true
-let carryMomentum=0;       // system khud nikalta hai: pichle 20s ki direction (-1..+1)
-let priceHistory=[];       // graph ke liye
-let startPrice=null;       // is cycle ka pehla live price
-let lastPrice=null;        // latest live price
-let locked=null;           // last 20s me lock hua final signal
-let lastCycleId=null;      // cycle reset detect karne ke liye
+let prevWindow  = [];   // pichle cycle ke last-20s ke prices (saved on cycle end)
+let currWindow  = [];   // is cycle ke 0-40s ke prices
 
-/* ================= WEBSOCKET ================= */
-function connectWS(){
-  apiHealth.textContent="CONNECTING";
-  apiHealth.style.color="var(--yellow)";
-  apiFilter.textContent="CONNECTING…";
+let lastPrice   = null;
+let cycleId     = null;
+let locked      = null; // final signal, lock hone ke baad nahi badlega
+let priceHistory= [];   // chart ke liye (last 60 ticks across time)
 
-  ws=new WebSocket("wss://ws.twelvedata.com/v1/quotes/price?apikey="+TWELVE_KEY);
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   IST CLOCK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function istNow() {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+}
+setInterval(() => {
+  const d = istNow();
+  document.getElementById("clock").textContent =
+    "IST " + d.toTimeString().slice(0, 8);
+}, 1000);
 
-  ws.onopen=()=>{
-    ws.send(JSON.stringify({action:"subscribe",params:{symbols:SYMBOL}}));
-    apiHealth.textContent="CONNECTED";
-    apiHealth.style.color="var(--green)";
-    apiFilter.textContent="LIVE";
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SINGLE WEBSOCKET  (only 1 connection)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+let ws = null;
+
+function connectWS() {
+  if (ws) { try { ws.close(); } catch(e){} }
+  setWsUi("CONNECTING", "wait");
+
+  ws = new WebSocket(
+    "wss://ws.twelvedata.com/v1/quotes/price?apikey=" + TWELVE_KEY
+  );
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ action: "subscribe", params: { symbols: SYMBOL } }));
+    setWsUi("LIVE", "live");
   };
 
-  ws.onmessage=(ev)=>{
+  ws.onmessage = (ev) => {
     let m;
-    try{ m=JSON.parse(ev.data); }catch{ return; }
+    try { m = JSON.parse(ev.data); } catch { return; }
 
-    if(m.event==="price" && m.price!=null){
-      const p=parseFloat(m.price);
-      if(!isFinite(p)) return;
-
-      lastPrice=p;
-      if(startPrice===null) startPrice=p;
-      cyclePrices.push(p);
-
-      // last 20s ka data automatically alag buffer me capture
-      if(capturingCarry) carryPrices.push(p);
-
-      // live price display
-      livePrice.textContent=p.toFixed(5);
-      priceTime.textContent=new Date().toTimeString().slice(0,8);
-
-      // graph
-      priceHistory.push(p);
-      if(priceHistory.length>60) priceHistory.shift();
-      drawPriceLine();
+    if (m.event === "price" && m.price != null) {
+      const p = parseFloat(m.price);
+      if (!isFinite(p)) return;
+      onTick(p);
     }
-
-    if(m.event==="subscribe-status" && m.status==="error"){
-      apiHealth.textContent="SUB ERROR";
-      apiHealth.style.color="var(--red)";
+    if (m.event === "subscribe-status" && m.status === "error") {
+      setWsUi("SUB ERR", "error");
     }
   };
 
-  ws.onerror=()=>{
-    apiHealth.textContent="WS ERROR";
-    apiHealth.style.color="var(--red)";
-    apiFilter.textContent="ERROR";
-  };
-
-  ws.onclose=()=>{
-    apiHealth.textContent="RECONNECTING";
-    apiHealth.style.color="var(--yellow)";
-    apiFilter.textContent="RETRY…";
-    setTimeout(connectWS,3000); // auto reconnect
+  ws.onerror = () => setWsUi("WS ERR", "error");
+  ws.onclose = () => {
+    setWsUi("RETRY…", "wait");
+    setTimeout(connectWS, 3000);
   };
 }
+
+function setWsUi(label, cls) {
+  const el = document.getElementById("wsStatus");
+  el.textContent = label;
+  el.style.color = cls === "live" ? "var(--green)"
+                 : cls === "error" ? "var(--red)"
+                 : "var(--yellow)";
+  const pill = document.getElementById("apiPill");
+  pill.textContent = label;
+  pill.className = "api-pill " + cls;
+}
+
 connectWS();
 
-/* ================= PRICE GRAPH ================= */
-function drawPriceLine(){
-  if(priceHistory.length<2){ priceLine.setAttribute("d",""); return; }
-  const min=Math.min(...priceHistory);
-  const max=Math.max(...priceHistory);
-  const range=(max-min)||1;
-  const step=300/(priceHistory.length-1);
-  const d="M "+priceHistory.map((p,i)=>{
-    const x=(i*step).toFixed(1);
-    const y=(110-((p-min)/range)*100).toFixed(1);
-    return x+","+y;
-  }).join(" L ");
-  priceLine.setAttribute("d",d);
-  const up = lastPrice!=null && startPrice!=null && lastPrice>=startPrice;
-  priceLine.style.stroke = up ? "var(--green)" : "var(--red)";
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ON EVERY TICK FROM WEBSOCKET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function onTick(p) {
+  lastPrice = p;
+
+  const d       = istNow();
+  const elapsed = d.getSeconds(); // 0..59
+
+  // ── cycle reset detect
+  const cid = Math.floor(Date.now() / 60000);
+  if (cid !== cycleId) {
+    onCycleReset(elapsed);
+    cycleId = cid;
+  }
+
+  // ── fill current window (only watch phase, 0..39s)
+  if (elapsed < WATCH_SEC) {
+    currWindow.push(p);
+  }
+
+  // ── chart history (last 60 ticks)
+  priceHistory.push(p);
+  if (priceHistory.length > 60) priceHistory.shift();
+
+  // ── UI update
+  document.getElementById("livePrice").textContent = p.toFixed(5);
+  document.getElementById("priceTime").textContent =
+    "Updated: " + d.toTimeString().slice(0, 8);
+  document.getElementById("livePrice").style.color =
+    priceHistory.length > 1 && p >= priceHistory[priceHistory.length - 2]
+      ? "var(--green)" : "var(--red)";
+
+  document.getElementById("tickCount").textContent = currWindow.length;
+
+  drawChart();
+  drawTickBars();
+  updateWindowStatus();
 }
 
-/* ================= CYCLE RESET ================= */
-function resetCycle(){
-  // --- AUTO MOMENTUM: system khud pichle 20s ki direction nikalta hai ---
-  if(carryPrices.length>=2){
-    const first=carryPrices[0];
-    const last=carryPrices[carryPrices.length-1];
-    if(first!==0){
-      const mv=((last-first)/first)*100;                  // pichle 20s ka % move
-      carryMomentum=Math.max(-1,Math.min(1,mv*900/50));   // -1..+1 me normalize
-    }else{
-      carryMomentum=0;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CYCLE RESET
+   Pichle cycle ke currWindow (jo last 20s mein aaya tha) 
+   prevWindow ban jata hai.
+   
+   NOTE: currWindow mein sirf 0-39s ke ticks hote hain.
+   last 20s (40-59s) ke ticks separately capture hote hain
+   niche ke signal engine mein.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+// last 20s ticks live capture karne ke liye alag buffer
+let lastWindowBuffer = [];
+
+function onCycleReset(currentSec) {
+  // prevWindow = pichle cycle ka last-20s data
+  prevWindow = [...lastWindowBuffer];
+  lastWindowBuffer = [];
+
+  // currWindow fresh
+  currWindow = [];
+  locked = null;
+
+  document.getElementById("sigMain").textContent  = "WAIT";
+  document.getElementById("sigMain").className    = "sig-main WAIT";
+  document.getElementById("signalCard").className = "card signal-card";
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SIGNAL ENGINE  — runs every 250ms
+   
+   Logic:
+   • elapsed 0-39s  (WATCH)  : WAIT
+   • elapsed 40-59s (FINAL)  : 
+       - lastWindowBuffer me ticks jama karo (ye data 
+         NEXT cycle ka prevWindow banega)
+       - combined = prevWindow + currWindow   ← DONO WINDOWS
+       - combined se slope/bias nikaalo
+       - signal lock karo (ek baar lock hone ke baad nahi badlega)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+setInterval(() => {
+  const d       = istNow();
+  const elapsed = d.getSeconds();
+  const rem     = TOTAL_SEC - elapsed;
+
+  document.getElementById("sigCountdown").textContent = rem;
+
+  // last 20s live ticks capture karna (NEXT cycle ka prevWindow)
+  if (elapsed >= WATCH_SEC && lastPrice !== null) {
+    // sirf ek baar push karo per second (approx) — duplicate filter
+    const lastAdded = lastWindowBuffer[lastWindowBuffer.length - 1];
+    if (lastAdded !== lastPrice) {
+      lastWindowBuffer.push(lastPrice);
     }
-  }else{
-    carryMomentum=0; // data na ho to neutral
   }
 
-  // naya cycle fresh (live) shuru
-  cyclePrices=[];
-  carryPrices=[];
-  capturingCarry=false;
-  startPrice=lastPrice;   // naye minute ka asli move iske base pr
+  if (elapsed < WATCH_SEC) {
+    /* ── WATCH PHASE ── */
+    document.getElementById("sigPhase").textContent  = "WATCHING MARKET";
+    document.getElementById("sigPhase").className    = "sig-phase";
 
-  locked=null;
-  signal.textContent="WAIT";
-  signal.className="signal skip";
-  biasBar.style.width="0%";
-  biasText.textContent="--";
-  confText.textContent="--%";
-  confBar.style.width="0%";
-  accCircle.style.setProperty('--deg',"0deg");
-  accVal.textContent="--%";
-}
+    if (locked === null) {
+      document.getElementById("sigMain").textContent  = "WAIT";
+      document.getElementById("sigMain").className    = "sig-main WAIT";
+      document.getElementById("signalCard").className = "card signal-card";
+    }
 
-/* ================= MAIN ENGINE (1 MIN CYCLE) ================= */
-setInterval(()=>{
-  const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
-  const sec=d.getSeconds();          // 0..59 = hamara cycle
-  const elapsed=sec;                 // 0..59
-  const rem=CYCLE-elapsed;           // 60..1
-  timer.textContent=rem;
+    const hint = `Watch phase · prev ticks: ${prevWindow.length} · curr ticks: ${currWindow.length}`;
+    document.getElementById("sigHint").textContent = hint;
 
-  // naya minute -> sab reset
-  const cycleId=Math.floor(Date.now()/60000);
-  if(cycleId!==lastCycleId){
-    lastCycleId=cycleId;
-    resetCycle();
-  }
+    // live bias sirf currWindow se (during watch)
+    calcAndShowBias(currWindow);
 
-  // ---- live bias REAL prices se ----
-  let move=0, liveBias=50;
-  if(startPrice!=null && lastPrice!=null && startPrice!==0){
-    move=((lastPrice-startPrice)/startPrice)*100;
-    liveBias=Math.max(0,Math.min(100,50+move*900));
-  }
+  } else {
+    /* ── FINAL SIGNAL PHASE ── */
+    document.getElementById("sigPhase").textContent = "⚡ FINAL SIGNAL";
+    document.getElementById("sigPhase").className   = "sig-phase locking";
 
-  // AUTO: pichle 20s ka momentum bias me mila do (live 80%, momentum 20%)
-  const momentumBias=50+carryMomentum*50;                 // -1..+1 -> 0..100
-  let bias=Math.round(liveBias*0.8 + momentumBias*0.2);
-  bias=Math.max(0,Math.min(100,bias));
+    // combined window: prevWindow (last 20s pichle cycle) + currWindow (40s is cycle)
+    const combined = [...prevWindow, ...currWindow];
 
-  const conf=Math.max(0,Math.min(100,Math.round(Math.abs(bias-50)*2)));
+    document.getElementById("sigHint").textContent =
+      `Combined: ${prevWindow.length} prev + ${currWindow.length} curr = ${combined.length} ticks`;
 
-  biasBar.style.width=bias+"%";
-  biasText.textContent = bias>55?"BULLISH":bias<45?"BEARISH":"SIDEWAYS";
-  biasText.style.color = bias>55?"var(--green)":bias<45?"var(--red)":"var(--yellow)";
+    // bias combined se
+    const { bias, conf, move } = calcBias(combined);
 
-  confText.textContent=conf+"%";
-  confBar.style.width=conf+"%";
-  accCircle.style.setProperty('--deg',(conf*3.6)+"deg");
-  accVal.textContent=conf+"%";
+    showBiasUi(bias, conf, move);
 
-  // ---- PHASE 1: WATCHING (first 40s) ----
-  if(elapsed < WATCH){
-    phase.textContent="WATCHING MARKET";
-    phase.className="phase watching";
-    signal.textContent="WAIT";
-    signal.className="signal skip";
-  }
-  // ---- PHASE 2: FINAL SIGNAL (last 20s) ----
-  else{
-    phase.textContent="FINAL SIGNAL";
-    phase.className="phase locking";
-
-    capturingCarry=true;   // system khud last 20s ka data momentum ke liye jama karta hai
-
-    if(locked===null){
-      if(cyclePrices.length<2 || lastPrice==null || startPrice==null){
-        locked="SKIP"; // enough live data nahi
-      }else{
-        locked = bias>55 ? "UP" : bias<45 ? "DOWN" : "SKIP";
+    // signal ek baar lock karo
+    if (locked === null) {
+      if (combined.length < 1) {
+        locked = "SKIP";  // sirf tab jab bilkul koi data nahi
+      } else {
+        // SKIP practically nahi aayega — 50% se upar = UP, 50% ya neeche = DOWN
+        // Exact 50% pe bhi DOWN (market flat = selling pressure)
+        locked = bias > 50 ? "UP" : "DOWN";
       }
     }
 
-    signal.textContent=locked;
-    signal.className="signal "+(locked==="UP"?"big":locked==="DOWN"?"small":"skip");
-  }
-},250); // 4x per second smooth timer
-</script>
+    const sigEl   = document.getElementById("sigMain");
+    const cardEl  = document.getElementById("signalCard");
+    sigEl.textContent = locked;
+    sigEl.className   = "sig-main " + locked;
 
+    cardEl.className  = "card signal-card " + (locked === "UP" ? "UP" : locked === "DOWN" ? "DOWN" : "");
+  }
+
+  updateWindowStatus();
+}, 250);
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BIAS CALCULATION  (pure function)
+   Input: array of prices
+   Output: { bias: 0-100, conf: 0-100, move: pips }
+   
+   Method: 
+   Linear weighted slope (recent ticks ko zyada weight)
+   + first-to-last move confirmation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function calcBias(arr) {
+  if (!arr || arr.length < 2) return { bias: 50, conf: 0, move: 0 };
+
+  const n = arr.length;
+
+  // ── 1. WEIGHTED SLOPE (recent ticks ko zyada weight)
+  let wSum = 0, wTotal = 0;
+  for (let i = 1; i < n; i++) {
+    const w     = i;
+    const delta = arr[i] - arr[i - 1];
+    wSum   += delta * w;
+    wTotal += w;
+  }
+  const slope = wTotal > 0 ? wSum / wTotal : 0;
+
+  // ── 2. NET MOVE first→last (in pips)
+  const move = (arr[n - 1] - arr[0]) / 0.0001;
+
+  // ── 3. LAST-5 momentum (sirf recent tail ka direction)
+  const tail     = arr.slice(-5);
+  const tailMove = tail.length > 1
+    ? (tail[tail.length - 1] - tail[0]) / 0.0001
+    : 0;
+
+  // ── 4. SCALING — EUR/USD ke liye realistic thresholds
+  // slope: 0.00001 per tick (~0.1 pip) already meaningful → saturation at 0.00003
+  const slopeFactor = Math.max(-1, Math.min(1, slope   / 0.000015));
+  // move:  sirf 0.5 pip net move bhi confident → saturation at 1.5 pip
+  const moveFactor  = Math.max(-1, Math.min(1, move    / 1.5));
+  // tail:  last 5 ticks ka quick direction
+  const tailFactor  = Math.max(-1, Math.min(1, tailMove / 0.8));
+
+  // ── 5. COMBINE: slope 50% + move 30% + tail 20%
+  const combined = slopeFactor * 0.5 + moveFactor * 0.3 + tailFactor * 0.2;
+
+  const bias = Math.round(50 + combined * 50);
+  const conf = Math.round(Math.abs(combined) * 100);
+
+  return { bias: Math.max(0, Math.min(100, bias)), conf, move: Math.round(move * 10) / 10 };
+}
+
+function calcAndShowBias(arr) {
+  const { bias, conf, move } = calcBias(arr);
+  showBiasUi(bias, conf, move);
+}
+
+function showBiasUi(bias, conf, move) {
+  const label = bias > 50 ? "BULLISH" : "BEARISH";
+  const color = bias > 50 ? "var(--green)" : "var(--red)";
+
+  document.getElementById("biasLabel").textContent  = label;
+  document.getElementById("biasLabel").style.color  = color;
+  document.getElementById("biasNum").textContent    = `Bias: ${bias}% · Move: ${move > 0 ? "+" : ""}${move} pip`;
+  document.getElementById("biasBar").style.width    = bias + "%";
+  document.getElementById("biasBar").style.background = color;
+
+  const pct = conf * 3.6;
+  document.getElementById("confRing").style.setProperty("--pct", pct + "deg");
+  document.getElementById("confVal").textContent    = conf + "%";
+
+  document.getElementById("moveVal").textContent    = (move > 0 ? "+" : "") + move;
+  document.getElementById("moveVal").style.color    = move > 0 ? "var(--green)" : move < 0 ? "var(--red)" : "var(--muted)";
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CHART — combined view
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function drawChart() {
+  const combined = [...prevWindow, ...currWindow];
+  if (combined.length < 2) { 
+    document.getElementById("priceLine").setAttribute("d", "");
+    return; 
+  }
+
+  const W = 300, H = 110;
+  const min = Math.min(...combined);
+  const max = Math.max(...combined);
+  const range = max - min || 0.00001;
+  const step  = W / (combined.length - 1);
+
+  const d = "M " + combined.map((p, i) => {
+    const x = (i * step).toFixed(1);
+    const y = (H - ((p - min) / range) * (H - 10)).toFixed(1);
+    return x + "," + y;
+  }).join(" L ");
+
+  document.getElementById("priceLine").setAttribute("d", d);
+
+  // yellow divider at prevWindow / currWindow boundary
+  if (prevWindow.length > 0 && combined.length > prevWindow.length) {
+    const divX = ((prevWindow.length - 1) * step).toFixed(1);
+    const dl = document.getElementById("divLine");
+    dl.setAttribute("x1", divX);
+    dl.setAttribute("x2", divX);
+    dl.setAttribute("y2", H);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TICK BARS VISUAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function drawTickBars() {
+  const combined = [...prevWindow, ...currWindow];
+  const track = document.getElementById("tickTrack");
+
+  // sirf agar count change hua tab re-render
+  if (track.children.length !== combined.length) {
+    track.innerHTML = "";
+    combined.forEach((_, i) => {
+      const bar = document.createElement("div");
+      bar.className = "tick-bar";
+      bar.style.background = i < prevWindow.length ? "var(--yellow)" : "var(--sky)";
+      track.appendChild(bar);
+    });
+  }
+
+  if (combined.length < 2) return;
+  const min = Math.min(...combined);
+  const max = Math.max(...combined);
+  const range = max - min || 0.0001;
+
+  Array.from(track.children).forEach((bar, i) => {
+    const h = Math.max(4, Math.round(((combined[i] - min) / range) * 18 + 2));
+    bar.style.height = h + "px";
+    bar.style.background = i < prevWindow.length ? "var(--yellow)" : "var(--sky)";
+  });
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   WINDOW STATUS TEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function updateWindowStatus() {
+  const pn = prevWindow.length;
+  const cn = currWindow.length;
+  document.getElementById("wPrev").textContent  = pn;
+  document.getElementById("wCurr").textContent  = cn;
+  document.getElementById("wTotal").textContent = pn + cn;
+  document.getElementById("prevPill").textContent = `PREV 20s: ${pn}`;
+  document.getElementById("currPill").textContent = `CURR 40s: ${cn}`;
+}
+</script>
 </body>
 </html>
