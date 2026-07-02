@@ -359,6 +359,19 @@ svg.chart { width: 100%; height: 100%; overflow: visible; }
   </div>
 </div>
 
+<!-- Filter Stats Banner -->
+<div style="margin-top:14px">
+  <div class="card" style="padding:14px 20px">
+    <div class="card-label" style="margin-bottom:6px">Tick Filter (Real vs Fake Detection)</div>
+    <div id="filterStats" style="font-family:var(--font-m);font-size:13px;color:var(--muted)">
+      Waiting for ticks…
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:var(--font-m)">
+      Rules: No-duplicate · 50ms-gap · &gt;0.1pip · &lt;50pip · No-6x-spike
+    </div>
+  </div>
+</div>
+
 <script>
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    CONFIG
@@ -387,6 +400,20 @@ let lastPrice   = null;
 let cycleId     = null;
 let locked      = null; // final signal, lock hone ke baad nahi badlega
 let priceHistory= [];   // chart ke liye (last 60 ticks across time)
+
+/* FAKE TICK FILTER STATE */
+let ftLastAccepted  = null;  // last accepted real tick price
+let ftLastTime      = 0;     // last accepted tick timestamp (ms)
+let ftRecentDeltas  = [];    // last 20 accepted tick ke deltas (for spike detection)
+let ftTotalRaw      = 0;     // total raw ticks received
+let ftTotalFake     = 0;     // total fake ticks rejected
+let ftTotalReal     = 0;     // total real ticks accepted
+
+// EUR/USD realistic thresholds
+const FT_MIN_CHANGE  = 0.00001; // 0.1 pip min — chhota = duplicate/flat fake
+const FT_MAX_CHANGE  = 0.0050;  // 50 pip max  — bada  = spike/error fake
+const FT_MIN_MS      = 50;      // 50ms interval min — server duplicate filter
+const FT_SPIKE_MULT  = 6.0;     // avg delta se 6x bada = outlier spike
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    IST CLOCK
@@ -425,7 +452,10 @@ function connectWS() {
     if (m.event === "price" && m.price != null) {
       const p = parseFloat(m.price);
       if (!isFinite(p)) return;
-      onTick(p);
+      // Filter karo — sirf real tick pass hoga
+      const result = filterTick(p, Date.now());
+      updateFilterUi();
+      if (result.real) onTick(p);
     }
     if (m.event === "subscribe-status" && m.status === "error") {
       setWsUi("SUB ERR", "error");
@@ -448,6 +478,80 @@ function setWsUi(label, cls) {
   const pill = document.getElementById("apiPill");
   pill.textContent = label;
   pill.className = "api-pill " + cls;
+}
+
+/* FAKE TICK FILTER — 5 Rules
+   Rule 1: Duplicate price (same as last accepted)       → FAKE
+   Rule 2: Too soon (< 50ms since last tick)             → FAKE (server duplicate)
+   Rule 3: Price change too small (< 0.1 pip)            → FAKE (platform-generated)
+   Rule 4: Price change too large (> 50 pip per tick)    → FAKE (data error/spike)
+   Rule 5: Spike outlier (6x larger than recent avg)     → FAKE (artificial jump)
+   Passes all 5 → REAL tick, accepted */
+function filterTick(price, nowMs) {
+  ftTotalRaw++;
+
+  // Rule 1: exact duplicate
+  if (price === ftLastAccepted) {
+    ftTotalFake++;
+    return { real: false, reason: 'DUPLICATE' };
+  }
+
+  // Rule 2: arrived too soon (server re-send / buffer flush)
+  const elapsed = nowMs - ftLastTime;
+  if (ftLastAccepted !== null && elapsed < FT_MIN_MS) {
+    ftTotalFake++;
+    return { real: false, reason: 'TOO_FAST' };
+  }
+
+  // Rule 3 & 4: price change size check
+  if (ftLastAccepted !== null) {
+    const delta = Math.abs(price - ftLastAccepted);
+
+    // Rule 3: too small — platform-generated or padding tick
+    if (delta < FT_MIN_CHANGE) {
+      ftTotalFake++;
+      return { real: false, reason: 'TOO_SMALL' };
+    }
+
+    // Rule 4: too large — data error or fat-finger spike
+    if (delta > FT_MAX_CHANGE) {
+      ftTotalFake++;
+      return { real: false, reason: 'SPIKE_BIG' };
+    }
+
+    // Rule 5: spike outlier vs recent average
+    if (ftRecentDeltas.length >= 5) {
+      const avgDelta = ftRecentDeltas.reduce((a,b)=>a+b,0) / ftRecentDeltas.length;
+      if (avgDelta > 0 && delta > avgDelta * FT_SPIKE_MULT) {
+        ftTotalFake++;
+        return { real: false, reason: 'SPIKE_OUTLIER' };
+      }
+    }
+
+    // Update rolling delta window (last 20)
+    ftRecentDeltas.push(delta);
+    if (ftRecentDeltas.length > 20) ftRecentDeltas.shift();
+  }
+
+  // All rules passed — REAL tick
+  ftLastAccepted = price;
+  ftLastTime     = nowMs;
+  ftTotalReal++;
+  return { real: true, reason: 'OK' };
+}
+
+/* Filter UI update */
+function updateFilterUi() {
+  const pct = ftTotalRaw > 0 ? Math.round((ftTotalReal / ftTotalRaw) * 100) : 0;
+  const el  = document.getElementById('filterStats');
+  if (el) {
+    el.textContent =
+      'Raw: ' + ftTotalRaw +
+      ' | Real: ' + ftTotalReal +
+      ' | Fake: ' + ftTotalFake +
+      ' | Purity: ' + pct + '%';
+    el.style.color = pct >= 85 ? 'var(--green)' : pct >= 60 ? 'var(--yellow)' : 'var(--red)';
+  }
 }
 
 connectWS();
