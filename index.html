@@ -2,874 +2,839 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VED – Fresh Water Engine</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+:root{ --yellow:#f5b301; --green:#22c55e; --red:#ef4444; --text:#eaf6ff; }
+body{
+  margin:0;font-family:system-ui;color:var(--text);
+  background:radial-gradient(circle at top,rgba(255,255,255,0.15),transparent 40%),
+    linear-gradient(180deg,#0ea5e9 0%,#0369a1 40%,#020617 100%);
+  min-height:100vh;
+}
+header{padding:16px 24px;display:flex;justify-content:space-between;align-items:center;font-weight:900;}
+.clock{color:#7dd3fc;font-size:18px}
+.wrap{padding:16px}
+.card{border:1px solid rgba(255,255,255,0.25);border-radius:22px;padding:20px;backdrop-filter:blur(6px);}
+.grid{display:grid;grid-template-columns:1.4fr 1.8fr 1.8fr;gap:16px;}
+.brand{background:linear-gradient(160deg,#facc15,#f59e0b);color:#020617;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:34px;font-weight:900;gap:6px;}
+.brand-pair{font-size:15px;font-weight:900;background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:10px;letter-spacing:2px;}
+.circle{--deg:0deg;width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--yellow) var(--deg),rgba(255,255,255,.2) 0);display:flex;align-items:center;justify-content:center;margin:auto;}
+.circle span{width:90px;height:90px;border-radius:50%;background:#020617;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;}
+.barWrap{height:16px;border-radius:12px;background:rgba(255,255,255,.25);margin-top:8px;}
+.bar{height:100%;width:0%;border-radius:12px;transition:width .4s}
+.barGreen{background:var(--green)}.barYellow{background:var(--yellow)}
+.signalBox{text-align:center}
+.timer{font-size:56px;font-weight:900;color:#7dd3fc}
+.signal{font-size:52px;font-weight:900}
+.big{color:var(--green)}.small{color:var(--red)}.skip{color:#fde047}
+.phase{font-size:18px;font-weight:900;letter-spacing:1px}
+.watching{color:#7dd3fc}.locking{color:#fde047}
+.apipill{position:absolute;top:14px;right:14px;padding:6px 14px;border-radius:14px;font-size:12px;font-weight:900;}
+.safe{background:#22c55e;color:#020617}.warn{background:#f5b301;color:#020617}.danger{background:#ef4444;color:#fff}
+.biasBig{font-size:42px;font-weight:900;text-align:center}
+.bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px;}
+.priceBig{font-size:32px;font-weight:900}
+.schedule{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.sess{padding:7px 12px;border-radius:14px;font-size:11px;font-weight:700;border:2px solid transparent;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.45);transition:all .3s;}
+.sess.active{background:rgba(34,197,94,0.18);border-color:var(--green);color:#fff;}
+.sess.avoid{background:rgba(239,68,68,0.1);color:rgba(255,255,255,0.3);}
+.sess.upcoming{border-color:var(--yellow);color:var(--yellow);}
+.notrade{display:none;background:rgba(239,68,68,0.15);border:1px solid var(--red);border-radius:16px;padding:14px 20px;margin-bottom:14px;font-size:17px;font-weight:900;color:var(--red);text-align:center;}
+.conn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;}
+.conn-tag{padding:3px 10px;border-radius:8px;background:rgba(255,255,255,0.07);font-weight:700;}
 
-:root {
-  --bg:       #020c18;
-  --surface:  #071428;
-  --border:   rgba(14,165,233,0.18);
-  --sky:      #0ea5e9;
-  --sky-dim:  #0369a1;
-  --green:    #22c55e;
-  --red:      #ef4444;
-  --yellow:   #f5b301;
-  --text:     #e0f2fe;
-  --muted:    #7dd3fc;
-  --font-d:   'Space Grotesk', system-ui;
-  --font-m:   'JetBrains Mono', monospace;
+/* Filter Stats Panel */
+.filter-panel{
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:16px;
+  padding:12px 18px;
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:12px;
+  font-size:12px;
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-d);
-  min-height: 100vh;
-  padding: 16px;
+.fstat{text-align:center;}
+.fstat-val{font-size:20px;font-weight:900;display:block;}
+.fstat-lbl{opacity:.6;font-size:10px;}
+.fval-green{color:var(--green)}.fval-red{color:var(--red)}.fval-yellow{color:var(--yellow)}.fval-blue{color:#7dd3fc}
+.filter-reason{
+  font-size:10px;
+  margin-top:6px;
+  text-align:center;
+  color:var(--red);
+  font-weight:700;
+  min-height:14px;
 }
-
-/* ── HEADER ── */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
+.pending-badge{
+  font-size:10px;text-align:center;margin-top:2px;color:#7dd3fc;font-weight:700;min-height:12px;
 }
-.logo {
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  color: var(--sky);
+.quality-badge{
+  font-size:10px;text-align:center;margin-top:4px;font-weight:800;letter-spacing:.5px;
 }
-.logo span { color: var(--yellow); }
-.ist-clock {
-  font-family: var(--font-m);
-  font-size: 17px;
-  color: var(--muted);
-}
-
-/* ── GRID ── */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-}
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 18px 20px;
-}
-
-.card-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-
-/* ── LIVE PRICE ── */
-.price-big {
-  font-family: var(--font-m);
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--text);
-  transition: color .3s;
-}
-.price-sub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-  font-family: var(--font-m);
-}
-
-/* ── CHART ── */
-.chart-card {
-  grid-column: 1 / -1;
-  padding: 18px 20px 10px;
-}
-.chart-wrap {
-  height: 110px;
-  position: relative;
-}
-svg.chart { width: 100%; height: 100%; overflow: visible; }
-
-/* ── WINDOW BUFFER VISUAL ── */
-.window-card { grid-column: 1 / -1; }
-.window-track {
-  display: flex;
-  gap: 2px;
-  height: 22px;
-  align-items: flex-end;
-  margin-top: 10px;
-}
-.tick-bar {
-  flex: 1;
-  border-radius: 3px 3px 0 0;
-  transition: height .2s, background .3s;
-  min-height: 3px;
-}
-
-/* ── SIGNAL BOX ── */
-.signal-card {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 28px 20px;
-  position: relative;
-  overflow: hidden;
-}
-.signal-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity .5s;
-  border-radius: 18px;
-}
-.signal-card.UP::before   { background: radial-gradient(ellipse at center, rgba(34,197,94,.12), transparent 70%); opacity: 1; }
-.signal-card.DOWN::before { background: radial-gradient(ellipse at center, rgba(239,68,68,.12), transparent 70%); opacity: 1; }
-
-.sig-phase {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: var(--muted);
-}
-.sig-phase.locking { color: var(--yellow); }
-
-.sig-countdown {
-  font-family: var(--font-m);
-  font-size: 64px;
-  font-weight: 700;
-  color: var(--sky);
-  line-height: 1;
-}
-
-.sig-main {
-  font-size: 56px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  transition: color .4s;
-}
-.sig-main.WAIT { color: var(--yellow); }
-.sig-main.UP   { color: var(--green); }
-.sig-main.DOWN { color: var(--red); }
-.sig-main.SKIP { color: rgba(255,255,255,.35); }
-
-.sig-hint {
-  font-size: 13px;
-  color: var(--muted);
-  text-align: center;
-  font-family: var(--font-m);
-  min-height: 18px;
-}
-
-/* ── DATA WINDOW STATUS ── */
-.window-status {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-size: 12px;
-  font-family: var(--font-m);
-}
-.ws-pill {
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 1px;
-}
-.ws-pill.prev  { background: rgba(245,179,1,.2);   color: var(--yellow); }
-.ws-pill.curr  { background: rgba(14,165,233,.2);  color: var(--sky);   }
-
-/* ── BIAS ── */
-.bias-val {
-  font-size: 38px;
-  font-weight: 900;
-}
-.bias-bar-wrap {
-  height: 8px;
-  border-radius: 6px;
-  background: rgba(255,255,255,.1);
-  margin-top: 10px;
-}
-.bias-bar {
-  height: 100%;
-  border-radius: 6px;
-  width: 50%;
-  transition: width .4s, background .4s;
-}
-
-/* ── CONFIDENCE ── */
-.conf-ring-wrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 6px;
-}
-.conf-ring {
-  --pct: 0%;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: conic-gradient(var(--sky) var(--pct), rgba(255,255,255,.1) 0);
-  display: flex; align-items: center; justify-content: center;
-}
-.conf-inner {
-  width: 70px; height: 70px;
-  border-radius: 50%;
-  background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-m);
-  font-size: 20px;
-  font-weight: 700;
-}
-
-/* ── API STATUS ── */
-.api-pill {
-  position: absolute;
-  top: 14px; right: 14px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
-.api-pill.live   { background: var(--green);  color: #020617; }
-.api-pill.wait   { background: var(--yellow); color: #020617; }
-.api-pill.error  { background: var(--red);    color: #fff; }
-
-/* ── BOTTOM ROW ── */
-.bottom { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 640px) {
-  .grid { grid-template-columns: 1fr 1fr; }
-  .chart-card, .window-card, .signal-card { grid-column: 1 / -1; }
-  .bottom { grid-template-columns: 1fr 1fr; }
-  .sig-countdown { font-size: 48px; }
-  .sig-main { font-size: 40px; }
-}
+.qgood{color:var(--green)}.qbad{color:var(--red)}
+.modebadge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:700;display:inline-block;}
+.ws-mode{background:rgba(34,197,94,0.2);color:#22c55e;border:1px solid #22c55e;}
+.http-mode{background:rgba(245,179,1,0.2);color:#f5b301;border:1px solid #f5b301;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">VED <span>·</span> FRESH WATER ENGINE</div>
-  <div class="ist-clock" id="clock">IST --:--:--</div>
-</div>
+<header>
+  <div class="clock" id="clock">IST --:--:--</div>
+  <div id="sessInfo" style="color:var(--yellow);font-size:13px;font-weight:700"></div>
+</header>
 
-<!-- ── MAIN GRID ── -->
-<div class="grid">
-
-  <!-- Live Price -->
-  <div class="card">
-    <div class="card-label">Live Price · EUR/USD</div>
-    <div class="price-big" id="livePrice">-.-----</div>
-    <div class="price-sub" id="priceTime">Waiting for tick…</div>
+<div class="wrap">
+  <div class="conn-row">
+    <span class="conn-tag">🔑 API1 → USD/JPY</span>
+    <span class="conn-tag">🔑 API2 → EUR/USD (12:30PM)</span>
+    <span class="conn-tag">🔑 API3 → GBP/USD</span>
+    <span class="conn-tag">🔑 API4 → EUR/USD (6:30PM)</span>
   </div>
 
-  <!-- Bias -->
-  <div class="card">
-    <div class="card-label">Combined Window Bias</div>
-    <div class="bias-val" id="biasLabel">--</div>
-    <div class="bias-bar-wrap"><div class="bias-bar" id="biasBar"></div></div>
-    <div style="font-size:12px;color:var(--muted);margin-top:6px;font-family:var(--font-m)" id="biasNum">--</div>
-  </div>
+  <div class="schedule" id="strip"></div>
+  <div class="notrade" id="noTrade">❌ AVOID — 11:00 AM to 12:30 PM</div>
 
-  <!-- Confidence ring -->
-  <div class="card">
-    <div class="card-label">Signal Confidence</div>
-    <div class="conf-ring-wrap">
-      <div class="conf-ring" id="confRing">
-        <div class="conf-inner" id="confVal">--%</div>
+  <div class="grid">
+    <div class="card brand">
+      <div>VED</div>
+      <div class="brand-pair" id="bPair">--/--</div>
+      <div style="font-size:11px;opacity:.7" id="bSess">--</div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px">Confidence</h3>
+      <div class="circle" id="accCircle"><span id="accVal">--%</span></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px">Signal Confidence</h3>
+      <div style="font-size:42px;font-weight:900" id="confText">--%</div>
+      <div class="barWrap"><div class="bar barGreen" id="confBar"></div></div>
+    </div>
+
+    <div class="card" style="grid-column:1/-1">
+      <h3 style="margin:0 0 10px">Live Price Flow · <span id="chartLbl" style="color:var(--yellow)">--/--</span>
+        <span id="emaDisplay" style="color:#7dd3fc;font-size:13px;font-weight:400;margin-left:10px">EMA --</span>
+      </h3>
+      <div style="height:150px;overflow:hidden">
+        <svg viewBox="0 0 300 120" style="width:100%;height:100%">
+          <path id="priceLine" style="fill:none;stroke:var(--green);stroke-width:2.5;stroke-linecap:round"/>
+          <path id="emaLine"   style="fill:none;stroke:#f5b301;stroke-width:1.5;stroke-dasharray:4 3;stroke-linecap:round"/>
+        </svg>
       </div>
     </div>
-  </div>
 
-  <!-- Price Chart -->
-  <div class="card chart-card">
-    <div class="card-label">Price Flow (last 60 ticks)</div>
-    <div class="chart-wrap">
-      <svg class="chart">
-        <defs>
-          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.7"/>
-            <stop offset="33%" stop-color="var(--sky)"/>
-            <stop offset="100%" stop-color="var(--green)"/>
-          </linearGradient>
-        </defs>
-        <path id="priceLine" fill="none" stroke="url(#lineGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- divider at 20-tick mark -->
-        <line id="divLine" x1="0" y1="0" x2="0" y2="110" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
-      </svg>
-    </div>
-    <!-- legend -->
-    <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;font-family:var(--font-m);color:var(--muted)">
-      <span>🟡 Prev cycle last 20s</span>
-      <span>🔵 Current cycle 40s watch</span>
+    <div class="card signalBox" style="grid-column:1/-1;position:relative">
+      <div class="apipill warn" id="apiPill">CONNECTING</div>
+      <h3 style="margin:0 0 6px">1 Minute Signal · <span id="sigLbl" style="color:var(--yellow)">--/--</span></h3>
+      <div class="timer" id="timer">60</div>
+      <div class="phase watching" id="phase">WATCHING MARKET</div>
+      <div class="signal skip" id="signal">WAIT</div>
+      <div id="qualityBadge" class="quality-badge"></div>
+      <div style="opacity:.7;font-size:13px">Watch 40s · Lock decided once at 20s remaining · frozen till cycle end</div>
     </div>
   </div>
 
-  <!-- Combined window tick bars -->
-  <div class="card window-card">
-    <div class="card-label" style="display:flex;align-items:center;gap:8px">
-      Combined 60-Tick Window
-      <span class="ws-pill prev" id="prevPill">PREV 20s: 0</span>
-      <span class="ws-pill curr" id="currPill">CURR 40s: 0</span>
+  <!-- ══ FILTER STATS PANEL ══ -->
+  <div class="filter-panel">
+    <div class="fstat">
+      <span class="fstat-val fval-green" id="fs_valid">0</span>
+      <span class="fstat-lbl">✅ CONFIRMED TICKS</span>
     </div>
-    <div class="window-track" id="tickTrack"></div>
-  </div>
-
-  <!-- Signal -->
-  <div class="card signal-card" id="signalCard">
-    <div class="api-pill wait" id="apiPill">CONNECTING</div>
-    <div class="sig-phase" id="sigPhase">WATCHING MARKET</div>
-    <div class="sig-countdown" id="sigCountdown">60</div>
-    <div class="sig-main WAIT" id="sigMain">WAIT</div>
-    <div class="sig-hint" id="sigHint">Watch: 0–40s · Lock: 40–60s · Bias&gt;50%=UP · Bias≤50%=DOWN</div>
-    <div class="window-status">
-      <div id="wStatus">Combined ticks: prev=<b id="wPrev">0</b> · curr=<b id="wCurr">0</b> · total=<b id="wTotal">0</b></div>
+    <div class="fstat">
+      <span class="fstat-val fval-red" id="fs_filtered">0</span>
+      <span class="fstat-lbl">❌ FILTERED</span>
     </div>
-  </div>
-
-</div>
-
-<!-- ── BOTTOM ── -->
-<div class="bottom">
-  <div class="card">
-    <div class="card-label">WebSocket</div>
-    <div style="font-size:22px;font-weight:900" id="wsStatus">WAIT</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Cycle Move (bp)</div>
-    <div style="font-size:22px;font-weight:900;font-family:var(--font-m)" id="moveVal">--</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Ticks this Minute</div>
-    <div style="font-size:22px;font-weight:900;font-family:var(--font-m)" id="tickCount">0</div>
-  </div>
-</div>
-
-<!-- Filter Stats Banner -->
-<div style="margin-top:14px">
-  <div class="card" style="padding:14px 20px">
-    <div class="card-label" style="margin-bottom:6px">Tick Filter (Real vs Fake Detection)</div>
-    <div id="filterStats" style="font-family:var(--font-m);font-size:13px;color:var(--muted)">
-      Waiting for ticks…
+    <div class="fstat">
+      <span class="fstat-val fval-green" id="fs_upticks">0</span>
+      <span class="fstat-lbl">↑ UP TICKS</span>
     </div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:var(--font-m)">
-      Rules: No-duplicate · 200ms-gap · &gt;0.2pip · &lt;5pip · No-4x-spike · No-uniform-delta
+    <div class="fstat">
+      <span class="fstat-val fval-red" id="fs_downticks">0</span>
+      <span class="fstat-lbl">↓ DOWN TICKS</span>
+    </div>
+    <div class="filter-reason" id="filterReason" style="grid-column:1/-1"></div>
+    <div class="pending-badge" id="pendingBadge" style="grid-column:1/-1"></div>
+  </div>
+
+  <div class="bottom">
+    <div class="card">
+      <h3 style="margin:0 0 8px">Connection</h3>
+      <div id="apiHealth" style="font-size:18px;font-weight:900">WAIT</div>
+      <span class="modebadge" id="modeBadge" style="display:none"></span>
+      <div id="apiKeyInfo" style="font-size:10px;opacity:0.6;margin-top:4px">--</div>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 8px">Market Bias</h3>
+      <div id="biasText" class="biasBig">--</div>
+      <div class="barWrap"><div class="bar barGreen" id="biasBar"></div></div>
+      <div id="voteDisplay" style="font-size:10px;opacity:.6;margin-top:4px;text-align:center">Vote: --</div>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 8px">Live Price · <span id="priceLbl" style="color:var(--yellow);font-size:12px">--/--</span></h3>
+      <div class="priceBig" id="livePrice">--</div>
+      <div style="opacity:.7;font-size:12px" id="priceTime">--:--:--</div>
     </div>
   </div>
 </div>
 
 <script>
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CONFIG
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-const TWELVE_KEY = "7d8ec8ca7bf8483b81ff4490c76dfe88";
-const SYMBOL     = "EUR/USD";
-const WATCH_SEC  = 40;   // 0..39 = watch phase
-const TOTAL_SEC  = 60;   // full cycle
-const SIGNAL_SEC = 20;   // last 20s = lock window
+/* ══════════════════════════════════════════
+   SESSIONS CONFIG — har session ki apni API key
+══════════════════════════════════════════ */
+const SESSIONS = [
+  { label:"8:00–11:00 AM",  pair:"USD/JPY", apiKey:"246618a38ee84e1abdb9511a378c46d4", start:480,  end:660,  stars:5, avoid:false },
+  { label:"11:00–12:30 PM", pair:null,       apiKey:null,                               start:660,  end:750,  stars:2, avoid:true  },
+  { label:"12:30–3:30 PM",  pair:"EUR/USD", apiKey:"33073d9ef38b4f25860738b1a1eae5bf", start:750,  end:930,  stars:5, avoid:false },
+  { label:"3:30–6:00 PM",   pair:"GBP/USD", apiKey:"fbecb3e6b46845deb7fab1f5e728ccc7", start:930,  end:1080, stars:4, avoid:false },
+  { label:"6:30–9:00 PM",   pair:"EUR/USD", apiKey:"8120e5ab512040cba8a775b8e1c14434", start:1110, end:1260, stars:5, avoid:false },
+];
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CORE STATE
-   
-   Ek combined buffer — MAX 60 ticks rakhega:
-   • prevWindow  → pichle cycle ke last 20s ke ticks   (index 0..N-1)
-   • currWindow  → is cycle ke pehle 40s ke ticks      (index N..end)
-   
-   Signal decide hone ke time (elapsed >= 40s):
-   dono windows ke price ticks ek saath analyze hote hain.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const CYCLE = 60, WATCH = 40, POLL_MS = 8000, WS_TIMEOUT = 7000;
 
-let prevWindow  = [];   // pichle cycle ke last-20s ke prices (saved on cycle end)
-let currWindow  = [];   // is cycle ke 0-40s ke prices
+/* ══════════════════════════════════════════
+   PAIR FILTER CONFIG
+══════════════════════════════════════════ */
+const PAIR_CONFIG = {
+  "EUR/USD": {
+    pip:       0.0001,
+    maxSpikeP: 50,
+    minMoveP:  0.2,
+    zWin:      20,
+    zMax:      3.5,
+    emaA_ws:   0.10,
+    emaA_http: 0.30,
+    priceMin:  0.80,
+    priceMax:  1.60,
+    minTicks:  8,
+    minHttpT:  3,
+    confirmMs: 1500,      // FIX: was 400ms — too tight even for WS
+    confirmTolP: 0.5,
+  },
+  "GBP/USD": {
+    pip:       0.0001,
+    maxSpikeP: 70,
+    minMoveP:  0.3,
+    zWin:      20,
+    zMax:      3.5,
+    emaA_ws:   0.10,
+    emaA_http: 0.30,
+    priceMin:  1.00,
+    priceMax:  2.00,
+    minTicks:  8,
+    minHttpT:  3,
+    confirmMs: 1500,
+    confirmTolP: 0.8,
+  },
+  "USD/JPY": {
+    pip:       0.01,
+    maxSpikeP: 50,
+    minMoveP:  0.2,
+    zWin:      20,
+    zMax:      3.5,
+    emaA_ws:   0.10,
+    emaA_http: 0.30,
+    priceMin:  80.0,
+    priceMax:  200.0,
+    minTicks:  8,
+    minHttpT:  3,
+    confirmMs: 1500,
+    confirmTolP: 0.5,
+  },
+};
 
-let lastPrice   = null;
-let cycleId     = null;
-let locked      = null; // final signal, lock hone ke baad nahi badlega
-let priceHistory= [];   // chart ke liye (last 60 ticks across time)
+/* ══════════════════════════════════════════
+   IST HELPERS
+══════════════════════════════════════════ */
+function istNow(){ return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"})); }
+function istMins(){ const d=istNow(); return d.getHours()*60+d.getMinutes(); }
+function getSession(){ const m=istMins(); return SESSIONS.find(s=>m>=s.start&&m<s.end)||null; }
+function nextSession(){ const m=istMins(); return SESSIONS.find(s=>s.start>m)||null; }
 
-/* FAKE TICK FILTER STATE */
-let ftLastAccepted  = null;  // last accepted real tick price
-let ftLastTime      = 0;     // last accepted tick timestamp (ms)
-let ftRecentDeltas  = [];    // last 20 accepted tick ke deltas (for spike detection)
-let ftTotalRaw      = 0;     // total raw ticks received
-let ftTotalFake     = 0;     // total fake ticks rejected
-let ftTotalReal     = 0;     // total real ticks accepted
+/* WS symbol normalize: "EURUSD" → "EUR/USD" */
+function normSym(s){ return (!s.includes('/')&&s.length===6) ? s.slice(0,3)+'/'+s.slice(3) : s; }
 
-// EUR/USD 100% Real Tick Thresholds (strict)
-const FT_MIN_CHANGE  = 0.00002; // 0.2 pip min — 0.1 pip noise/padding = fake
-const FT_MAX_CHANGE  = 0.0005;  // 5 pip max per tick — isse bada = spike/error
-const FT_MIN_MS      = 200;     // 200ms min — real EUR/USD max ~5 ticks/sec
-const FT_SPIKE_MULT  = 4.0;     // avg delta se 4x bada = outlier spike (strict)
+/* ══════════════════════════════════════════
+   TICK VALIDATOR ENGINE
+   ─────────────────────────────────────────
+   7 layers of filters:
+   1. Finite & positive check
+   2. Pair price range sanity
+   3. Duplicate price reject
+   4. Spike reject (maxSpikeP pips)
+   5. Noise reject (minMoveP pips, rapid ticks only <2s)
+   6. Statistical outlier reject (rolling z-score)
+   7. CONFIRMATION —
+      • HTTP POLL mode: each poll is already the provider's
+        official quote for that instant (8s apart), so it is
+        accepted immediately once layers 1–6 pass. There is
+        no faster "next tick" to wait for — waiting for one
+        within a sub-second window (the old bug) meant HTTP
+        ticks could NEVER confirm, so price/ticks froze.
+      • WEBSOCKET mode: keeps two-stage confirmation (a
+        follow-up tick must land within confirmMs and stay
+        within confirmTolP pips) since WS can push multiple
+        ticks per second and spurious single blips are
+        possible. confirmMs floored at 1.5s so it isn't
+        killed by normal network jitter either.
+══════════════════════════════════════════ */
+const TV = {
+  buf:           [],    // rolling price buffer for z-score
+  lastValidP:    null,
+  lastTickMs:    0,
+  pending:       null,  // {price,time} awaiting confirmation (WS only)
+  validCount:    0,     // fully confirmed ticks accepted
+  filteredCount: 0,     // ticks actively rejected (spike/noise/outlier/drift/timeout)
+  reasonTimer:   null,
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   IST CLOCK
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function istNow() {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-}
-setInterval(() => {
-  const d = istNow();
-  document.getElementById("clock").textContent =
-    "IST " + d.toTimeString().slice(0, 8);
-}, 1000);
+  reset(){
+    this.buf=[];
+    this.lastValidP=null;
+    this.lastTickMs=0;
+    this.pending=null;
+    this.validCount=0;
+    this.filteredCount=0;
+  },
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   SINGLE WEBSOCKET  (only 1 connection)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-let ws = null;
+  softReset(){
+    this.validCount=0;
+    this.filteredCount=0;
+  },
 
-function connectWS() {
-  if (ws) { try { ws.close(); } catch(e){} }
-  setWsUi("CONNECTING", "wait");
+  _accept(price, cfg){
+    this.lastValidP = price;
+    this.lastTickMs = Date.now();
+    this.validCount++;
+    pendingBadge.textContent="";
+    this.buf.push(price);
+    if(this.buf.length > cfg.zWin) this.buf.shift();
+    return true;
+  },
 
-  ws = new WebSocket(
-    "wss://ws.twelvedata.com/v1/quotes/price?apikey=" + TWELVE_KEY
-  );
+  validate(price, pairKey){
+    const cfg = PAIR_CONFIG[pairKey];
+    if(!cfg) return true; // unknown pair, pass through
 
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ action: "subscribe", params: { symbols: SYMBOL } }));
-    setWsUi("LIVE", "live");
-  };
+    const now = Date.now();
+    const dt  = now - this.lastTickMs; // ms since last CONFIRMED tick
 
-  ws.onmessage = (ev) => {
-    let m;
-    try { m = JSON.parse(ev.data); } catch { return; }
+    /* ── Layer 1: Finite & positive ── */
+    if(!isFinite(price) || price<=0) return this._reject("NOT A NUMBER", null);
 
-    if (m.event === "price" && m.price != null) {
-      const p = parseFloat(m.price);
-      if (!isFinite(p)) return;
-      // Filter karo — sirf real tick pass hoga
-      const result = filterTick(p, Date.now());
-      updateFilterUi();
-      if (result.real) onTick(p);
+    /* ── Layer 2: Hard price range ── */
+    if(price < cfg.priceMin || price > cfg.priceMax)
+      return this._reject("PRICE OUT OF RANGE ("+price.toFixed(5)+")", null);
+
+    /* ── Layer 3: Duplicate ── */
+    if(this.lastValidP!==null && price===this.lastValidP)
+      return this._reject("DUPLICATE TICK", null);
+
+    /* ── Layer 4: Spike filter ── */
+    if(this.lastValidP!==null){
+      const pips = Math.abs(price - this.lastValidP) / cfg.pip;
+      if(pips > cfg.maxSpikeP) return this._reject("SPIKE "+pips.toFixed(1)+"pips > "+cfg.maxSpikeP, price);
     }
-    if (m.event === "subscribe-status" && m.status === "error") {
-      setWsUi("SUB ERR", "error");
-    }
-  };
 
-  ws.onerror = () => setWsUi("WS ERR", "error");
-  ws.onclose = () => {
-    setWsUi("RETRY…", "wait");
-    setTimeout(connectWS, 3000);
-  };
-}
-
-function setWsUi(label, cls) {
-  const el = document.getElementById("wsStatus");
-  el.textContent = label;
-  el.style.color = cls === "live" ? "var(--green)"
-                 : cls === "error" ? "var(--red)"
-                 : "var(--yellow)";
-  const pill = document.getElementById("apiPill");
-  pill.textContent = label;
-  pill.className = "api-pill " + cls;
-}
-
-/* FAKE TICK FILTER — 5 Rules
-   Rule 1: Duplicate price (same as last accepted)       → FAKE
-   Rule 2: Too soon (< 50ms since last tick)             → FAKE (server duplicate)
-   Rule 3: Price change too small (< 0.1 pip)            → FAKE (platform-generated)
-   Rule 4: Price change too large (> 50 pip per tick)    → FAKE (data error/spike)
-   Rule 5: Spike outlier (6x larger than recent avg)     → FAKE (artificial jump)
-   Passes all 5 → REAL tick, accepted */
-function filterTick(price, nowMs) {
-  ftTotalRaw++;
-
-  // Rule 1: exact duplicate
-  if (price === ftLastAccepted) {
-    ftTotalFake++;
-    return { real: false, reason: 'DUPLICATE' };
-  }
-
-  // Rule 2: arrived too soon (server re-send / buffer flush)
-  const elapsed = nowMs - ftLastTime;
-  if (ftLastAccepted !== null && elapsed < FT_MIN_MS) {
-    ftTotalFake++;
-    return { real: false, reason: 'TOO_FAST' };
-  }
-
-  // Rule 3 & 4: price change size check
-  if (ftLastAccepted !== null) {
-    const delta = Math.abs(price - ftLastAccepted);
-
-    // Rule 3: too small — platform-generated or padding tick
-    if (delta < FT_MIN_CHANGE) {
-      ftTotalFake++;
-      return { real: false, reason: 'TOO_SMALL' };
+    /* ── Layer 5: Noise/spread filter (only for rapid ticks <2s) ── */
+    if(this.lastValidP!==null && dt < 2000){
+      const pips = Math.abs(price - this.lastValidP) / cfg.pip;
+      if(pips < cfg.minMoveP) return this._reject("NOISE "+pips.toFixed(2)+"pips < "+cfg.minMoveP, price);
     }
 
-    // Rule 4: too large — data error or fat-finger spike
-    if (delta > FT_MAX_CHANGE) {
-      ftTotalFake++;
-      return { real: false, reason: 'SPIKE_BIG' };
-    }
-
-    // Rule 5: spike outlier vs recent average
-    if (ftRecentDeltas.length >= 5) {
-      const avgDelta = ftRecentDeltas.reduce((a,b)=>a+b,0) / ftRecentDeltas.length;
-      if (avgDelta > 0 && delta > avgDelta * FT_SPIKE_MULT) {
-        ftTotalFake++;
-        return { real: false, reason: 'SPIKE_OUTLIER' };
+    /* ── Layer 6: Statistical z-score outlier ── */
+    if(this.buf.length >= 8){
+      const n    = this.buf.length;
+      const mean = this.buf.reduce((a,b)=>a+b,0)/n;
+      const vari = this.buf.reduce((a,b)=>a+(b-mean)**2,0)/n;
+      const std  = Math.sqrt(vari);
+      if(std > 0){
+        const z = Math.abs(price-mean)/std;
+        if(z > cfg.zMax) return this._reject("OUTLIER z="+z.toFixed(1)+" > "+cfg.zMax, price);
       }
     }
 
-    // Rule 6: Uniform delta — synthetic/interpolated tick stream detect
-    // Agar last 4 deltas bilkul ek jaisi hain = machine-generated
-    if (ftRecentDeltas.length >= 4) {
-      const last4 = ftRecentDeltas.slice(-4);
-      const allSame = last4.every(d => Math.abs(d - delta) < 0.000005);
-      if (allSame) {
-        ftTotalFake++;
-        return { real: false, reason: 'UNIFORM_DELTA' };
+    /* ── Layer 7: Confirmation (mode-aware) ── */
+    if(usingPoll){
+      // HTTP poll: accept immediately, no waiting for a "next" tick.
+      return this._accept(price, cfg);
+    }
+
+    // WebSocket: two-stage confirmation with a realistic floor.
+    const effConfirmMs = Math.max(cfg.confirmMs, 1500);
+    if(this.pending===null){
+      this.pending={price,time:now};
+      pendingBadge.textContent="⏳ tick awaiting confirmation…";
+      return false; // NOT a reject — just not confirmed yet
+    }
+    const elapsed   = now - this.pending.time;
+    const driftPips = Math.abs(price - this.pending.price)/cfg.pip;
+    if(elapsed > effConfirmMs){
+      this.pending={price,time:now};
+      return this._reject("UNCONFIRMED TIMEOUT "+elapsed+"ms > "+effConfirmMs, price);
+    }
+    if(driftPips > cfg.confirmTolP){
+      this.pending={price,time:now};
+      return this._reject("UNCONFIRMED DRIFT "+driftPips.toFixed(2)+"pips > "+cfg.confirmTolP, price);
+    }
+
+    /* ✅ CONFIRMED */
+    this.pending={price,time:now};
+    return this._accept(price, cfg);
+  },
+
+  _reject(reason, rawPrice){
+    this.filteredCount++;
+    filterReason.textContent = "🚫 FILTERED: "+reason;
+    clearTimeout(this.reasonTimer);
+    this.reasonTimer = setTimeout(()=>{ filterReason.textContent=""; }, 2500);
+
+    if(rawPrice!=null && isFinite(rawPrice) && rawPrice>0
+       && reason!=="NOT A NUMBER"
+       && !reason.startsWith("PRICE OUT OF RANGE")
+       && reason!=="DUPLICATE TICK"){
+      const ref = nextPrevP!==null ? nextPrevP
+                : (this.lastValidP!==null ? this.lastValidP : null);
+      if(ref!==null){
+        if(rawPrice > ref) nextUp++;
+        else if(rawPrice < ref) nextDown++;
       }
+      nextPrevP  = rawPrice;
+      nextCount++;
     }
-
-    // Update rolling delta window (last 20)
-    ftRecentDeltas.push(delta);
-    if (ftRecentDeltas.length > 20) ftRecentDeltas.shift();
+    return false;
   }
+};
 
-  // All 6 rules passed — 100% REAL tick
-  ftLastAccepted = price;
-  ftLastTime     = nowMs;
-  ftTotalReal++;
-  return { real: true, reason: 'OK' };
-}
+/* ══════════════════════════════════════════
+   PRICE STATE — EMA + Direction Voting
+══════════════════════════════════════════ */
+let ema            = null;
+let emaHistory     = [];
+let cycleEmaStart  = null;
+let upTicks        = 0;
+let downTicks      = 0;
+let validTickCount = 0;
+let prevValidP     = null;
+let priceHistory   = [];
+let lastPrice      = null;
+let startPrice     = null;
+let locked         = null;
+let signalDecision = null;
+let lastCycleId    = null;
+let capturingCarry = false;
+let carryMomentum  = 0;
+let carryPrices    = [];
 
-/* Filter UI update */
-function updateFilterUi() {
-  const pct = ftTotalRaw > 0 ? Math.round((ftTotalReal / ftTotalRaw) * 100) : 0;
-  const el  = document.getElementById('filterStats');
-  if (el) {
-    el.textContent =
-      'Raw: ' + ftTotalRaw +
-      ' | Real: ' + ftTotalReal +
-      ' | Fake: ' + ftTotalFake +
-      ' | Purity: ' + pct + '%';
-    el.style.color = pct >= 90 ? 'var(--green)' : pct >= 75 ? 'var(--yellow)' : 'var(--red)';
-  }
-}
+let nextUp=0, nextDown=0, nextPrevP=null, nextCount=0;
 
-connectWS();
+/* ══════════════════════════════════════════
+   CONNECTION STATE
+══════════════════════════════════════════ */
+let activeWS=null, wsReady=false, wsRetryT=null, wsTimeoutT=null;
+let pollInterval=null, usingPoll=false;
+let activeApiKey=null, activePair=null, isDisconnected=true;
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ON EVERY TICK FROM WEBSOCKET
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function onTick(p) {
-  lastPrice = p;
-
-  const d       = istNow();
-  const elapsed = d.getSeconds(); // 0..59
-
-  // ── cycle reset detect
-  const cid = Math.floor(Date.now() / 60000);
-  if (cid !== cycleId) {
-    onCycleReset(elapsed);
-    cycleId = cid;
-  }
-
-  // ── fill current window (only watch phase, 0..39s)
-  if (elapsed < WATCH_SEC) {
-    currWindow.push(p);
-  }
-
-  // ── chart history (last 60 ticks)
-  priceHistory.push(p);
-  if (priceHistory.length > 60) priceHistory.shift();
-
-  // ── UI update
-  document.getElementById("livePrice").textContent = p.toFixed(5);
-  document.getElementById("priceTime").textContent =
-    "Updated: " + d.toTimeString().slice(0, 8);
-  document.getElementById("livePrice").style.color =
-    priceHistory.length > 1 && p >= priceHistory[priceHistory.length - 2]
-      ? "var(--green)" : "var(--red)";
-
-  document.getElementById("tickCount").textContent = currWindow.length;
-
-  drawChart();
-  drawTickBars();
-  updateWindowStatus();
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CYCLE RESET
-   Pichle cycle ke currWindow (jo last 20s mein aaya tha) 
-   prevWindow ban jata hai.
-   
-   NOTE: currWindow mein sirf 0-39s ke ticks hote hain.
-   last 20s (40-59s) ke ticks separately capture hote hain
-   niche ke signal engine mein.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-// last 20s ticks live capture karne ke liye alag buffer
-let lastWindowBuffer = [];
-
-function onCycleReset(currentSec) {
-  // prevWindow = pichle cycle ka last-20s data
-  prevWindow = [...lastWindowBuffer];
-  lastWindowBuffer = [];
-
-  // currWindow fresh
-  currWindow = [];
-  locked = null;
-
-  // Filter delta history bhi reset (naye cycle ka clean baseline)
-  ftRecentDeltas = [];
-  ftLastAccepted = null;  // naye cycle mein first tick fresh accept hoga
-  ftLastTime     = 0;
-
-  document.getElementById("sigMain").textContent  = "WAIT";
-  document.getElementById("sigMain").className    = "sig-main WAIT";
-  document.getElementById("signalCard").className = "card signal-card";
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   SIGNAL ENGINE  — runs every 250ms
-   
-   Logic:
-   • elapsed 0-39s  (WATCH)  : WAIT
-   • elapsed 40-59s (FINAL)  : 
-       - lastWindowBuffer me ticks jama karo (ye data 
-         NEXT cycle ka prevWindow banega)
-       - combined = prevWindow + currWindow   ← DONO WINDOWS
-       - combined se slope/bias nikaalo
-       - signal lock karo (ek baar lock hone ke baad nahi badlega)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-setInterval(() => {
-  const d       = istNow();
-  const elapsed = d.getSeconds();
-  const rem     = TOTAL_SEC - elapsed;
-
-  document.getElementById("sigCountdown").textContent = rem;
-
-  // last 20s live ticks capture karna (NEXT cycle ka prevWindow)
-  if (elapsed >= WATCH_SEC && lastPrice !== null) {
-    // sirf ek baar push karo per second (approx) — duplicate filter
-    const lastAdded = lastWindowBuffer[lastWindowBuffer.length - 1];
-    if (lastAdded !== lastPrice) {
-      lastWindowBuffer.push(lastPrice);
-    }
-  }
-
-  if (elapsed < WATCH_SEC) {
-    /* ── WATCH PHASE ── */
-    document.getElementById("sigPhase").textContent  = "WATCHING MARKET";
-    document.getElementById("sigPhase").className    = "sig-phase";
-
-    // Watch phase mein HAMESHA WAIT — locked ka koi role nahi yahan
-    document.getElementById("sigMain").textContent  = "WAIT";
-    document.getElementById("sigMain").className    = "sig-main WAIT";
-    document.getElementById("signalCard").className = "card signal-card";
-    locked = null; // watch phase mein lock kabhi nahi hoga
-
-    const hint = `Watch phase · prev ticks: ${prevWindow.length} · curr ticks: ${currWindow.length}`;
-    document.getElementById("sigHint").textContent = hint;
-
-    // live bias sirf currWindow se (during watch) — display only, signal nahi
-    calcAndShowBias(currWindow);
-
+/* ══════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════ */
+function setHealth(h,hc,pill,pc,mode){
+  apiHealth.textContent=h; apiHealth.style.color=hc;
+  apiPill.textContent=pill; apiPill.className="apipill "+pc;
+  if(mode==="ws"){
+    modeBadge.style.display="inline-block";
+    modeBadge.className="modebadge ws-mode";
+    modeBadge.textContent="⚡ WEBSOCKET";
+  } else if(mode==="http"){
+    modeBadge.style.display="inline-block";
+    modeBadge.className="modebadge http-mode";
+    modeBadge.textContent="🔄 HTTP POLL";
   } else {
-    /* ── FINAL SIGNAL PHASE ── */
-    document.getElementById("sigPhase").textContent = "⚡ FINAL SIGNAL";
-    document.getElementById("sigPhase").className   = "sig-phase locking";
-
-    // combined window: prevWindow (last 20s pichle cycle) + currWindow (40s is cycle)
-    const combined = [...prevWindow, ...currWindow];
-
-    document.getElementById("sigHint").textContent =
-      `Combined: ${prevWindow.length} prev + ${currWindow.length} curr = ${combined.length} ticks`;
-
-    // bias combined se
-    const { bias, conf, move } = calcBias(combined);
-
-    showBiasUi(bias, conf, move);
-
-    // signal ek baar lock karo
-    if (locked === null) {
-      if (combined.length < 1) {
-        locked = "SKIP";  // sirf tab jab bilkul koi data nahi
-      } else {
-        // SKIP practically nahi aayega — 50% se upar = UP, 50% ya neeche = DOWN
-        // Exact 50% pe bhi DOWN (market flat = selling pressure)
-        locked = bias > 50 ? "UP" : "DOWN";
-      }
-    }
-
-    const sigEl   = document.getElementById("sigMain");
-    const cardEl  = document.getElementById("signalCard");
-    sigEl.textContent = locked;
-    sigEl.className   = "sig-main " + locked;
-
-    cardEl.className  = "card signal-card " + (locked === "UP" ? "UP" : locked === "DOWN" ? "DOWN" : "");
-  }
-
-  updateWindowStatus();
-}, 250);
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   BIAS CALCULATION  (pure function)
-   Input: array of prices
-   Output: { bias: 0-100, conf: 0-100, move: pips }
-   
-   Method: 
-   Linear weighted slope (recent ticks ko zyada weight)
-   + first-to-last move confirmation
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function calcBias(arr) {
-  if (!arr || arr.length < 2) return { bias: 50, conf: 0, move: 0 };
-
-  const n = arr.length;
-
-  // ── 1. WEIGHTED SLOPE (recent ticks ko zyada weight)
-  let wSum = 0, wTotal = 0;
-  for (let i = 1; i < n; i++) {
-    const w     = i;
-    const delta = arr[i] - arr[i - 1];
-    wSum   += delta * w;
-    wTotal += w;
-  }
-  const slope = wTotal > 0 ? wSum / wTotal : 0;
-
-  // ── 2. NET MOVE first→last (in pips)
-  const move = (arr[n - 1] - arr[0]) / 0.0001;
-
-  // ── 3. LAST-5 momentum (sirf recent tail ka direction)
-  const tail     = arr.slice(-5);
-  const tailMove = tail.length > 1
-    ? (tail[tail.length - 1] - tail[0]) / 0.0001
-    : 0;
-
-  // ── 4. SCALING — EUR/USD ke liye realistic thresholds
-  // slope: 0.00001 per tick (~0.1 pip) already meaningful → saturation at 0.00003
-  const slopeFactor = Math.max(-1, Math.min(1, slope   / 0.000015));
-  // move:  sirf 0.5 pip net move bhi confident → saturation at 1.5 pip
-  const moveFactor  = Math.max(-1, Math.min(1, move    / 1.5));
-  // tail:  last 5 ticks ka quick direction
-  const tailFactor  = Math.max(-1, Math.min(1, tailMove / 0.8));
-
-  // ── 5. COMBINE: slope 50% + move 30% + tail 20%
-  const combined = slopeFactor * 0.5 + moveFactor * 0.3 + tailFactor * 0.2;
-
-  const bias = Math.round(50 + combined * 50);
-  const conf = Math.round(Math.abs(combined) * 100);
-
-  return { bias: Math.max(0, Math.min(100, bias)), conf, move: Math.round(move * 10) / 10 };
-}
-
-function calcAndShowBias(arr) {
-  const { bias, conf, move } = calcBias(arr);
-  showBiasUi(bias, conf, move);
-}
-
-function showBiasUi(bias, conf, move) {
-  const label = bias > 50 ? "BULLISH" : "BEARISH";
-  const color = bias > 50 ? "var(--green)" : "var(--red)";
-
-  document.getElementById("biasLabel").textContent  = label;
-  document.getElementById("biasLabel").style.color  = color;
-  document.getElementById("biasNum").textContent    = `Bias: ${bias}% · Move: ${move > 0 ? "+" : ""}${move} pip`;
-  document.getElementById("biasBar").style.width    = bias + "%";
-  document.getElementById("biasBar").style.background = color;
-
-  const pct = conf * 3.6;
-  document.getElementById("confRing").style.setProperty("--pct", pct + "deg");
-  document.getElementById("confVal").textContent    = conf + "%";
-
-  document.getElementById("moveVal").textContent    = (move > 0 ? "+" : "") + move;
-  document.getElementById("moveVal").style.color    = move > 0 ? "var(--green)" : move < 0 ? "var(--red)" : "var(--muted)";
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CHART — combined view
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function drawChart() {
-  const combined = [...prevWindow, ...currWindow];
-  if (combined.length < 2) { 
-    document.getElementById("priceLine").setAttribute("d", "");
-    return; 
-  }
-
-  const W = 300, H = 110;
-  const min = Math.min(...combined);
-  const max = Math.max(...combined);
-  const range = max - min || 0.00001;
-  const step  = W / (combined.length - 1);
-
-  const d = "M " + combined.map((p, i) => {
-    const x = (i * step).toFixed(1);
-    const y = (H - ((p - min) / range) * (H - 10)).toFixed(1);
-    return x + "," + y;
-  }).join(" L ");
-
-  document.getElementById("priceLine").setAttribute("d", d);
-
-  // yellow divider at prevWindow / currWindow boundary
-  if (prevWindow.length > 0 && combined.length > prevWindow.length) {
-    const divX = ((prevWindow.length - 1) * step).toFixed(1);
-    const dl = document.getElementById("divLine");
-    dl.setAttribute("x1", divX);
-    dl.setAttribute("x2", divX);
-    dl.setAttribute("y2", H);
+    modeBadge.style.display="none";
   }
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   TICK BARS VISUAL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function drawTickBars() {
-  const combined = [...prevWindow, ...currWindow];
-  const track = document.getElementById("tickTrack");
-
-  // sirf agar count change hua tab re-render
-  if (track.children.length !== combined.length) {
-    track.innerHTML = "";
-    combined.forEach((_, i) => {
-      const bar = document.createElement("div");
-      bar.className = "tick-bar";
-      bar.style.background = i < prevWindow.length ? "var(--yellow)" : "var(--sky)";
-      track.appendChild(bar);
-    });
-  }
-
-  if (combined.length < 2) return;
-  const min = Math.min(...combined);
-  const max = Math.max(...combined);
-  const range = max - min || 0.0001;
-
-  Array.from(track.children).forEach((bar, i) => {
-    const h = Math.max(4, Math.round(((combined[i] - min) / range) * 18 + 2));
-    bar.style.height = h + "px";
-    bar.style.background = i < prevWindow.length ? "var(--yellow)" : "var(--sky)";
+function updateLabels(pair){
+  ["bPair","chartLbl","sigLbl","priceLbl"].forEach(id=>{
+    document.getElementById(id).textContent=pair||"--/--";
   });
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   WINDOW STATUS TEXT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function updateWindowStatus() {
-  const pn = prevWindow.length;
-  const cn = currWindow.length;
-  document.getElementById("wPrev").textContent  = pn;
-  document.getElementById("wCurr").textContent  = cn;
-  document.getElementById("wTotal").textContent = pn + cn;
-  document.getElementById("prevPill").textContent = `PREV 20s: ${pn}`;
-  document.getElementById("currPill").textContent = `CURR 40s: ${cn}`;
+/* ══════════════════════════════════════════
+   CONNECT FOR SESSION
+══════════════════════════════════════════ */
+function connectForSession(sess){
+  if(!isDisconnected && sess.apiKey===activeApiKey && sess.pair===activePair) return;
+  isDisconnected=false;
+  stopAll();
+  activeApiKey=sess.apiKey; activePair=sess.pair;
+  TV.reset();
+  updateLabels(sess.pair);
+  apiKeyInfo.textContent="Key: ..."+sess.apiKey.slice(-6)+" → "+sess.pair;
+  attemptWS(sess.apiKey, sess.pair);
+}
+
+/* ══════════════════════════════════════════
+   WEBSOCKET — Primary
+══════════════════════════════════════════ */
+function attemptWS(apiKey, pair){
+  setHealth("WS TRY","var(--yellow)","CONN…","warn","");
+  const ws=new WebSocket("wss://ws.twelvedata.com/v1/quotes/price?apikey="+apiKey);
+  activeWS=ws;
+
+  wsTimeoutT=setTimeout(()=>{
+    if(!wsReady && ws===activeWS){
+      killWS(ws); startHTTPPoll(apiKey,pair);
+    }
+  }, WS_TIMEOUT);
+
+  ws.onopen=()=>{
+    clearTimeout(wsTimeoutT); wsReady=true; usingPoll=false;
+    ws.send(JSON.stringify({action:"subscribe",params:{symbols:pair}}));
+    setHealth("WS LIVE","var(--green)","LIVE","safe","ws");
+  };
+
+  ws.onmessage=(ev)=>{
+    let m; try{m=JSON.parse(ev.data);}catch{return;}
+    if(m.event==="price" && m.price!=null){
+      const sym=normSym(m.symbol||"");
+      if(sym && sym!==activePair) return;
+      onRawTick(parseFloat(m.price));
+    }
+    if(m.event==="subscribe-status"){
+      if(m.status==="ok"){
+        setHealth("WS LIVE","var(--green)","LIVE","safe","ws");
+      } else {
+        console.warn("WS sub err:",m.message);
+        killWS(ws); startHTTPPoll(apiKey,pair);
+      }
+    }
+  };
+
+  ws.onerror=()=>{
+    clearTimeout(wsTimeoutT);
+    if(ws===activeWS){ killWS(ws); startHTTPPoll(apiKey,pair); }
+  };
+
+  ws.onclose=()=>{
+    clearTimeout(wsTimeoutT);
+    if(ws===activeWS && !usingPoll && !isDisconnected){
+      wsReady=false;
+      setHealth("WS DROP","var(--yellow)","RETRY","warn","");
+      wsRetryT=setTimeout(()=>attemptWS(apiKey,pair),4000);
+    }
+  };
+}
+
+function killWS(ws){
+  if(ws){ ws.onclose=null;ws.onerror=null;ws.onmessage=null;try{ws.close();}catch(e){} }
+  if(activeWS===ws) activeWS=null;
+  wsReady=false;
+  clearTimeout(wsTimeoutT); clearTimeout(wsRetryT);
+}
+
+/* ══════════════════════════════════════════
+   HTTP POLLING — Fallback
+══════════════════════════════════════════ */
+function startHTTPPoll(apiKey,pair){
+  stopPolling(); usingPoll=true;
+  setHealth("HTTP POLL","var(--yellow)","POLL","warn","http");
+  const doFetch=async()=>{
+    if(!usingPoll||activeApiKey!==apiKey||activePair!==pair) return;
+    try{
+      const r=await fetch("https://api.twelvedata.com/price?symbol="+encodeURIComponent(pair)+"&apikey="+apiKey);
+      const d=await r.json();
+      if(d && d.price){
+        onRawTick(parseFloat(d.price));
+        setHealth("HTTP OK","var(--green)","LIVE","safe","http");
+      } else if(d&&d.status==="error"){
+        setHealth("API ERR","var(--red)","ERR","danger","http");
+      }
+    }catch(e){ setHealth("NET ERR","var(--red)","ERR","danger",""); }
+  };
+  doFetch();
+  pollInterval=setInterval(doFetch,POLL_MS);
+}
+
+function stopPolling(){ usingPoll=false; if(pollInterval){clearInterval(pollInterval);pollInterval=null;} }
+function stopAll(){
+  clearTimeout(wsRetryT);wsRetryT=null;
+  clearTimeout(wsTimeoutT);wsTimeoutT=null;
+  killWS(activeWS); stopPolling();
+}
+function disconnectAll(){
+  if(isDisconnected) return;
+  isDisconnected=true;
+  stopAll(); TV.reset();
+  activeApiKey=null; activePair=null;
+  updateLabels(null);
+  livePrice.textContent="--"; priceTime.textContent="--:--:--";
+  priceLine.setAttribute("d",""); emaLine.setAttribute("d","");
+  emaDisplay.textContent="EMA --";
+  fs_valid.textContent="0"; fs_filtered.textContent="0";
+  fs_upticks.textContent="0"; fs_downticks.textContent="0";
+  filterReason.textContent=""; pendingBadge.textContent="";
+  voteDisplay.textContent="Vote: --";
+  qualityBadge.textContent="";
+  resetCycle(true);
+  setHealth("OFFLINE","rgba(255,255,255,0.4)","OFF","warn","");
+  apiKeyInfo.textContent="--";
+}
+
+/* ══════════════════════════════════════════
+   RAW TICK → VALIDATOR → CONFIRMED TICK
+══════════════════════════════════════════ */
+function onRawTick(p){
+  if(!isFinite(p)) return;
+
+  const valid = TV.validate(p, activePair);
+
+  fs_valid.textContent    = TV.validCount;
+  fs_filtered.textContent = TV.filteredCount;
+
+  if(!valid) return; /* ❌ REJECTED or still awaiting confirmation */
+
+  /* ✅ CONFIRMED TICK — enters signal engine */
+  onValidTick(p);
+}
+
+/* ══════════════════════════════════════════
+   CONFIRMED TICK PROCESSOR
+══════════════════════════════════════════ */
+function onValidTick(p){
+  if(signalDecision!==null){
+    const ref = nextPrevP!==null ? nextPrevP : prevValidP;
+    if(ref!==null){
+      if(p>ref) nextUp++; else if(p<ref) nextDown++;
+    }
+    nextPrevP=p; nextCount++;
+  } else {
+    if(prevValidP!==null){
+      if(p>prevValidP) upTicks++; else if(p<prevValidP) downTicks++;
+    }
+    prevValidP=p; validTickCount++;
+    fs_upticks.textContent   = upTicks;
+    fs_downticks.textContent = downTicks;
+  }
+
+  const cfg = PAIR_CONFIG[activePair];
+  const alpha = cfg ? (usingPoll ? cfg.emaA_http : cfg.emaA_ws) : 0.15;
+  if(ema===null){ ema=p; cycleEmaStart=p; }
+  else { ema = ema + alpha*(p-ema); }
+  if(cycleEmaStart===null) cycleEmaStart=ema;
+
+  if(capturingCarry) carryPrices.push(p);
+
+  lastPrice=p;
+  if(startPrice===null) startPrice=p;
+
+  livePrice.textContent=p.toFixed(5);
+  priceTime.textContent=istNow().toTimeString().slice(0,8);
+  emaDisplay.textContent="EMA "+ema.toFixed(5);
+
+  priceHistory.push(p);
+  if(priceHistory.length>60) priceHistory.shift();
+  emaHistory.push(ema);
+  if(emaHistory.length>60) emaHistory.shift();
+
+  drawChart();
+}
+
+/* ══════════════════════════════════════════
+   CHART
+══════════════════════════════════════════ */
+function drawChart(){
+  if(priceHistory.length<2){ priceLine.setAttribute("d",""); emaLine.setAttribute("d",""); return; }
+  const mn=Math.min(...priceHistory,...emaHistory);
+  const mx=Math.max(...priceHistory,...emaHistory);
+  const rng=(mx-mn)||0.0001;
+  const step=300/(priceHistory.length-1);
+  const pt=(arr)=>"M "+arr.map((v,i)=>`${(i*step).toFixed(1)},${(110-((v-mn)/rng)*100).toFixed(1)}`).join(" L ");
+  priceLine.setAttribute("d",pt(priceHistory));
+  priceLine.style.stroke=(lastPrice>=startPrice)?"var(--green)":"var(--red)";
+  if(emaHistory.length>=2) emaLine.setAttribute("d",pt(emaHistory));
+}
+
+function emaSlopeUp(){
+  if(emaHistory.length<5) return null;
+  const recent=emaHistory.slice(-5);
+  return recent[recent.length-1] > recent[0];
+}
+
+/* ══════════════════════════════════════════
+   CYCLE RESET
+══════════════════════════════════════════ */
+function resetCycle(hardReset){
+  if(ema!==null) cycleEmaStart=ema;
+  else { ema=null; cycleEmaStart=null; emaHistory=[]; }
+
+  if(carryPrices.length>=2){
+    const f=carryPrices[0],l=carryPrices[carryPrices.length-1];
+    carryMomentum=f!==0?Math.max(-1,Math.min(1,((l-f)/f)*100*900/50)):0;
+  } else { carryMomentum=0; }
+  carryPrices=[]; capturingCarry=false;
+
+  if(hardReset){
+    upTicks=0; downTicks=0; validTickCount=0; prevValidP=lastPrice;
+    nextUp=0; nextDown=0; nextCount=0; nextPrevP=null;
+  } else {
+    upTicks=nextUp; downTicks=nextDown; validTickCount=nextCount;
+    prevValidP = nextPrevP!==null ? nextPrevP : lastPrice;
+    nextUp=0; nextDown=0; nextCount=0; nextPrevP=null;
+  }
+
+  startPrice=lastPrice; locked=null; signalDecision=null;
+  TV.softReset();
+
+  signal.textContent="WAIT"; signal.className="signal skip";
+  biasBar.style.width="0%"; biasText.textContent="--";
+  biasText.style.color="var(--text)";
+  confText.textContent="--%"; confBar.style.width="0%";
+  accCircle.style.setProperty("--deg","0deg"); accVal.textContent="--%";
+  voteDisplay.textContent = validTickCount>0
+    ? `Vote: carried ${validTickCount} tick(s) fwd (incl. filtered)`
+    : "Vote: --";
+  fs_valid.textContent="0"; fs_filtered.textContent="0";
+  fs_upticks.textContent=upTicks; fs_downticks.textContent=downTicks;
+  filterReason.textContent=""; pendingBadge.textContent="";
+  qualityBadge.textContent="";
+}
+
+/* ══════════════════════════════════════════
+   SCHEDULE STRIP
+══════════════════════════════════════════ */
+function buildStrip(){
+  const strip=document.getElementById("strip"); strip.innerHTML="";
+  const m=istMins();
+  SESSIONS.forEach(s=>{
+    const div=document.createElement("div");
+    const stars="⭐".repeat(s.stars)+(s.stars<5?"☆".repeat(5-s.stars):"");
+    div.innerHTML=`<b>${s.label}</b><br>${s.avoid?"❌ Avoid":"✅ "+s.pair} ${stars}`;
+    div.className="sess"+(s.avoid?" avoid":m>=s.start&&m<s.end?" active":s.start>m?" upcoming":"");
+    strip.appendChild(div);
+  });
+}
+
+setInterval(()=>{ clock.textContent="IST "+istNow().toTimeString().slice(0,8); },1000);
+
+/* ══════════════════════════════════════════
+   MAIN ENGINE (250ms)
+══════════════════════════════════════════ */
+setInterval(()=>{
+  const d=istNow();
+  const sec=d.getSeconds(), rem=CYCLE-sec;
+  timer.textContent=rem;
+
+  buildStrip();
+  const sess=getSession();
+  noTrade.style.display=(sess&&sess.avoid)?"block":"none";
+
+  if(sess&&sess.avoid){
+    signal.textContent="NO TRADE"; signal.className="signal skip";
+    phase.textContent="AVOID — Market Slow"; phase.className="phase watching";
+    bSess.textContent="❌ Avoid zone"; disconnectAll(); return;
+  }
+  if(!sess){
+    const nxt=nextSession();
+    bSess.textContent=nxt?"Next: "+nxt.label:"Market Closed";
+    sessInfo.textContent=nxt?"Next: "+nxt.label:"";
+    disconnectAll(); return;
+  }
+
+  bSess.textContent=sess.label+" "+"⭐".repeat(sess.stars);
+  sessInfo.textContent=sess.label;
+  connectForSession(sess);
+
+  const cid=Math.floor(Date.now()/60000);
+  if(cid!==lastCycleId){ lastCycleId=cid; resetCycle(false); }
+
+  const totalDirTicks = upTicks + downTicks;
+
+  let voteBias = 50;
+  if(totalDirTicks>0) voteBias = Math.round((upTicks/totalDirTicks)*100);
+
+  let emaBias = 50;
+  if(ema!==null && cycleEmaStart!==null && cycleEmaStart!==0){
+    const emaTrend=((ema-cycleEmaStart)/cycleEmaStart)*100;
+    emaBias=Math.max(0,Math.min(100,50+emaTrend*900));
+  }
+
+  const momentumBias=50+carryMomentum*50;
+
+  let bias=Math.round(voteBias*0.55 + emaBias*0.30 + momentumBias*0.15);
+  bias=Math.max(0,Math.min(100,bias));
+
+  const cfg=PAIR_CONFIG[activePair]||{minTicks:8,minHttpT:3};
+  const minReq=usingPoll ? cfg.minHttpT : cfg.minTicks;
+  const tickReadiness=Math.min(1, validTickCount/minReq);
+  const rawConf=Math.abs(bias-50)*2;
+  const conf=Math.round(rawConf * tickReadiness);
+
+  biasBar.style.width=bias+"%";
+  biasText.textContent=bias>50?"BULLISH":"BEARISH";
+  biasText.style.color=bias>50?"var(--green)":"var(--red)";
+  confText.textContent=conf+"%"; confBar.style.width=conf+"%";
+  accCircle.style.setProperty("--deg",(conf*3.6)+"deg"); accVal.textContent=conf+"%";
+
+  const upPct=totalDirTicks>0?Math.round(upTicks/totalDirTicks*100):0;
+  voteDisplay.textContent=`Vote: ↑${upPct}% ↓${100-upPct}% (${validTickCount} confirmed)`;
+
+  const totalSeen = TV.validCount + TV.filteredCount;
+  const rejectRate = totalSeen>0 ? TV.filteredCount/totalSeen : 0;
+  const feedNoisy = totalSeen>=10 && rejectRate>0.6;
+  if(sec<WATCH){
+    qualityBadge.textContent = feedNoisy ? "⚠ NOISY FEED — "+Math.round(rejectRate*100)+"% ticks rejected" : "";
+    qualityBadge.className = "quality-badge "+(feedNoisy?"qbad":"qgood");
+  }
+
+  if(sec < WATCH){
+    phase.textContent="WATCHING MARKET"; phase.className="phase watching";
+    signal.textContent="WAIT"; signal.className="signal skip";
+    locked=null; signalDecision=null;
+  } else {
+    phase.textContent="FINAL SIGNAL"; phase.className="phase locking";
+    capturingCarry=true;
+
+    if(signalDecision===null){
+      if(feedNoisy){
+        signalDecision="NOISY";
+      } else if(validTickCount >= minReq && conf > 20){
+        const voteUp = voteBias > 50;
+        const emaUp  = ema!==null && cycleEmaStart!==null && ema > cycleEmaStart;
+        const slope  = emaSlopeUp();
+        const slopeOk = slope===null ? true : slope===voteUp;
+        signalDecision = (voteUp===emaUp && slopeOk) ? (voteUp?"UP":"DOWN") : "MIXED";
+      } else {
+        signalDecision="LOADING";
+      }
+      locked = (signalDecision==="UP"||signalDecision==="DOWN") ? signalDecision : null;
+    }
+
+    if(signalDecision==="UP"||signalDecision==="DOWN"){
+      signal.textContent=signalDecision;
+      signal.className="signal "+(signalDecision==="UP"?"big":"small");
+    } else if(signalDecision==="LOADING"){
+      signal.textContent="LOADING…"; signal.className="signal skip";
+    } else if(signalDecision==="NOISY"){
+      signal.textContent="NOISY FEED"; signal.className="signal skip";
+    } else {
+      signal.textContent="MIXED"; signal.className="signal skip";
+    }
+    qualityBadge.textContent = feedNoisy ? "⚠ NOISY FEED — locked as skip" : "";
+    qualityBadge.className = "quality-badge "+(feedNoisy?"qbad":"qgood");
+  }
+},250);
+
+/* ══ INIT ══ */
+buildStrip();
+const initSess=getSession();
+if(initSess&&!initSess.avoid){
+  connectForSession(initSess);
+  bSess.textContent=initSess.label;
+} else {
+  setHealth("OFFLINE","rgba(255,255,255,0.4)","OFF","warn","");
 }
 </script>
 </body>
