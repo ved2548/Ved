@@ -3,854 +3,1021 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VED – Fresh Water Engine (Dual Source)</title>
+<title>VED – Trading Dashboard</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 :root {
-  --bg:      #020c18;
-  --surface: #071428;
-  --border:  rgba(14,165,233,0.18);
-  --sky:     #0ea5e9;
-  --green:   #22c55e;
-  --red:     #ef4444;
-  --yellow:  #f5b301;
-  --purple:  #a855f7;
-  --text:    #e0f2fe;
-  --muted:   #7dd3fc;
-  --font-d:  'Space Grotesk', system-ui;
-  --font-m:  'JetBrains Mono', monospace;
+  --bg:       #f0f4f8;
+  --white:    #ffffff;
+  --border:   #e2e8f0;
+  --text:     #1a202c;
+  --muted:    #718096;
+  --sky:      #0ea5e9;
+  --green:    #22c55e;
+  --green-lt: #dcfce7;
+  --red:      #ef4444;
+  --red-lt:   #fee2e2;
+  --orange:   #f97316;
+  --orange-lt:#ffedd5;
+  --purple:   #8b5cf6;
+  --purple-lt:#ede9fe;
+  --yellow:   #f5b301;
+  --blue:     #3b82f6;
+  --blue-lt:  #dbeafe;
+  --font:     'Inter', system-ui;
+  --mono:     'JetBrains Mono', monospace;
 }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--font-d);min-height:100vh;padding:14px}
+body{background:var(--bg);font-family:var(--font);color:var(--text);min-height:100vh;padding:12px}
 
-/* HEADER */
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.logo{font-size:24px;font-weight:900;letter-spacing:3px;color:var(--sky)}
-.logo span{color:var(--yellow)}
-.ist-clock{font-family:var(--font-m);font-size:16px;color:var(--muted)}
-
-/* TOP INFO ROW */
-.top-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
-.card-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-
-/* LIVE PRICE */
-.price-big{font-family:var(--font-m);font-size:34px;font-weight:700;transition:color .3s}
-.price-sub{font-size:11px;color:var(--muted);margin-top:4px;font-family:var(--font-m)}
-.src-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-top:5px;letter-spacing:1px}
-.src-tag.td{background:rgba(14,165,233,.2);color:var(--sky)}
-.src-tag.fh{background:rgba(168,85,247,.2);color:var(--purple)}
-
-/* BIAS */
-.bias-val{font-size:32px;font-weight:900}
-.bias-bar-wrap{height:7px;border-radius:6px;background:rgba(255,255,255,.1);margin-top:8px}
-.bias-bar{height:100%;border-radius:6px;transition:width .4s,background .4s}
-.bias-num{font-size:11px;color:var(--muted);margin-top:5px;font-family:var(--font-m)}
-
-/* CHART */
-.chart-card{grid-column:1/-1;padding:16px 18px 10px}
-.chart-wrap{height:100px;position:relative}
-svg.chart{width:100%;height:100%;overflow:visible}
-
-/* DUAL SIGNAL SECTION */
-.dual-signal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-
-/* SIGNAL BOX */
-.sig-box{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:22px 16px 18px;
-  display:flex;flex-direction:column;align-items:center;
-  gap:8px;position:relative;overflow:hidden
+/* ── FILTER BAR ── */
+.filter-bar{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:10px 16px;display:flex;align-items:center;gap:16px;
+  margin-bottom:12px;flex-wrap:wrap;
 }
-.sig-box::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .5s;border-radius:16px}
-.sig-box.UP::before  {background:radial-gradient(ellipse at center,rgba(34,197,94,.13),transparent 70%);opacity:1}
-.sig-box.DOWN::before{background:radial-gradient(ellipse at center,rgba(239,68,68,.13),transparent 70%);opacity:1}
+.filter-label{font-size:11px;color:var(--muted);font-weight:500}
+.filter-val{font-size:13px;font-weight:700;color:var(--text)}
+.filter-sep{width:1px;height:24px;background:var(--border)}
+.radio-group{display:flex;gap:12px;align-items:center}
+.radio-item{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted)}
+.radio-item.active{color:var(--sky)}
+.radio-dot{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;position:relative}
+.radio-item.active .radio-dot::after{content:'';position:absolute;inset:2px;border-radius:50%;background:var(--sky)}
+.btn-filter{background:#22c55e;color:#fff;border:none;padding:7px 18px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;margin-left:auto}
+.btn-clear{background:transparent;border:1.5px solid var(--border);color:var(--text);padding:7px 14px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;margin-left:4px}
 
-/* source header badge */
-.sig-src-badge{
-  position:absolute;top:10px;left:14px;
-  font-size:10px;font-weight:900;letter-spacing:2px;
-  padding:2px 9px;border-radius:10px
+/* ── TOP 3-COL KPI PANEL ── */
+.kpi-panel{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:0;background:var(--white);border:1px solid var(--border);
+  border-radius:10px;margin-bottom:12px;overflow:hidden;
 }
-.sig-src-badge.td{background:rgba(14,165,233,.2);color:var(--sky)}
-.sig-src-badge.fh{background:rgba(168,85,247,.2);color:var(--purple)}
+.kpi-section{padding:18px 22px;position:relative}
+.kpi-section+.kpi-section{border-left:1px solid var(--border)}
+.kpi-section-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:14px}
+.kpi-inner{display:flex;align-items:center;gap:18px;justify-content:space-between}
+.kpi-left,.kpi-right{display:flex;flex-direction:column;gap:6px}
+.kpi-sub-label{font-size:11px;color:var(--muted);font-weight:500}
+.kpi-val{font-size:18px;font-weight:800}
+.kpi-val.orange{color:var(--orange)}
+.kpi-val.green{color:var(--green)}
+.kpi-val.sky{color:var(--sky)}
+.kpi-val.purple{color:var(--purple)}
 
-/* ws status pill */
-.ws-pill{
-  position:absolute;top:10px;right:12px;
-  padding:3px 9px;border-radius:20px;font-size:10px;font-weight:900;letter-spacing:1px
+/* DONUT RING */
+.donut-wrap{position:relative;width:90px;height:90px;flex-shrink:0}
+.donut-wrap svg{width:90px;height:90px;transform:rotate(-90deg)}
+.donut-bg{fill:none;stroke:#f0f0f0;stroke-width:9}
+.donut-fill{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.donut-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;
 }
-.ws-pill.live {background:var(--green);color:#020617}
-.ws-pill.wait {background:var(--yellow);color:#020617}
-.ws-pill.error{background:var(--red);color:#fff}
-
-.sig-phase{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--muted);margin-top:10px}
-.sig-phase.locking{color:var(--yellow)}
-
-.sig-countdown{font-family:var(--font-m);font-size:52px;font-weight:700;color:var(--sky);line-height:1}
-
-.sig-main{font-size:48px;font-weight:900;letter-spacing:5px;transition:color .4s}
-.sig-main.WAIT{color:var(--yellow)}
-.sig-main.UP  {color:var(--green)}
-.sig-main.DOWN{color:var(--red)}
-.sig-main.SKIP{color:rgba(255,255,255,.3)}
-
-.sig-hint{font-size:11px;color:var(--muted);text-align:center;font-family:var(--font-m);min-height:16px}
-
-/* CONFIDENCE RING — inside each signal box */
-.conf-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
-.conf-ring{
-  width:80px;height:80px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center
-}
-.conf-ring.td-ring{background:conic-gradient(var(--sky) var(--pct,0deg),rgba(255,255,255,.1) 0)}
-.conf-ring.fh-ring{background:conic-gradient(var(--purple) var(--pct,0deg),rgba(255,255,255,.1) 0)}
-.conf-inner{
-  width:56px;height:56px;border-radius:50%;background:var(--surface);
+.donut-pct{font-size:22px;font-weight:800;line-height:1}
+.donut-arrow{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  width:18px;height:18px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-m);font-size:16px;font-weight:700
+  color:#fff;font-size:10px;font-weight:900;
+  rotate:90deg;
 }
-.conf-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted)}
 
-/* TICK WINDOW BARS */
-.window-card{grid-column:1/-1}
-.window-track{display:flex;gap:2px;height:20px;align-items:flex-end;margin-top:8px}
-.tick-bar{flex:1;border-radius:3px 3px 0 0;transition:height .2s;min-height:3px}
+/* ── 4 STAT BOXES ── */
+.stat-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;margin-bottom:12px;
+}
+.stat-box{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:4px;
+  align-items:center;text-align:center;
+}
+.stat-num{font-size:26px;font-weight:800;color:var(--text)}
+.stat-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
 
-/* BOTTOM ROW */
-.bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+/* ── BOTTOM 2-COL ── */
+.bottom-row{display:grid;grid-template-columns:1fr 1.6fr;gap:12px}
 
-/* DUAL FILTER */
-.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.filter-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 16px}
-.filter-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
-.filter-stats{font-family:var(--font-m);font-size:12px;color:var(--muted)}
-.filter-rules{font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;font-family:var(--font-m)}
+/* STAIRS CARD */
+.stairs-card{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;
+}
+.stairs-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.stairs-canvas-wrap{
+  position:relative;flex:1;min-height:220px;
+  background:linear-gradient(135deg,#0a0f1e 0%,#0d1b3e 50%,#0a0f1e 100%);
+  border-radius:8px;overflow:hidden;
+}
+/* Ambient glow lines on sides */
+.stairs-canvas-wrap::before,.stairs-canvas-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:4px;
+  background:linear-gradient(to bottom,transparent,#0ea5e9,#f5b301,#0ea5e9,transparent);
+  opacity:.6;border-radius:2px;
+}
+.stairs-canvas-wrap::before{left:8px}
+.stairs-canvas-wrap::after{right:8px}
 
-/* RESPONSIVE */
-@media(max-width:640px){
-  .top-row{grid-template-columns:1fr 1fr}
-  .chart-card{grid-column:1/-1}
-  .dual-signal{grid-template-columns:1fr}
-  .bottom{grid-template-columns:1fr 1fr}
-  .filter-grid{grid-template-columns:1fr}
-  .sig-countdown{font-size:40px}
-  .sig-main{font-size:36px}
+#stairsCanvas{width:100%;height:100%;display:block}
+
+.stairs-info{
+  display:flex;gap:16px;align-items:center;
+  font-family:var(--mono);font-size:11px;flex-wrap:wrap;
+}
+.si-item{display:flex;flex-direction:column;gap:2px}
+.si-label{color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.si-val{font-weight:700;font-size:14px}
+
+/* CHART CARD */
+.chart-card{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:16px;display:flex;flex-direction:column;gap:10px;
+}
+.chart-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.chart-legend{display:flex;gap:12px;align-items:center}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
+.legend-item{font-size:11px;font-weight:600;color:var(--muted);display:flex;align-items:center}
+.chart-toggle{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.toggle-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.toggle-wrap{display:flex;align-items:center;gap:6px}
+.toggle-switch{
+  width:36px;height:20px;background:var(--sky);border-radius:10px;
+  position:relative;cursor:pointer;
+}
+.toggle-switch::after{
+  content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;
+  border-radius:50%;background:#fff;transition:left .2s;
+}
+.toggle-switch.off{background:var(--border)}
+.toggle-switch.off::after{left:19px}
+.chart-avg{display:flex;gap:16px;margin-top:4px}
+.avg-item{font-size:12px;font-weight:700;color:var(--muted)}
+.avg-val{color:var(--text);font-size:14px;font-weight:800}
+
+#barCanvas{width:100%;height:180px;display:block}
+
+/* ── SIGNAL OVERLAY (bottom right of stairs) ── */
+.src-signals{
+  position:absolute;bottom:8px;left:8px;right:8px;
+  display:flex;gap:6px;
+}
+.src-sig-pill{
+  flex:1;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  border-radius:6px;padding:4px 6px;text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+}
+.ssp-src{font-size:8px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.5)}
+.ssp-sig{font-size:13px;font-weight:900;letter-spacing:2px}
+.ssp-sig.UP  {color:#22c55e}
+.ssp-sig.DOWN{color:#ef4444}
+.ssp-sig.WAIT{color:#f5b301}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .kpi-panel,.bottom-row{grid-template-columns:1fr}
+  .kpi-section+.kpi-section{border-left:none;border-top:1px solid var(--border)}
+  .stat-row{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">VED <span>·</span> FRESH WATER ENGINE <span style="font-size:13px;letter-spacing:1px;color:var(--muted)">DUAL SOURCE</span></div>
-  <div class="ist-clock" id="clock">IST --:--:--</div>
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div>
+    <div class="filter-label">Symbol</div>
+    <div class="filter-val">EUR / USD</div>
+  </div>
+  <div class="filter-sep"></div>
+  <div>
+    <div class="filter-label">Session</div>
+    <div class="filter-val" id="sessionLabel">London</div>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="radio-group">
+    <div class="radio-item active" id="rb30"><div class="radio-dot"></div>30s Cycle</div>
+    <div class="radio-item" id="rb60"><div class="radio-dot"></div>60s Cycle</div>
+    <div class="radio-item" id="rbLive"><div class="radio-dot"></div>Live</div>
+  </div>
+  <div class="filter-sep"></div>
+  <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text)" id="clock">IST --:--:--</div>
+  <button class="btn-clear" onclick="location.reload()">RESET</button>
+  <button class="btn-filter">LIVE ▶</button>
 </div>
 
-<!-- TOP INFO ROW -->
-<div class="top-row">
+<!-- KPI PANEL -->
+<div class="kpi-panel">
 
-  <!-- Live Price -->
-  <div class="card">
-    <div class="card-label">Live Price · EUR/USD</div>
-    <div class="price-big" id="livePrice">-.-----</div>
-    <div class="price-sub" id="priceTime">Waiting…</div>
-    <span class="src-tag td" id="priceSourceTag">—</span>
+  <!-- SALES = TD Signal -->
+  <div class="kpi-section">
+    <div class="kpi-section-title">TWELVE DATA</div>
+    <div class="kpi-inner">
+      <div class="kpi-left">
+        <div class="kpi-sub-label">Ticks Received</div>
+        <div class="kpi-val orange" id="tdTicksKpi">0</div>
+        <div style="height:10px"></div>
+        <div class="kpi-sub-label">WS Status</div>
+        <div class="kpi-val orange" id="tdWsKpi">CONNECTING</div>
+      </div>
+      <div class="donut-wrap" id="donutTD">
+        <svg viewBox="0 0 90 90">
+          <circle class="donut-bg" cx="45" cy="45" r="36"/>
+          <circle class="donut-fill" id="donutFillTD" cx="45" cy="45" r="36"
+            stroke="#f97316" stroke-dasharray="226.2" stroke-dashoffset="226.2"/>
+        </svg>
+        <div class="donut-center">
+          <div class="donut-pct" id="donutPctTD" style="color:#f97316">0%</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:600">CONF</div>
+        </div>
+        <div class="donut-arrow" style="background:#f97316" id="donutArrowTD">→</div>
+      </div>
+      <div class="kpi-right">
+        <div class="kpi-sub-label">Signal</div>
+        <div class="kpi-val orange" id="tdSigKpi">WAIT</div>
+        <div style="height:10px"></div>
+        <div class="kpi-sub-label">Bias</div>
+        <div class="kpi-val orange" id="tdBiasKpi">--</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Bias (combined) -->
-  <div class="card">
-    <div class="card-label">Market Bias (merged ticks)</div>
-    <div class="bias-val" id="biasLabel">--</div>
-    <div class="bias-bar-wrap"><div class="bias-bar" id="biasBar" style="width:50%"></div></div>
-    <div class="bias-num" id="biasNum">--</div>
+  <!-- RECEIVABLES = FH Signal -->
+  <div class="kpi-section">
+    <div class="kpi-section-title">FINNHUB</div>
+    <div class="kpi-inner">
+      <div class="kpi-left">
+        <div class="kpi-sub-label">Ticks Received</div>
+        <div class="kpi-val green" id="fhTicksKpi">0</div>
+        <div style="height:10px"></div>
+        <div class="kpi-sub-label">WS Status</div>
+        <div class="kpi-val green" id="fhWsKpi">CONNECTING</div>
+      </div>
+      <div class="donut-wrap" id="donutFH">
+        <svg viewBox="0 0 90 90">
+          <circle class="donut-bg" cx="45" cy="45" r="36"/>
+          <circle class="donut-fill" id="donutFillFH" cx="45" cy="45" r="36"
+            stroke="#22c55e" stroke-dasharray="226.2" stroke-dashoffset="226.2"/>
+        </svg>
+        <div class="donut-center">
+          <div class="donut-pct" id="donutPctFH" style="color:#22c55e">0%</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:600">CONF</div>
+        </div>
+        <div class="donut-arrow" style="background:#22c55e" id="donutArrowFH">→</div>
+      </div>
+      <div class="kpi-right">
+        <div class="kpi-sub-label">Signal</div>
+        <div class="kpi-val green" id="fhSigKpi">WAIT</div>
+        <div style="height:10px"></div>
+        <div class="kpi-sub-label">Bias</div>
+        <div class="kpi-val green" id="fhBiasKpi">--</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Tick counts -->
-  <div class="card">
-    <div class="card-label">Tick Sources</div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
-      <div style="font-family:var(--font-m);font-size:13px">
-        <span style="color:var(--sky);font-weight:700">TD</span>
-        <span style="color:var(--muted)"> real ticks: </span>
-        <span style="color:var(--text);font-weight:700" id="tdTickCount">0</span>
+  <!-- PURCHASE = EO Signal -->
+  <div class="kpi-section">
+    <div class="kpi-section-title">EODHD</div>
+    <div class="kpi-inner">
+      <div class="kpi-left">
+        <div class="kpi-sub-label">Ticks Received</div>
+        <div class="kpi-val sky" id="eoTicksKpi">0</div>
+        <div style="height:10px"></div>
+        <div class="kpi-sub-label">WS Status</div>
+        <div class="kpi-val sky" id="eoWsKpi">CONNECTING</div>
       </div>
-      <div style="font-family:var(--font-m);font-size:13px">
-        <span style="color:var(--purple);font-weight:700">FH</span>
-        <span style="color:var(--muted)"> real ticks: </span>
-        <span style="color:var(--text);font-weight:700" id="fhTickCount">0</span>
+      <div class="donut-wrap" id="donutEO">
+        <svg viewBox="0 0 90 90">
+          <circle class="donut-bg" cx="45" cy="45" r="36"/>
+          <circle class="donut-fill" id="donutFillEO" cx="45" cy="45" r="36"
+            stroke="#0ea5e9" stroke-dasharray="226.2" stroke-dashoffset="226.2"/>
+        </svg>
+        <div class="donut-center">
+          <div class="donut-pct" id="donutPctEO" style="color:#0ea5e9">0%</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:600">CONF</div>
+        </div>
+        <div class="donut-arrow" style="background:#0ea5e9" id="donutArrowEO">→</div>
       </div>
-      <div style="font-family:var(--font-m);font-size:13px">
-        <span style="color:var(--green);font-weight:700">TOT</span>
-        <span style="color:var(--muted)"> merged: </span>
-        <span style="color:var(--text);font-weight:700" id="mergedTotal">0</span>
+      <div class="kpi-right">
+        <div class="kpi-sub-label">Signal</div>
+        <div class="kpi-val sky" id="eoSigKpi">WAIT</div>
+        <div style="height:10px"></div>
+        <div class="kpi-sub-label">Bias</div>
+        <div class="kpi-val sky" id="eoBiasKpi">--</div>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- PRICE CHART (full width) -->
-<div class="top-row" style="grid-template-columns:1fr;margin-bottom:12px">
-  <div class="card chart-card" style="grid-column:unset">
-    <div class="card-label">Price Flow (last 60 ticks · merged)</div>
-    <div class="chart-wrap">
-      <svg class="chart">
-        <defs>
-          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.7"/>
-            <stop offset="40%" stop-color="var(--sky)"/>
-            <stop offset="100%" stop-color="var(--green)"/>
-          </linearGradient>
-        </defs>
-        <path id="priceLine" fill="none" stroke="url(#lineGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <line id="divLine" x1="0" y1="0" x2="0" y2="100" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
-      </svg>
-    </div>
-    <div style="display:flex;gap:14px;margin-top:5px;font-size:10px;font-family:var(--font-m);color:var(--muted);flex-wrap:wrap">
-      <span>🟡 Prev 20s</span>
-      <span>🔵 Curr 40s</span>
-      <span style="color:var(--sky)">● TD ticks</span>
-      <span style="color:var(--purple)">● FH ticks</span>
-    </div>
+<!-- 4 STAT BOXES -->
+<div class="stat-row">
+  <div class="stat-box">
+    <div class="stat-num" id="statPrice">-.-----</div>
+    <div class="stat-lbl">Live EUR/USD</div>
   </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     DUAL SIGNAL BOXES — MAIN FEATURE
-══════════════════════════════════════ -->
-<div class="dual-signal">
-
-  <!-- ── TWELVE DATA SIGNAL BOX ── -->
-  <div class="sig-box" id="sigBoxTD">
-    <span class="sig-src-badge td">⬡ TWELVE DATA</span>
-    <span class="ws-pill wait" id="wsPillTD">CONNECTING</span>
-
-    <div class="sig-phase" id="sigPhaseTD" style="margin-top:10px">WATCHING</div>
-    <div class="sig-countdown" id="sigCdTD">60</div>
-    <div class="sig-main WAIT" id="sigMainTD">WAIT</div>
-    <div class="sig-hint" id="sigHintTD">prev=0 · curr=0 · ticks=0</div>
-
-    <!-- TD Confidence Ring -->
-    <div class="conf-wrap" style="margin-top:4px">
-      <div class="conf-ring td-ring" id="confRingTD">
-        <div class="conf-inner" id="confValTD">0%</div>
-      </div>
-      <div class="conf-label">CONFIDENCE</div>
-    </div>
+  <div class="stat-box">
+    <div class="stat-num" id="statTotalTicks">0</div>
+    <div class="stat-lbl">Total Real Ticks</div>
   </div>
-
-  <!-- ── FINNHUB SIGNAL BOX ── -->
-  <div class="sig-box" id="sigBoxFH">
-    <span class="sig-src-badge fh">⬡ FINNHUB</span>
-    <span class="ws-pill wait" id="wsPillFH">CONNECTING</span>
-
-    <div class="sig-phase" id="sigPhaseFH" style="margin-top:10px">WATCHING</div>
-    <div class="sig-countdown" id="sigCdFH">60</div>
-    <div class="sig-main WAIT" id="sigMainFH">WAIT</div>
-    <div class="sig-hint" id="sigHintFH">prev=0 · curr=0 · ticks=0</div>
-
-    <!-- FH Confidence Ring -->
-    <div class="conf-wrap" style="margin-top:4px">
-      <div class="conf-ring fh-ring" id="confRingFH">
-        <div class="conf-inner" id="confValFH">0%</div>
-      </div>
-      <div class="conf-label">CONFIDENCE</div>
-    </div>
+  <div class="stat-box">
+    <div class="stat-num" id="statConsensus">--</div>
+    <div class="stat-lbl">Consensus Signal</div>
   </div>
-
-</div>
-
-<!-- TICK WINDOW BAR -->
-<div class="top-row" style="grid-template-columns:1fr;margin-bottom:12px">
-  <div class="card" style="grid-column:unset">
-    <div class="card-label" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      Combined 60-Tick Window
-      <span style="padding:2px 8px;border-radius:10px;background:rgba(245,179,1,.15);color:var(--yellow);font-size:10px;font-weight:700" id="prevPill">PREV 20s: 0</span>
-      <span style="padding:2px 8px;border-radius:10px;background:rgba(14,165,233,.15);color:var(--sky);font-size:10px;font-weight:700" id="currPill">CURR 40s: 0</span>
-    </div>
-    <div class="window-track" id="tickTrack"></div>
+  <div class="stat-box">
+    <div class="stat-num" id="statLive">0/3</div>
+    <div class="stat-lbl">Sources Live</div>
   </div>
 </div>
 
 <!-- BOTTOM ROW -->
-<div class="bottom">
-  <div class="card">
-    <div class="card-label">TD WebSocket</div>
-    <div style="font-size:18px;font-weight:900" id="wsStatusTD">WAIT</div>
-  </div>
-  <div class="card">
-    <div class="card-label">FH WebSocket</div>
-    <div style="font-size:18px;font-weight:900" id="wsStatusFH">WAIT</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Cycle Move (pip)</div>
-    <div style="font-size:22px;font-weight:900;font-family:var(--font-m)" id="moveVal">--</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Ticks This Minute</div>
-    <div style="font-size:22px;font-weight:900;font-family:var(--font-m)" id="tickCount">0</div>
-  </div>
-</div>
+<div class="bottom-row">
 
-<!-- DUAL FILTER STATS -->
-<div class="filter-grid">
-  <div class="filter-card">
-    <div class="filter-title" style="color:var(--sky)">⬡ TWELVE DATA — Tick Filter</div>
-    <div class="filter-stats" id="filterStatsTD">Waiting…</div>
-    <div class="filter-rules">Rules: No-dup · 200ms · &gt;0.2pip · &lt;5pip · No-spike · No-uniform</div>
+  <!-- STAIRS CARD -->
+  <div class="stairs-card">
+    <div class="stairs-title">TICK MOMENTUM · LIVE STAIRS</div>
+    <div class="stairs-canvas-wrap">
+      <canvas id="stairsCanvas" width="400" height="240"></canvas>
+      <!-- source signal pills inside stairs card -->
+      <div class="src-signals">
+        <div class="src-sig-pill">
+          <div class="ssp-src">TD</div>
+          <div class="ssp-sig WAIT" id="pillTD">WAIT</div>
+        </div>
+        <div class="src-sig-pill">
+          <div class="ssp-src">FH</div>
+          <div class="ssp-sig WAIT" id="pillFH">WAIT</div>
+        </div>
+        <div class="src-sig-pill">
+          <div class="ssp-src">EO</div>
+          <div class="ssp-sig WAIT" id="pillEO">WAIT</div>
+        </div>
+      </div>
+    </div>
+    <div class="stairs-info">
+      <div class="si-item">
+        <div class="si-label">Step</div>
+        <div class="si-val" id="siStep" style="color:#0ea5e9">0</div>
+      </div>
+      <div class="si-item">
+        <div class="si-label">Total Ticks</div>
+        <div class="si-val" id="siTotal" style="color:#f5b301">0</div>
+      </div>
+      <div class="si-item">
+        <div class="si-label">Per Step</div>
+        <div class="si-val" id="siPerStep" style="color:#22c55e">5</div>
+      </div>
+      <div class="si-item">
+        <div class="si-label">Progress</div>
+        <div class="si-val" id="siProgress" style="color:#a855f7">0%</div>
+      </div>
+    </div>
   </div>
-  <div class="filter-card">
-    <div class="filter-title" style="color:var(--purple)">⬡ FINNHUB — Tick Filter</div>
-    <div class="filter-stats" id="filterStatsFH">Waiting…</div>
-    <div class="filter-rules">Rules: No-dup · 200ms · &gt;0.2pip · &lt;5pip · No-spike · No-uniform</div>
+
+  <!-- BAR CHART CARD -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">TICK FLOW · LAST 30 CYCLES</div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>TD Ticks</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span>FH Ticks</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f97316"></span>EO Ticks</div>
+        </div>
+      </div>
+      <div class="chart-toggle">
+        <div class="toggle-label">SALE VS PURCHASE</div>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">COMPARE</div>
+        <div class="toggle-label" style="color:var(--muted);margin-bottom:2px">UP vs DOWN</div>
+        <div class="toggle-wrap">
+          <div class="toggle-switch" id="toggleSwitch"></div>
+        </div>
+      </div>
+    </div>
+    <canvas id="barCanvas" width="600" height="180"></canvas>
+    <div class="chart-avg">
+      <div class="avg-item">AVG TICKS/CYCLE <span class="avg-val" id="avgTicks">0</span></div>
+      <div class="avg-item">CYCLE MOVE <span class="avg-val" id="avgMove">--</span></div>
+      <div class="avg-item">FILTER PURITY <span class="avg-val" id="avgPurity">--%</span></div>
+    </div>
   </div>
+
 </div>
 
 <script>
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════
    CONFIG
-═══════════════════════════════════════ */
+══════════════════════════════════════════ */
 const TWELVE_KEY  = "7d8ec8ca7bf8483b81ff4490c76dfe88";
 const FINNHUB_KEY = "d97ltghr01qicrqvhid0d97ltghr01qicrqvhidg";
-const TD_SYMBOL   = "EUR/USD";
-const FH_SYMBOL   = "OANDA:EUR_USD";
-const WATCH_SEC   = 40;
-const TOTAL_SEC   = 60;
+const EODHD_KEY   = "demo";
+const WATCH_SEC   = 15;
+const TOTAL_SEC   = 30;
+const STAIRS_MAX  = 10;   // 10 stairs total
+const TICKS_PER_STEP = 5; // har 5 real ticks = 1 step upar
 
-/* ═══════════════════════════════════════
-   PER-SOURCE STATE
-   TD aur FH ka apna alag signal engine
-═══════════════════════════════════════ */
-function makeSourceState(name) {
-  return {
-    name,
-    prevWindow:       [],
-    currWindow:       [],
-    lastWindowBuffer: [],
-    lastPrice:        null,
-    cycleId:          null,
-    locked:           null,
-    ticksAccepted:    0,
-
-    // filter
-    ft: {
-      lastAccepted: null,
-      lastTime:     0,
-      recentDeltas: [],
-      totalRaw:     0,
-      totalFake:    0,
-      totalReal:    0
-    }
-  };
+/* ══════════════════════════════════════════
+   SOURCE STATE
+══════════════════════════════════════════ */
+function makeSrc(id){
+  return{id,prevWindow:[],currWindow:[],lastWindowBuffer:[],
+    lastPrice:null,cycleId:null,locked:null,ticksAccepted:0,
+    conf:0,bias:50,signal:'WAIT',
+    ft:{lastAccepted:null,lastTime:0,recentDeltas:[],totalRaw:0,totalFake:0,totalReal:0}};
 }
+const SRCS={td:makeSrc('td'),fh:makeSrc('fh'),eo:makeSrc('eo')};
 
-const TD = makeSourceState('TD');
-const FH = makeSourceState('FH');
+let priceHistory=[];
+let totalRealTicks=0;
 
-/* Shared chart history (merged, for display) */
-let priceHistory = [];
-let lastAnyPrice = null;
+// Staircase state
+let stairStep=0;       // current step (0–STAIRS_MAX)
+let stairProgress=0;   // ticks toward next step (0–TICKS_PER_STEP)
+let personY=0;         // current animated Y of person
+let personTargetY=0;   // target Y
+let cycleHistory=[];   // [{td,fh,eo}] tick counts per cycle
 
-/* ═══════════════════════════════════════
-   FILTER — same rules, per-state
-═══════════════════════════════════════ */
-const FT_MIN_CHANGE = 0.00002;
-const FT_MAX_CHANGE = 0.0005;
-const FT_MIN_MS     = 200;
-const FT_SPIKE_MULT = 4.0;
+// Bar chart state
+let barHistory=[];     // last 30 cycles [{td,fh,eo,up,down}]
 
-function filterTick(price, nowMs, ft) {
+const liveIds=new Set();
+
+/* ══════════════════════════════════════════
+   IST CLOCK + SESSION
+══════════════════════════════════════════ */
+function istNow(){return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));}
+function getSession(h){
+  if(h>=13&&h<17)return'London';
+  if(h>=17&&h<22)return'New York';
+  if(h>=22||h<5) return'Tokyo';
+  return'Pre-Market';
+}
+setInterval(()=>{
+  const d=istNow();
+  document.getElementById('clock').textContent='IST '+d.toTimeString().slice(0,8);
+  document.getElementById('sessionLabel').textContent=getSession(d.getHours());
+},1000);
+
+/* ══════════════════════════════════════════
+   FILTER
+══════════════════════════════════════════ */
+const FT_MIN=0.00002,FT_MAX=0.0005,FT_MS=200,FT_MULT=4.0;
+function filterTick(price,nowMs,ft){
   ft.totalRaw++;
-
-  if (price === ft.lastAccepted) { ft.totalFake++; return false; }
-
-  const gap = nowMs - ft.lastTime;
-  if (ft.lastAccepted !== null && gap < FT_MIN_MS) { ft.totalFake++; return false; }
-
-  if (ft.lastAccepted !== null) {
-    const delta = Math.abs(price - ft.lastAccepted);
-    if (delta < FT_MIN_CHANGE) { ft.totalFake++; return false; }
-    if (delta > FT_MAX_CHANGE) { ft.totalFake++; return false; }
-
-    if (ft.recentDeltas.length >= 5) {
-      const avg = ft.recentDeltas.reduce((a,b)=>a+b,0) / ft.recentDeltas.length;
-      if (avg > 0 && delta > avg * FT_SPIKE_MULT) { ft.totalFake++; return false; }
+  if(price===ft.lastAccepted){ft.totalFake++;return false;}
+  if(ft.lastAccepted!==null&&(nowMs-ft.lastTime)<FT_MS){ft.totalFake++;return false;}
+  if(ft.lastAccepted!==null){
+    const d=Math.abs(price-ft.lastAccepted);
+    if(d<FT_MIN||d>FT_MAX){ft.totalFake++;return false;}
+    if(ft.recentDeltas.length>=5){
+      const avg=ft.recentDeltas.reduce((a,b)=>a+b,0)/ft.recentDeltas.length;
+      if(avg>0&&d>avg*FT_MULT){ft.totalFake++;return false;}
     }
-    if (ft.recentDeltas.length >= 4) {
-      const last4 = ft.recentDeltas.slice(-4);
-      if (last4.every(d => Math.abs(d - delta) < 0.000005)) { ft.totalFake++; return false; }
+    if(ft.recentDeltas.length>=4&&ft.recentDeltas.slice(-4).every(x=>Math.abs(x-d)<0.000005)){ft.totalFake++;return false;}
+    ft.recentDeltas.push(d);if(ft.recentDeltas.length>20)ft.recentDeltas.shift();
+  }
+  ft.lastAccepted=price;ft.lastTime=nowMs;ft.totalReal++;return true;
+}
+
+/* ══════════════════════════════════════════
+   AUTO-REFRESH
+══════════════════════════════════════════ */
+const failCount={td:0,fh:0,eo:0};
+let rfTimer=null,rfing=false;
+function onFail(id){
+  failCount[id]++;
+  if((Object.values(failCount).some(v=>v>=3)||Object.values(failCount).every(v=>v>=2))&&!rfing) startRF(id);
+}
+function onConn(id){failCount[id]=0;if(rfTimer){clearInterval(rfTimer);rfTimer=null;rfing=false;hideBanner();}}
+function startRF(id){rfing=true;let s=3;showBanner(id,s);rfTimer=setInterval(()=>{s--;if(s<=0){clearInterval(rfTimer);showBanner(id,0);setTimeout(()=>location.reload(),400);}else showBanner(id,s);},1000);}
+function showBanner(id,s){
+  let b=document.getElementById('rfB');
+  if(!b){b=document.createElement('div');b.id='rfB';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#ef4444;color:#fff;font-family:monospace;font-size:13px;font-weight:700;padding:9px 14px;display:flex;align-items:center;justify-content:space-between';document.body.prepend(b);}
+  if(s===0){b.innerHTML='<span>🔄 REFRESHING…</span>';b.style.background='#f5b301';b.style.color='#000';}
+  else b.innerHTML=`<span>⚠️ ${id.toUpperCase()} WS error — refresh in <b>${s}s</b></span><button onclick="location.reload()" style="background:#fff;color:#ef4444;border:none;padding:3px 10px;border-radius:5px;font-weight:900;cursor:pointer">NOW</button>`;
+}
+function hideBanner(){const b=document.getElementById('rfB');if(b)b.remove();}
+
+/* ══════════════════════════════════════════
+   WS STATUS UI
+══════════════════════════════════════════ */
+function setWsUi(id,label){
+  const kpiId={td:'tdWsKpi',fh:'fhWsKpi',eo:'eoWsKpi'}[id];
+  if(document.getElementById(kpiId))document.getElementById(kpiId).textContent=label;
+  if(label==='LIVE')liveIds.add(id);else liveIds.delete(id);
+  document.getElementById('statLive').textContent=liveIds.size+'/3';
+  document.getElementById('statLive').style.color=liveIds.size===3?'#22c55e':liveIds.size>=1?'#f5b301':'#ef4444';
+}
+
+/* ══════════════════════════════════════════
+   WS 1 — TWELVE DATA
+══════════════════════════════════════════ */
+let wsTD=null;
+function connectTD(){
+  if(wsTD)try{wsTD.close();}catch(e){}
+  setWsUi('td','CONNECTING');
+  wsTD=new WebSocket("wss://ws.twelvedata.com/v1/quotes/price?apikey="+TWELVE_KEY);
+  wsTD.onopen=()=>{wsTD.send(JSON.stringify({action:"subscribe",params:{symbols:"EUR/USD"}}));setWsUi('td','LIVE');onConn('td');};
+  wsTD.onmessage=(ev)=>{
+    let m;try{m=JSON.parse(ev.data);}catch{return;}
+    if(m.event==="price"&&m.price!=null){const p=parseFloat(m.price);if(!isFinite(p))return;if(filterTick(p,Date.now(),SRCS.td.ft)){SRCS.td.ticksAccepted++;onTickSrc(p,SRCS.td);}}
+  };
+  wsTD.onerror=()=>{setWsUi('td','ERR');onFail('td');};
+  wsTD.onclose=()=>{setWsUi('td','RETRY…');onFail('td');setTimeout(connectTD,3000);};
+}
+
+/* ══════════════════════════════════════════
+   WS 2 — FINNHUB
+══════════════════════════════════════════ */
+let wsFH=null;
+function connectFH(){
+  if(wsFH)try{wsFH.close();}catch(e){}
+  setWsUi('fh','CONNECTING');
+  wsFH=new WebSocket("wss://ws.finnhub.io?token="+FINNHUB_KEY);
+  wsFH.onopen=()=>{wsFH.send(JSON.stringify({type:"subscribe",symbol:"OANDA:EUR_USD"}));setWsUi('fh','LIVE');onConn('fh');};
+  wsFH.onmessage=(ev)=>{
+    let m;try{m=JSON.parse(ev.data);}catch{return;}
+    if(m.type==="trade"&&Array.isArray(m.data)){
+      m.data.forEach(t=>{if(t.s!=="OANDA:EUR_USD")return;const p=parseFloat(t.p);if(!isFinite(p)||p<=0)return;if(filterTick(p,Date.now(),SRCS.fh.ft)){SRCS.fh.ticksAccepted++;onTickSrc(p,SRCS.fh);}});
     }
-
-    ft.recentDeltas.push(delta);
-    if (ft.recentDeltas.length > 20) ft.recentDeltas.shift();
-  }
-
-  ft.lastAccepted = price;
-  ft.lastTime     = nowMs;
-  ft.totalReal++;
-  return true;
-}
-
-function updateFilterUi(ft, elId) {
-  const pct = ft.totalRaw > 0 ? Math.round(ft.totalReal / ft.totalRaw * 100) : 0;
-  const el  = document.getElementById(elId);
-  if (!el) return;
-  el.textContent = `Raw: ${ft.totalRaw} | Real: ${ft.totalReal} | Fake: ${ft.totalFake} | Purity: ${pct}%`;
-  el.style.color = pct >= 90 ? 'var(--green)' : pct >= 75 ? 'var(--yellow)' : 'var(--red)';
-}
-
-/* ═══════════════════════════════════════
-   IST CLOCK
-═══════════════════════════════════════ */
-function istNow() {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-}
-setInterval(() => {
-  document.getElementById("clock").textContent =
-    "IST " + istNow().toTimeString().slice(0,8);
-}, 1000);
-
-/* ═══════════════════════════════════════
-   AUTO-REFRESH SYSTEM
-   Logic:
-   • Har source ka failCount track hota hai
-   • error/close pe failCount++
-   • onopen pe failCount reset
-   • Dono ka failCount >= 2 matlab dono fail hain
-     → 3 second countdown banner dikhao → page.reload()
-   • Sirf ek source fail ho to normal reconnect chalti rahe
-═══════════════════════════════════════ */
-const failCount = { TD: 0, FH: 0 };
-let refreshTimer = null;   // active countdown interval
-let refreshing   = false;  // ek baar hi trigger ho
-
-function onSourceFail(src) {
-  failCount[src]++;
-
-  // Dono fail ho gaye hain?
-  const bothFailed = failCount.TD >= 2 && failCount.FH >= 2;
-  // Ya ek source ne 3 baar fail kiya?
-  const oneFailed  = failCount[src] >= 3;
-
-  if ((bothFailed || oneFailed) && !refreshing) {
-    triggerAutoRefresh(src);
-  }
-}
-
-function onSourceConnect(src) {
-  failCount[src] = 0;  // reset on successful connect
-  // Agar refresh countdown chal raha tha, cancel karo
-  if (refreshTimer) {
-    clearInterval(refreshTimer);
-    refreshTimer = null;
-    refreshing   = false;
-    hideBanner();
-  }
-}
-
-function triggerAutoRefresh(src) {
-  refreshing = true;
-  let secs   = 3;
-  showBanner(src, secs);
-
-  refreshTimer = setInterval(() => {
-    secs--;
-    if (secs <= 0) {
-      clearInterval(refreshTimer);
-      showBanner(src, 0);
-      setTimeout(() => location.reload(), 400);
-    } else {
-      showBanner(src, secs);
-    }
-  }, 1000);
-}
-
-/* ── Banner UI ── */
-function showBanner(src, secs) {
-  let banner = document.getElementById('refreshBanner');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'refreshBanner';
-    banner.style.cssText = `
-      position:fixed; top:0; left:0; right:0; z-index:9999;
-      background:#ef4444; color:#fff;
-      font-family:'JetBrains Mono',monospace;
-      font-size:14px; font-weight:700;
-      padding:10px 16px;
-      display:flex; align-items:center; justify-content:space-between;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
-    `;
-    document.body.prepend(banner);
-  }
-  if (secs === 0) {
-    banner.innerHTML = `<span>🔄 REFRESHING PAGE NOW…</span>`;
-    banner.style.background = '#f5b301';
-    banner.style.color = '#020617';
-  } else {
-    banner.innerHTML = `
-      <span>⚠️ ${src} WebSocket error — auto-refresh in <b>${secs}s</b></span>
-      <button onclick="location.reload()" style="
-        background:#fff; color:#ef4444; border:none;
-        padding:4px 12px; border-radius:8px; font-weight:900;
-        cursor:pointer; font-size:13px
-      ">REFRESH NOW</button>
-    `;
-  }
-}
-
-function hideBanner() {
-  const b = document.getElementById('refreshBanner');
-  if (b) b.remove();
-}
-
-/* ═══════════════════════════════════════
-   WEBSOCKET — TWELVE DATA
-═══════════════════════════════════════ */
-let wsTD = null;
-function connectTD() {
-  if (wsTD) try { wsTD.close(); } catch(e){}
-  setWsUi('TD', 'CONNECTING', 'wait');
-
-  wsTD = new WebSocket("wss://ws.twelvedata.com/v1/quotes/price?apikey=" + TWELVE_KEY);
-
-  wsTD.onopen = () => {
-    wsTD.send(JSON.stringify({ action:"subscribe", params:{ symbols: TD_SYMBOL } }));
-    setWsUi('TD', 'LIVE', 'live');
-    onSourceConnect('TD');
+    if(m.type==="ping")try{wsFH.send(JSON.stringify({type:"pong"}));}catch(e){}
+    if(m.type==="error"){setWsUi('fh','ERR');onFail('fh');}
   };
-  wsTD.onmessage = (ev) => {
-    let m; try { m = JSON.parse(ev.data); } catch { return; }
-    if (m.event === "price" && m.price != null) {
-      const p = parseFloat(m.price);
-      if (!isFinite(p)) return;
-      const ok = filterTick(p, Date.now(), TD.ft);
-      updateFilterUi(TD.ft, 'filterStatsTD');
-      if (ok) { TD.ticksAccepted++; onTickSource(p, TD, 'td'); }
-    }
-    if (m.event === "subscribe-status" && m.status === "error")
-      setWsUi('TD', 'SUB ERR', 'error');
-  };
-  wsTD.onerror = () => { setWsUi('TD', 'WS ERR', 'error'); onSourceFail('TD'); };
-  wsTD.onclose = () => {
-    setWsUi('TD', 'RETRY…', 'wait');
-    onSourceFail('TD');
-    setTimeout(connectTD, 3000);
-  };
+  wsFH.onerror=()=>{setWsUi('fh','ERR');onFail('fh');};
+  wsFH.onclose=()=>{setWsUi('fh','RETRY…');onFail('fh');setTimeout(connectFH,4000);};
 }
 
-/* ═══════════════════════════════════════
-   WEBSOCKET — FINNHUB
-═══════════════════════════════════════ */
-let wsFH = null;
-function connectFH() {
-  if (wsFH) try { wsFH.close(); } catch(e){}
-  setWsUi('FH', 'CONNECTING', 'wait');
-
-  wsFH = new WebSocket("wss://ws.finnhub.io?token=" + FINNHUB_KEY);
-
-  wsFH.onopen = () => {
-    wsFH.send(JSON.stringify({ type:"subscribe", symbol: FH_SYMBOL }));
-    setWsUi('FH', 'LIVE', 'live');
-    onSourceConnect('FH');
+/* ══════════════════════════════════════════
+   WS 3 — EODHD
+══════════════════════════════════════════ */
+let wsEO=null;
+function connectEO(){
+  if(wsEO)try{wsEO.close();}catch(e){}
+  setWsUi('eo','CONNECTING');
+  wsEO=new WebSocket("wss://ws.eodhistoricaldata.com/ws/forex?api_token="+EODHD_KEY);
+  wsEO.onopen=()=>{wsEO.send(JSON.stringify({action:"subscribe",symbols:"EURUSD"}));setWsUi('eo','LIVE');onConn('eo');};
+  wsEO.onmessage=(ev)=>{
+    let m;try{m=JSON.parse(ev.data);}catch{return;}
+    if(m.s==="EURUSD"&&m.a!=null&&m.b!=null){const mid=(parseFloat(m.a)+parseFloat(m.b))/2;if(!isFinite(mid)||mid<=0)return;if(filterTick(mid,Date.now(),SRCS.eo.ft)){SRCS.eo.ticksAccepted++;onTickSrc(mid,SRCS.eo);}}
+    if(m.status_code&&m.status_code!==200){setWsUi('eo','ERR');onFail('eo');}
   };
-  wsFH.onmessage = (ev) => {
-    let m; try { m = JSON.parse(ev.data); } catch { return; }
-    if (m.type === "trade" && Array.isArray(m.data)) {
-      m.data.forEach(trade => {
-        if (trade.s !== FH_SYMBOL) return;
-        const p = parseFloat(trade.p);
-        if (!isFinite(p) || p <= 0) return;
-        const ok = filterTick(p, Date.now(), FH.ft);
-        updateFilterUi(FH.ft, 'filterStatsFH');
-        if (ok) { FH.ticksAccepted++; onTickSource(p, FH, 'fh'); }
-      });
-    }
-    if (m.type === "ping") try { wsFH.send(JSON.stringify({type:"pong"})); } catch(e){}
-    if (m.type === "error") { setWsUi('FH', 'ERR', 'error'); onSourceFail('FH'); }
-  };
-  wsFH.onerror = () => { setWsUi('FH', 'WS ERR', 'error'); onSourceFail('FH'); };
-  wsFH.onclose = () => {
-    setWsUi('FH', 'RETRY…', 'wait');
-    onSourceFail('FH');
-    setTimeout(connectFH, 4000);
-  };
+  wsEO.onerror=()=>{setWsUi('eo','ERR');onFail('eo');};
+  wsEO.onclose=()=>{setWsUi('eo','RETRY…');onFail('eo');setTimeout(connectEO,4000);};
 }
 
-connectTD();
-connectFH();
+connectTD();connectFH();connectEO();
 
-/* ═══════════════════════════════════════
-   WS UI HELPER
-═══════════════════════════════════════ */
-function setWsUi(src, label, cls) {
-  const pillId = src === 'TD' ? 'wsPillTD' : 'wsPillFH';
-  const wsId   = src === 'TD' ? 'wsStatusTD' : 'wsStatusFH';
-  const color  = cls==='live' ? 'var(--green)' : cls==='error' ? 'var(--red)' : 'var(--yellow)';
-
-  const pill = document.getElementById(pillId);
-  pill.textContent = label; pill.className = 'ws-pill ' + cls;
-
-  const ws = document.getElementById(wsId);
-  ws.textContent = label; ws.style.color = color;
-}
-
-/* ═══════════════════════════════════════
-   ON TICK — per source
-   Each source apna cycle aur signal maintain karta hai
-═══════════════════════════════════════ */
-function onTickSource(p, src, srcKey) {
-  src.lastPrice = p;
-
-  const d       = istNow();
-  const elapsed = d.getSeconds();
-
-  // cycle reset
-  const cid = Math.floor(Date.now() / 60000);
-  if (cid !== src.cycleId) {
-    src.prevWindow       = [...src.lastWindowBuffer];
-    src.lastWindowBuffer = [];
-    src.currWindow       = [];
-    src.locked           = null;
-    src.cycleId          = cid;
-    src.ft.recentDeltas  = [];
-    src.ft.lastAccepted  = null;
-    src.ft.lastTime      = 0;
+/* ══════════════════════════════════════════
+   ON TICK
+══════════════════════════════════════════ */
+function onTickSrc(p,src){
+  src.lastPrice=p;
+  const nowMs=Date.now();
+  const elapsed=Math.floor((nowMs%30000)/1000);
+  const cid=Math.floor(nowMs/30000);
+  if(cid!==src.cycleId){
+    src.prevWindow=[...src.lastWindowBuffer];
+    src.lastWindowBuffer=[];src.currWindow=[];src.locked=null;src.cycleId=cid;
+    src.ft.recentDeltas=[];src.ft.lastAccepted=null;src.ft.lastTime=0;
   }
+  if(elapsed<WATCH_SEC)src.currWindow.push(p);
 
-  // watch phase tick collect
-  if (elapsed < WATCH_SEC) {
-    src.currWindow.push(p);
+  priceHistory.push(p);if(priceHistory.length>60)priceHistory.shift();
+  totalRealTicks++;
+
+  // Staircase advance
+  stairProgress++;
+  if(stairProgress>=TICKS_PER_STEP&&stairStep<STAIRS_MAX){
+    stairStep++;stairProgress=0;
   }
+  if(stairStep>=STAIRS_MAX){stairStep=0;stairProgress=0;} // reset at top
 
-  // shared chart + price display (latest tick wins)
-  lastAnyPrice = p;
-  priceHistory.push(p);
-  if (priceHistory.length > 60) priceHistory.shift();
+  // Price display
+  document.getElementById('statPrice').textContent=p.toFixed(5);
+  document.getElementById('statPrice').style.color=
+    priceHistory.length>1&&p>=priceHistory[priceHistory.length-2]?'#22c55e':'#ef4444';
+  document.getElementById('statTotalTicks').textContent=totalRealTicks;
 
-  document.getElementById("livePrice").textContent = p.toFixed(5);
-  document.getElementById("priceTime").textContent = "Updated: " + d.toTimeString().slice(0,8);
-  document.getElementById("livePrice").style.color =
-    priceHistory.length > 1 && p >= priceHistory[priceHistory.length-2]
-      ? "var(--green)" : "var(--red)";
+  // Per-source ticks
+  document.getElementById('tdTicksKpi').textContent=SRCS.td.ticksAccepted;
+  document.getElementById('fhTicksKpi').textContent=SRCS.fh.ticksAccepted;
+  document.getElementById('eoTicksKpi').textContent=SRCS.eo.ticksAccepted;
 
-  const tag = document.getElementById("priceSourceTag");
-  tag.textContent = srcKey === 'td' ? 'TWELVE DATA' : 'FINNHUB';
-  tag.className   = 'src-tag ' + srcKey;
+  // Stair info
+  document.getElementById('siStep').textContent=stairStep;
+  document.getElementById('siTotal').textContent=totalRealTicks;
+  document.getElementById('siProgress').textContent=Math.round((stairProgress/TICKS_PER_STEP)*100)+'%';
 
-  // tick counts
-  document.getElementById("tdTickCount").textContent  = TD.ticksAccepted;
-  document.getElementById("fhTickCount").textContent  = FH.ticksAccepted;
-  document.getElementById("mergedTotal").textContent  = TD.ticksAccepted + FH.ticksAccepted;
-  document.getElementById("tickCount").textContent    = TD.currWindow.length + FH.currWindow.length;
-
-  drawChart();
-  drawTickBars();
-  updateWindowStatus();
+  updatePurityDisplay();
 }
 
-/* ═══════════════════════════════════════
-   SIGNAL ENGINE — 250ms, runs for both
-═══════════════════════════════════════ */
-setInterval(() => {
-  const d       = istNow();
-  const elapsed = d.getSeconds();
-  const rem     = TOTAL_SEC - elapsed;
+function updatePurityDisplay(){
+  const allRaw=Object.values(SRCS).reduce((a,s)=>a+s.ft.totalRaw,0);
+  const allReal=Object.values(SRCS).reduce((a,s)=>a+s.ft.totalReal,0);
+  const pct=allRaw>0?Math.round(allReal/allRaw*100):0;
+  document.getElementById('avgPurity').textContent=pct+'%';
+  document.getElementById('avgPurity').style.color=pct>=90?'#22c55e':pct>=70?'#f5b301':'#ef4444';
+}
 
-  // update both countdowns
-  document.getElementById("sigCdTD").textContent = rem;
-  document.getElementById("sigCdFH").textContent = rem;
+/* ══════════════════════════════════════════
+   SIGNAL ENGINE — 250ms
+══════════════════════════════════════════ */
+setInterval(()=>{
+  const nowMs=Date.now();
+  const elapsed=Math.floor((nowMs%30000)/1000);
+  const rem=TOTAL_SEC-elapsed;
 
-  // last-20s buffer fill for BOTH sources
-  [TD, FH].forEach(src => {
-    if (elapsed >= WATCH_SEC && src.lastPrice !== null) {
-      const last = src.lastWindowBuffer[src.lastWindowBuffer.length - 1];
-      if (last !== src.lastPrice) src.lastWindowBuffer.push(src.lastPrice);
+  Object.values(SRCS).forEach(src=>{
+    if(elapsed>=WATCH_SEC&&src.lastPrice!==null){
+      const last=src.lastWindowBuffer[src.lastWindowBuffer.length-1];
+      if(last!==src.lastPrice)src.lastWindowBuffer.push(src.lastPrice);
     }
   });
 
-  // run signal logic per source
-  runSignal(TD, elapsed, 'TD');
-  runSignal(FH, elapsed, 'FH');
+  const signals=[];
+  Object.values(SRCS).forEach(src=>{
+    const K=src.id.toUpperCase();
+    const combined=[...src.prevWindow,...src.currWindow];
+    const{bias,conf,move}=calcBias(elapsed<WATCH_SEC?src.currWindow:combined);
+    src.conf=conf;src.bias=bias;
 
-  updateWindowStatus();
-}, 250);
+    // Donut update
+    const circ=226.2;
+    const offset=circ-(conf/100)*circ;
+    document.getElementById('donutFill'+K).style.strokeDashoffset=offset;
+    document.getElementById('donutPct'+K).textContent=conf+'%';
 
-function runSignal(src, elapsed, srcKey) {
-  const suffix = srcKey; // 'TD' or 'FH'
-
-  if (elapsed < WATCH_SEC) {
-    /* WATCH PHASE */
-    document.getElementById(`sigPhase${suffix}`).textContent = "WATCHING MARKET";
-    document.getElementById(`sigPhase${suffix}`).className   = "sig-phase";
-    document.getElementById(`sigMain${suffix}`).textContent  = "WAIT";
-    document.getElementById(`sigMain${suffix}`).className    = "sig-main WAIT";
-    document.getElementById(`sigBox${suffix}`).className     = "sig-box";
-    src.locked = null;
-
-    document.getElementById(`sigHint${suffix}`).textContent =
-      `prev=${src.prevWindow.length} · curr=${src.currWindow.length} · watching`;
-
-    // live bias from currWindow only (display, not signal)
-    const { bias, conf, move } = calcBias(src.currWindow);
-    showConfidence(suffix, conf);
-    showBias(bias, move); // shared bias card
-
-  } else {
-    /* LOCK PHASE */
-    document.getElementById(`sigPhase${suffix}`).textContent = "⚡ FINAL SIGNAL";
-    document.getElementById(`sigPhase${suffix}`).className   = "sig-phase locking";
-
-    const combined = [...src.prevWindow, ...src.currWindow];
-    document.getElementById(`sigHint${suffix}`).textContent =
-      `prev=${src.prevWindow.length} + curr=${src.currWindow.length} = ${combined.length} ticks`;
-
-    const { bias, conf, move } = calcBias(combined);
-    showConfidence(suffix, conf);
-    showBias(bias, move);
-
-    if (src.locked === null) {
-      src.locked = combined.length < 1 ? "SKIP" : (bias > 50 ? "UP" : "DOWN");
+    if(elapsed<WATCH_SEC){
+      src.locked=null;src.signal='WAIT';
+    }else{
+      if(src.locked===null)src.locked=combined.length<1?'SKIP':(bias>50?'UP':'DOWN');
+      src.signal=src.locked;
     }
 
-    const sigEl  = document.getElementById(`sigMain${suffix}`);
-    const boxEl  = document.getElementById(`sigBox${suffix}`);
-    sigEl.textContent = src.locked;
-    sigEl.className   = "sig-main " + src.locked;
-    boxEl.className   = "sig-box " + (src.locked === "UP" ? "UP" : src.locked === "DOWN" ? "DOWN" : "");
+    // KPI update
+    const sigColors={UP:'#22c55e',DOWN:'#ef4444',WAIT:'#f5b301',SKIP:'#94a3b8'};
+    const sc=sigColors[src.signal]||'#94a3b8';
+    document.getElementById(src.id+'SigKpi').textContent=src.signal;
+    document.getElementById(src.id+'SigKpi').style.color=sc;
+    document.getElementById(src.id+'BiasKpi').textContent=bias+'%';
+    document.getElementById(src.id+'BiasKpi').style.color=bias>50?'#22c55e':'#ef4444';
+
+    // Pill
+    const pill=document.getElementById('pill'+K);
+    pill.textContent=src.signal;
+    pill.className='ssp-sig '+(src.signal==='UP'?'UP':src.signal==='DOWN'?'DOWN':'WAIT');
+
+    if(src.signal==='UP'||src.signal==='DOWN')signals.push(src.signal);
+
+    // Move display
+    if(move!==0)document.getElementById('avgMove').textContent=(move>0?'+':'')+move+' pip';
+  });
+
+  // Consensus
+  const up=signals.filter(s=>s==='UP').length;
+  const dn=signals.filter(s=>s==='DOWN').length;
+  const consEl=document.getElementById('statConsensus');
+  if(!signals.length){consEl.textContent='--';consEl.style.color='#94a3b8';}
+  else if(up>dn){consEl.textContent='UP '+up+'/3';consEl.style.color='#22c55e';}
+  else if(dn>up){consEl.textContent='DN '+dn+'/3';consEl.style.color='#ef4444';}
+  else{consEl.textContent='TIE';consEl.style.color='#f5b301';}
+
+  // Avg ticks
+  const allCurr=Object.values(SRCS).reduce((a,s)=>a+s.currWindow.length,0);
+  document.getElementById('avgTicks').textContent=allCurr;
+
+},250);
+
+/* ══════════════════════════════════════════
+   BIAS CALC
+══════════════════════════════════════════ */
+function calcBias(arr){
+  if(!arr||arr.length<2)return{bias:50,conf:0,move:0};
+  const n=arr.length;
+  let wSum=0,wTotal=0;
+  for(let i=1;i<n;i++){wSum+=(arr[i]-arr[i-1])*i;wTotal+=i;}
+  const slope=wTotal>0?wSum/wTotal:0;
+  const move=(arr[n-1]-arr[0])/0.0001;
+  const tail=arr.slice(-5);
+  const tailMove=tail.length>1?(tail[tail.length-1]-tail[0])/0.0001:0;
+  const sf=Math.max(-1,Math.min(1,slope/0.000015));
+  const mf=Math.max(-1,Math.min(1,move/1.5));
+  const tf=Math.max(-1,Math.min(1,tailMove/0.8));
+  const c=sf*0.5+mf*0.3+tf*0.2;
+  return{bias:Math.max(0,Math.min(100,Math.round(50+c*50))),conf:Math.round(Math.abs(c)*100),move:Math.round(move*10)/10};
+}
+
+/* ══════════════════════════════════════════
+   STAIRS CANVAS ANIMATION
+   Dark sci-fi background, glowing stairs,
+   person silhouette walking up live
+══════════════════════════════════════════ */
+const stairsCanvas=document.getElementById('stairsCanvas');
+const sCtx=stairsCanvas.getContext('2d');
+
+// Resize canvas to actual pixel size
+function resizeStairs(){
+  const wrap=stairsCanvas.parentElement;
+  stairsCanvas.width=wrap.clientWidth||400;
+  stairsCanvas.height=wrap.clientHeight||240;
+}
+resizeStairs();
+window.addEventListener('resize',resizeStairs);
+
+// Person smooth animation
+let personAnimY=0;
+let personAnimX=0;
+let personInitialized=false;
+
+function drawStairs(){
+  const W=stairsCanvas.width, H=stairsCanvas.height;
+  sCtx.clearRect(0,0,W,H);
+
+  // Background gradient
+  const bgGrad=sCtx.createLinearGradient(0,0,W,H);
+  bgGrad.addColorStop(0,'#0a0f1e');
+  bgGrad.addColorStop(0.5,'#0d1b3e');
+  bgGrad.addColorStop(1,'#0a0f1e');
+  sCtx.fillStyle=bgGrad;
+  sCtx.fillRect(0,0,W,H);
+
+  // Floor perspective lines (ambient)
+  sCtx.strokeStyle='rgba(14,165,233,0.06)';
+  sCtx.lineWidth=1;
+  for(let i=0;i<8;i++){
+    const y=H*0.5+i*(H*0.08);
+    sCtx.beginPath();sCtx.moveTo(0,y);sCtx.lineTo(W,y);sCtx.stroke();
   }
-}
 
-/* ═══════════════════════════════════════
-   SHOW CONFIDENCE RING
-═══════════════════════════════════════ */
-function showConfidence(suffix, conf) {
-  const deg   = Math.round(conf * 3.6);
-  const ring  = document.getElementById(`confRing${suffix}`);
-  const val   = document.getElementById(`confVal${suffix}`);
-  ring.style.setProperty('--pct', deg + 'deg');
+  const NUM=STAIRS_MAX;
+  const stepW=W/(NUM+1);
+  const stepH=(H*0.7)/NUM;
+  const startX=stepW*0.4;
+  const startY=H*0.88;
 
-  // rebuild conic-gradient with correct color
-  const color = suffix === 'TD' ? 'var(--sky)' : 'var(--purple)';
-  ring.style.background = `conic-gradient(${color} ${deg}deg, rgba(255,255,255,.1) 0)`;
-  val.textContent = conf + '%';
-}
+  // Draw stairs bottom to top
+  for(let i=0;i<NUM;i++){
+    const sx=startX+i*stepW;
+    const sy=startY-i*stepH;
+    const sw=stepW;
+    const sh=stepH;
 
-/* ═══════════════════════════════════════
-   BIAS CALCULATION
-═══════════════════════════════════════ */
-function calcBias(arr) {
-  if (!arr || arr.length < 2) return { bias: 50, conf: 0, move: 0 };
-  const n = arr.length;
+    // Is this step reached?
+    const reached=i<stairStep;
+    const isCurrent=i===stairStep;
 
-  let wSum = 0, wTotal = 0;
-  for (let i = 1; i < n; i++) {
-    wSum   += (arr[i] - arr[i-1]) * i;
-    wTotal += i;
+    // Step tread
+    if(reached){
+      const g=sCtx.createLinearGradient(sx,sy-sh,sx,sy);
+      g.addColorStop(0,'rgba(14,165,233,0.35)');
+      g.addColorStop(1,'rgba(14,165,233,0.08)');
+      sCtx.fillStyle=g;
+    }else{
+      sCtx.fillStyle='rgba(255,255,255,0.04)';
+    }
+    sCtx.fillRect(sx,sy-sh,sw,sh);
+
+    // Bottom glow line (orange for reached, blue for unreached)
+    const lineColor=reached?'#f5b301':isCurrent?'#0ea5e9':'rgba(255,255,255,0.15)';
+    const lineGlow=reached?'rgba(245,179,1,0.6)':isCurrent?'rgba(14,165,233,0.6)':'rgba(255,255,255,0.1)';
+
+    sCtx.shadowColor=lineGlow;
+    sCtx.shadowBlur=reached?10:isCurrent?8:0;
+    sCtx.strokeStyle=lineColor;
+    sCtx.lineWidth=reached?2.5:1.5;
+    sCtx.beginPath();
+    sCtx.moveTo(sx,sy);
+    sCtx.lineTo(sx+sw,sy);
+    sCtx.stroke();
+    sCtx.shadowBlur=0;
+
+    // Riser (vertical face)
+    sCtx.strokeStyle=reached?'rgba(14,165,233,0.2)':'rgba(255,255,255,0.06)';
+    sCtx.lineWidth=1;
+    sCtx.beginPath();
+    sCtx.moveTo(sx,sy);
+    sCtx.lineTo(sx,sy-sh);
+    sCtx.stroke();
   }
-  const slope    = wTotal > 0 ? wSum / wTotal : 0;
-  const move     = (arr[n-1] - arr[0]) / 0.0001;
-  const tail     = arr.slice(-5);
-  const tailMove = tail.length > 1 ? (tail[tail.length-1] - tail[0]) / 0.0001 : 0;
 
-  const sf = Math.max(-1, Math.min(1, slope    / 0.000015));
-  const mf = Math.max(-1, Math.min(1, move     / 1.5));
-  const tf = Math.max(-1, Math.min(1, tailMove / 0.8));
-
-  const combined = sf * 0.5 + mf * 0.3 + tf * 0.2;
-  const bias = Math.round(50 + combined * 50);
-  const conf = Math.round(Math.abs(combined) * 100);
-  return { bias: Math.max(0, Math.min(100, bias)), conf, move: Math.round(move*10)/10 };
-}
-
-/* ═══════════════════════════════════════
-   SHARED BIAS CARD (combined TD+FH ticks)
-═══════════════════════════════════════ */
-function showBias(bias, move) {
-  const label = bias > 50 ? "BULLISH" : "BEARISH";
-  const color = bias > 50 ? "var(--green)" : "var(--red)";
-  document.getElementById("biasLabel").textContent = label;
-  document.getElementById("biasLabel").style.color = color;
-  document.getElementById("biasNum").textContent   = `Bias: ${bias}% · Move: ${move > 0 ? "+" : ""}${move} pip`;
-  document.getElementById("biasBar").style.width      = bias + "%";
-  document.getElementById("biasBar").style.background = color;
-  document.getElementById("moveVal").textContent   = (move > 0 ? "+" : "") + move;
-  document.getElementById("moveVal").style.color   = move > 0 ? "var(--green)" : move < 0 ? "var(--red)" : "var(--muted)";
-}
-
-/* ═══════════════════════════════════════
-   PRICE CHART (merged ticks)
-═══════════════════════════════════════ */
-function drawChart() {
-  // Use TD's windows for chart (primary source), fallback to FH
-  const prev = TD.prevWindow.length ? TD.prevWindow : FH.prevWindow;
-  const curr = TD.currWindow.length ? TD.currWindow : FH.currWindow;
-  const combined = [...prev, ...curr];
-
-  if (combined.length < 2) { document.getElementById("priceLine").setAttribute("d",""); return; }
-
-  const W = 300, H = 100;
-  const min   = Math.min(...combined);
-  const max   = Math.max(...combined);
-  const range = max - min || 0.00001;
-  const step  = W / (combined.length - 1);
-
-  const d = "M " + combined.map((p,i) => {
-    const x = (i * step).toFixed(1);
-    const y = (H - ((p - min) / range) * (H - 8)).toFixed(1);
-    return x + "," + y;
-  }).join(" L ");
-
-  document.getElementById("priceLine").setAttribute("d", d);
-
-  if (prev.length > 0 && combined.length > prev.length) {
-    const divX = ((prev.length - 1) * step).toFixed(1);
-    const dl = document.getElementById("divLine");
-    dl.setAttribute("x1", divX); dl.setAttribute("x2", divX); dl.setAttribute("y2", H);
+  // Progress tick marks on current step
+  if(stairProgress>0&&stairStep<STAIRS_MAX){
+    const sx=startX+stairStep*stepW;
+    const sy=startY-stairStep*stepH;
+    for(let j=0;j<stairProgress;j++){
+      const tx=sx+(j+0.5)*(stepW/TICKS_PER_STEP);
+      sCtx.fillStyle='rgba(245,179,1,0.7)';
+      sCtx.shadowColor='#f5b301';
+      sCtx.shadowBlur=4;
+      sCtx.beginPath();
+      sCtx.arc(tx,sy-2,2,0,Math.PI*2);
+      sCtx.fill();
+    }
+    sCtx.shadowBlur=0;
   }
+
+  // ── PERSON (silhouette walking up) ──
+  // Target position = on top of current step
+  const tStep=Math.min(stairStep,STAIRS_MAX-1);
+  const tx=startX+tStep*stepW+stepW*0.45;
+  const ty=startY-tStep*stepH-stepH;
+
+  if(!personInitialized){personAnimX=tx;personAnimY=ty;personInitialized=true;}
+
+  // Smooth lerp toward target
+  personAnimX+=(tx-personAnimX)*0.08;
+  personAnimY+=(ty-personAnimY)*0.08;
+
+  const px=personAnimX, py=personAnimY;
+  const ph=Math.min(stepH*2.8,52); // person height responsive
+  const pw=ph*0.32;
+
+  // Walking animation (leg swing based on time)
+  const t=Date.now()/300;
+  const legSwing=Math.sin(t)*0.28;
+  const armSwing=Math.sin(t+Math.PI)*0.22;
+  const bodyBob=Math.abs(Math.sin(t))*1.5;
+
+  sCtx.save();
+  sCtx.translate(px,py+bodyBob);
+
+  // Shadow on step
+  sCtx.fillStyle='rgba(14,165,233,0.18)';
+  sCtx.beginPath();
+  sCtx.ellipse(0,ph*0.02,pw*0.9,3,0,0,Math.PI*2);
+  sCtx.fill();
+
+  // Head glow
+  sCtx.shadowColor='rgba(255,255,255,0.6)';
+  sCtx.shadowBlur=8;
+  sCtx.fillStyle='#e2e8f0';
+  sCtx.beginPath();
+  sCtx.arc(0,-ph*0.88,pw*0.38,0,Math.PI*2);
+  sCtx.fill();
+  sCtx.shadowBlur=0;
+
+  // Hair
+  sCtx.fillStyle='#1a202c';
+  sCtx.beginPath();
+  sCtx.arc(0,-ph*0.88,pw*0.38,Math.PI,2*Math.PI);
+  sCtx.fill();
+
+  // Body (white shirt)
+  sCtx.fillStyle='#f1f5f9';
+  sCtx.beginPath();
+  sCtx.moveTo(-pw*0.35,-ph*0.65);
+  sCtx.bezierCurveTo(-pw*0.4,-ph*0.3,-pw*0.3,-ph*0.1,-pw*0.1,-ph*0.05);
+  sCtx.lineTo(pw*0.1,-ph*0.05);
+  sCtx.bezierCurveTo(pw*0.3,-ph*0.1,pw*0.4,-ph*0.3,pw*0.35,-ph*0.65);
+  sCtx.closePath();
+  sCtx.fill();
+
+  // Skirt/pants (dark)
+  sCtx.fillStyle='#1e293b';
+  sCtx.beginPath();
+  sCtx.moveTo(-pw*0.28,-ph*0.18);
+  sCtx.lineTo(-pw*0.32,-ph*0.02);
+  sCtx.lineTo(pw*0.32,-ph*0.02);
+  sCtx.lineTo(pw*0.28,-ph*0.18);
+  sCtx.closePath();
+  sCtx.fill();
+
+  // Legs
+  sCtx.strokeStyle='#1e293b';
+  sCtx.lineWidth=pw*0.38;
+  sCtx.lineCap='round';
+  // Left leg
+  sCtx.save();sCtx.rotate(legSwing);
+  sCtx.beginPath();sCtx.moveTo(-pw*0.12,0);sCtx.lineTo(-pw*0.1,ph*0.38);sCtx.stroke();
+  // Foot
+  sCtx.strokeStyle='#0f172a';sCtx.lineWidth=pw*0.3;
+  sCtx.beginPath();sCtx.moveTo(-pw*0.1,ph*0.38);sCtx.lineTo(pw*0.05,ph*0.4);sCtx.stroke();
+  sCtx.restore();
+  // Right leg
+  sCtx.save();sCtx.rotate(-legSwing);
+  sCtx.strokeStyle='#1e293b';sCtx.lineWidth=pw*0.38;
+  sCtx.beginPath();sCtx.moveTo(pw*0.12,0);sCtx.lineTo(pw*0.1,ph*0.38);sCtx.stroke();
+  sCtx.strokeStyle='#0f172a';sCtx.lineWidth=pw*0.3;
+  sCtx.beginPath();sCtx.moveTo(pw*0.1,ph*0.38);sCtx.lineTo(-pw*0.05,ph*0.4);sCtx.stroke();
+  sCtx.restore();
+
+  // Arms
+  sCtx.strokeStyle='#e2e8f0';sCtx.lineWidth=pw*0.28;
+  sCtx.save();sCtx.rotate(armSwing);
+  sCtx.beginPath();sCtx.moveTo(-pw*0.32,-ph*0.52);sCtx.lineTo(-pw*0.48,-ph*0.2);sCtx.stroke();
+  sCtx.restore();
+  sCtx.save();sCtx.rotate(-armSwing);
+  sCtx.beginPath();sCtx.moveTo(pw*0.32,-ph*0.52);sCtx.lineTo(pw*0.48,-ph*0.2);sCtx.stroke();
+  sCtx.restore();
+
+  sCtx.restore();
+
+  requestAnimationFrame(drawStairs);
 }
+drawStairs();
 
-/* ═══════════════════════════════════════
-   TICK BARS (merged windows)
-═══════════════════════════════════════ */
-function drawTickBars() {
-  const prev     = [...TD.prevWindow, ...FH.prevWindow];
-  const curr     = [...TD.currWindow, ...FH.currWindow];
-  const combined = [...prev, ...curr];
-  const prevLen  = prev.length;
+/* ══════════════════════════════════════════
+   BAR CHART CANVAS
+══════════════════════════════════════════ */
+const barCanvas=document.getElementById('barCanvas');
+const bCtx=barCanvas.getContext('2d');
 
-  const track = document.getElementById("tickTrack");
-  if (track.children.length !== combined.length) {
-    track.innerHTML = "";
-    combined.forEach((_, i) => {
-      const bar = document.createElement("div");
-      bar.className = "tick-bar";
-      bar.style.background = i < prevLen ? "var(--yellow)" : "var(--sky)";
-      track.appendChild(bar);
+// Collect cycle snapshot every 30s
+let lastCycleId=-1;
+setInterval(()=>{
+  const cid=Math.floor(Date.now()/30000);
+  if(cid!==lastCycleId){
+    lastCycleId=cid;
+    barHistory.push({
+      td:SRCS.td.ticksAccepted,
+      fh:SRCS.fh.ticksAccepted,
+      eo:SRCS.eo.ticksAccepted
+    });
+    if(barHistory.length>30)barHistory.shift();
+    drawBar();
+  }
+},1000);
+
+function drawBar(){
+  const W=barCanvas.clientWidth||600;
+  const H=barCanvas.clientHeight||180;
+  barCanvas.width=W;barCanvas.height=H;
+  bCtx.clearRect(0,0,W,H);
+
+  if(barHistory.length<2){
+    bCtx.fillStyle='#94a3b8';bCtx.font='13px Inter';bCtx.textAlign='center';
+    bCtx.fillText('Waiting for cycle data…',W/2,H/2);return;
+  }
+
+  // Deltas per cycle
+  const deltas=[];
+  for(let i=1;i<barHistory.length;i++){
+    deltas.push({
+      td:Math.max(0,barHistory[i].td-barHistory[i-1].td),
+      fh:Math.max(0,barHistory[i].fh-barHistory[i-1].fh),
+      eo:Math.max(0,barHistory[i].eo-barHistory[i-1].eo),
     });
   }
-  if (combined.length < 2) return;
 
-  const min   = Math.min(...combined);
-  const max   = Math.max(...combined);
-  const range = max - min || 0.0001;
-  Array.from(track.children).forEach((bar, i) => {
-    bar.style.height     = Math.max(4, Math.round(((combined[i]-min)/range)*18+2)) + "px";
-    bar.style.background = i < prevLen ? "var(--yellow)" : "var(--sky)";
+  const n=deltas.length;
+  const padL=8,padR=8,padT=12,padB=22;
+  const maxVal=Math.max(1,...deltas.map(d=>d.td+d.fh+d.eo));
+  const groupW=(W-padL-padR)/n;
+  const barW=groupW*0.72;
+
+  // Grid lines
+  bCtx.strokeStyle='rgba(0,0,0,0.06)';bCtx.lineWidth=1;
+  for(let g=0;g<=4;g++){
+    const y=padT+(H-padT-padB)*(1-g/4);
+    bCtx.beginPath();bCtx.moveTo(padL,y);bCtx.lineTo(W-padR,y);bCtx.stroke();
+  }
+
+  // Stacked bars
+  deltas.forEach((d,i)=>{
+    const x=padL+i*groupW+(groupW-barW)/2;
+    const chartH=H-padT-padB;
+    let yBase=H-padB;
+
+    const layers=[
+      {v:d.td,color:'#3b82f6'},
+      {v:d.fh,color:'#8b5cf6'},
+      {v:d.eo,color:'#f97316'},
+    ];
+    layers.forEach(l=>{
+      if(l.v<=0)return;
+      const bh=Math.max(2,(l.v/maxVal)*chartH);
+      const grad=bCtx.createLinearGradient(0,yBase-bh,0,yBase);
+      grad.addColorStop(0,l.color);
+      grad.addColorStop(1,l.color+'88');
+      bCtx.fillStyle=grad;
+      bCtx.beginPath();
+      bCtx.roundRect(x,yBase-bh,barW,bh,2);
+      bCtx.fill();
+      yBase-=bh;
+    });
+  });
+
+  // X-axis labels (every 5)
+  bCtx.fillStyle='#94a3b8';bCtx.font='9px Inter';bCtx.textAlign='center';
+  deltas.forEach((_,i)=>{
+    if(i%5===0||i===deltas.length-1){
+      const x=padL+i*groupW+groupW/2;
+      bCtx.fillText(i+1,x,H-4);
+    }
   });
 }
 
-/* ═══════════════════════════════════════
-   WINDOW STATUS TEXT
-═══════════════════════════════════════ */
-function updateWindowStatus() {
-  const pn = TD.prevWindow.length + FH.prevWindow.length;
-  const cn = TD.currWindow.length + FH.currWindow.length;
-  document.getElementById("prevPill").textContent = `PREV 20s: ${pn}`;
-  document.getElementById("currPill").textContent = `CURR 40s: ${cn}`;
-}
+// Initial draw
+drawBar();
+
+/* ══════════════════════════════════════════
+   TOGGLE SWITCH (decorative)
+══════════════════════════════════════════ */
+document.getElementById('toggleSwitch').addEventListener('click',function(){
+  this.classList.toggle('off');
+});
 </script>
 </body>
 </html>
