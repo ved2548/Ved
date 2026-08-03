@@ -1,969 +1,740 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Digit Tracker v5</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VED – Trading Dashboard v6.14</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+:root{--bg:#f0f4f8;--white:#ffffff;--border:#e2e8f0;--text:#1a202c;--muted:#718096;--font:'Inter',system-ui;--mono:'JetBrains Mono',monospace}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#0d0d0d;min-height:100vh;
-  display:flex;justify-content:center;padding:14px 10px 40px;
-}
-.wrap{width:100%;max-width:420px}
-
-/* ── PERIOD BOX ── */
-.pid-box{background:#141414;border-radius:12px;padding:12px 14px;margin-bottom:12px;border:1px solid #222}
-.pid-label{font-size:9px;color:#555;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-.pid-row{display:flex;gap:8px}
-.pid-input{
-  flex:1;background:#0d0d0d;border:1px solid #2a2a2a;color:#fff;border-radius:8px;
-  padding:8px 11px;font-size:15px;font-weight:600;outline:none;-webkit-appearance:none;
-}
-.pid-input:focus{border-color:#f59e0b}
-.pid-input::placeholder{color:#2a2a2a;font-size:12px;font-weight:400}
-.pid-set{background:#1c1700;border:1px solid #5a3e00;color:#f59e0b;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
-.pid-set:active{opacity:.7}
-.pid-cur{font-size:10px;color:#444;margin-top:6px;display:none}
-.pid-cur.show{display:block}
-.pid-cur span{color:#f59e0b;font-weight:700}
-
-/* ── STATS ── */
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
-.sc{background:#141414;border-radius:10px;padding:11px 8px;text-align:center}
-.sv{font-size:26px;font-weight:800;line-height:1}
-.sv-w{color:#22c55e}.sv-l{color:#ef4444}.sv-t{color:#555}
-.sl{font-size:10px;color:#444;margin-top:3px}
-
-/* ── VERDICT ── */
-.verdict{
-  border-radius:10px;padding:10px 14px;font-size:12px;font-weight:600;
-  margin-bottom:12px;display:none;align-items:center;gap:8px
-}
-.verdict.show{display:flex}
-.v-w{background:#071a0e;color:#22c55e;border:1px solid #0f4020}
-.v-l{background:#1e0808;color:#ef4444;border:1px solid #5c1a1a}
-.vico{font-size:16px}
-
-/* ══════════════════════════════════════════
-   PATTERN ANALYZER
-══════════════════════════════════════════ */
-.pa-box{
-  background:#0a0a12;
-  border:1px solid #1e1e3a;
-  border-radius:14px;
-  padding:0;
-  margin-bottom:12px;
-  overflow:hidden;
-}
-.pa-head{
-  background:#0e0e1e;
-  padding:12px 14px;
-  border-bottom:1px solid #1a1a2e;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.pa-title{
-  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-  font-weight:800;color:#7c6ef0;
-}
-.pa-confidence{
-  font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;
-  background:#13103a;border:1px solid #3a2e9a;color:#9b8ff7;
-}
-.pa-body{padding:14px}
-
-/* Recent 10 bar */
-.pa-recent-lbl{font-size:9px;color:#333;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
-.pa-recent-bar{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
-.pa-rb{
-  width:30px;height:30px;border-radius:7px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;font-size:13px;font-weight:700;gap:1px;
-}
-.pa-rb-d{background:#1e0808;color:#ef4444;border:1px solid #3d1010}
-.pa-rb-u{background:#071a0e;color:#22c55e;border:1px solid #0a3018}
-.pa-rb-arr{font-size:8px;line-height:1}
-.pa-rb-empty{background:#141414;border:1px dashed #222;color:#2a2a2a;font-size:10px}
-
-/* Pattern list */
-.pa-patterns{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.pa-pattern{
-  background:#0d0d1a;border-radius:9px;padding:9px 11px;
-  border-left:3px solid #333;
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-}
-.pa-pattern.strong{border-left-color:#7c6ef0}
-.pa-pattern.found{border-left-color:#22c55e}
-.pa-pattern.weak{border-left-color:#555}
-.pa-pat-left{flex:1;min-width:0}
-.pa-pat-name{font-size:11px;font-weight:700;color:#aaa;margin-bottom:2px}
-.pa-pat-desc{font-size:10px;color:#444;line-height:1.4}
-.pa-pat-right{flex-shrink:0;text-align:right}
-.pa-pat-vote{font-size:18px;font-weight:800;line-height:1}
-.pa-pat-vote-u{color:#22c55e}
-.pa-pat-vote-d{color:#ef4444}
-.pa-pat-vote-n{color:#333}
-.pa-pat-pct{font-size:9px;color:#555;margin-top:1px}
-
-/* Final signal */
-.pa-signal{
-  background:#0e0e1e;border-radius:10px;padding:12px 14px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  border:1px solid #1e1e3a;
-}
-.pa-sig-left{}
-.pa-sig-lbl{font-size:9px;color:#444;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-.pa-sig-dir{font-size:32px;font-weight:800;line-height:1}
-.pa-sig-u{color:#22c55e}
-.pa-sig-d{color:#ef4444}
-.pa-sig-n{color:#333;font-size:20px}
-.pa-sig-right{}
-.pa-sig-badge{
-  font-size:13px;font-weight:700;padding:7px 16px;border-radius:9px;
-}
-.pa-sig-badge-u{background:#071a0e;color:#22c55e;border:1px solid #0f4020}
-.pa-sig-badge-d{background:#1e0808;color:#ef4444;border:1px solid #5c1a1a}
-.pa-sig-badge-n{background:#141414;color:#333;border:1px solid #222}
-.pa-sig-score{font-size:10px;color:#555;margin-top:4px;text-align:right}
-
-/* Waiting state */
-.pa-wait{
-  text-align:center;padding:20px 14px;
-  font-size:12px;color:#333;line-height:1.6;
-}
-.pa-wait-num{font-size:32px;font-weight:800;color:#222;margin-bottom:4px}
-
-/* ── BUTTONS ── */
-.btn-section{margin-bottom:6px}
-.btn-label{font-size:9px;color:#444;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
-.dgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:7px}
-.dbtn{
-  height:64px;border-radius:11px;border:none;font-size:22px;font-weight:700;
-  cursor:pointer;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:2px;transition:transform .1s,opacity .1s;
-  -webkit-tap-highlight-color:transparent
-}
-.dbtn:active{transform:scale(.87);opacity:.65}
-.dbtn-d{background:#1e0808;color:#ef4444}
-.dbtn-u{background:#071a0e;color:#22c55e}
-.barr{font-size:11px;line-height:1}
-
-/* ── UNDO ── */
-.undo-row{display:flex;justify-content:flex-end;margin-bottom:10px}
-.ubtn{background:#141414;border:1px solid #222;color:#555;border-radius:7px;padding:5px 12px;font-size:11px;cursor:pointer}
-.ubtn:disabled{opacity:.25;cursor:not-allowed}
-.ubtn:not(:disabled):hover{color:#888}
-
-/* ── HISTORY ── */
-.hlbl{font-size:9px;color:#444;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
-.harea{background:#141414;border-radius:11px;padding:9px 11px;max-height:240px;overflow-y:auto;margin-bottom:12px}
-.hempty{font-size:12px;color:#333}
-.hrow{display:flex;align-items:center;gap:4px;padding:6px 0;border-bottom:1px solid #1a1a1a;flex-wrap:wrap}
-.hrow:last-child{border-bottom:none}
-.hpills{display:flex;gap:2px}
-.hp{font-size:10px;padding:2px 5px;border-radius:4px;font-weight:700}
-.hpd{background:#1e0808;color:#ef4444}
-.hpu{background:#071a0e;color:#22c55e}
-.hres{font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px}
-.harrow{font-size:10px;color:#333}
-.hpa{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#13103a;color:#9b8ff7;border:1px solid #2a2460}
-.hwl{font-size:11px;font-weight:700}
-.hww{color:#22c55e}.hwll{color:#ef4444}
-.hskip{font-size:10px;color:#333;font-style:italic}
-
-/* ── RESET ── */
-.resetbtn{width:100%;background:#141414;border:1px solid #222;color:#444;border-radius:9px;padding:10px;font-size:12px;cursor:pointer}
-.resetbtn:hover{color:#666}
-
-/* ── VOICE BAR ── */
-.voice-bar{
-  display:flex;align-items:center;gap:10px;
-  background:#0e0e1a;border:1px solid #1e1e3a;border-radius:11px;
-  padding:10px 14px;margin-bottom:12px;
-}
-.voice-dot{
-  width:10px;height:10px;border-radius:50%;flex-shrink:0;
-  background:#333;transition:background .2s;
-}
-.voice-dot.idle{background:#333}
-.voice-dot.listening{background:#f59e0b;animation:vpulse .8s ease infinite}
-.voice-dot.heard{background:#22c55e}
-.voice-dot.waiting{background:#7c6ef0;animation:vpulse .6s ease infinite}
-.voice-dot.error{background:#ef4444}
-.voice-status{font-size:11px;color:#555;flex:1}
-.voice-status b{color:#aaa}
-.voice-toggle{
-  background:#141414;border:1px solid #2a2a2a;color:#555;
-  border-radius:7px;padding:4px 11px;font-size:11px;font-weight:700;cursor:pointer;
-  white-space:nowrap;flex-shrink:0;
-}
-.voice-toggle.on{background:#1c1700;border-color:#5a3e00;color:#f59e0b}
-@keyframes vpulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-@keyframes pop{
-  0%{transform:scale(.7);opacity:.1}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}
-}
-.pop{animation:pop .16s ease}
-
-.toast{
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(60px);
-  background:#22c55e;color:#000;padding:8px 18px;border-radius:30px;
-  font-size:12px;font-weight:700;opacity:0;transition:all .2s;
-  pointer-events:none;white-space:nowrap;z-index:999
-}
-.toast.loss{background:#ef4444;color:#fff}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── 100% CONFIDENCE OVERLAY ── */
-.conf100-overlay{
-  position:fixed;inset:0;z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-}
-.conf100-overlay.show{opacity:1;pointer-events:auto}
-.conf100-overlay.up-bg{background:rgba(7,26,14,0.96)}
-.conf100-overlay.down-bg{background:rgba(30,8,8,0.96)}
-.conf100-dir{
-  font-size:110px;font-weight:900;line-height:1;letter-spacing:-4px;
-  animation:conf100pop .25s ease;
-}
-.conf100-overlay.up-bg .conf100-dir{color:#22c55e;text-shadow:0 0 60px #22c55e88}
-.conf100-overlay.down-bg .conf100-dir{color:#ef4444;text-shadow:0 0 60px #ef444488}
-.conf100-label{
-  font-size:18px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  margin-top:12px;opacity:.6;
-}
-.conf100-overlay.up-bg .conf100-label{color:#22c55e}
-.conf100-overlay.down-bg .conf100-label{color:#ef4444}
-.conf100-badge{
-  margin-top:20px;font-size:13px;font-weight:700;padding:6px 20px;
-  border-radius:30px;letter-spacing:.1em;
-}
-.conf100-overlay.up-bg .conf100-badge{background:#22c55e22;border:1px solid #22c55e55;color:#22c55e}
-.conf100-overlay.down-bg .conf100-badge{background:#ef444422;border:1px solid #ef444455;color:#ef4444}
-@keyframes conf100pop{
-  0%{transform:scale(.4);opacity:0}
-  70%{transform:scale(1.08)}
-  100%{transform:scale(1);opacity:1}
-}
+body{background:var(--bg);font-family:var(--font);color:var(--text);min-height:100vh;padding:12px}
+.collapse-btn{width:100%;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;font-size:13px;font-weight:700;color:var(--text)}
+.collapse-btn .caret{font-size:16px;transition:transform .25s}
+.collapse-btn.collapsed .caret{transform:rotate(-90deg)}
+.collapsible-section.hidden{display:none}
+.filter-bar{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.filter-label{font-size:11px;color:var(--muted);font-weight:500}
+.filter-val{font-size:13px;font-weight:700;color:var(--text)}
+.filter-sep{width:1px;height:24px;background:var(--border)}
+.btn-clear{background:transparent;border:1.5px solid var(--border);color:var(--text);padding:7px 14px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer}
+.btn-live{background:#22c55e;color:#fff;border:none;padding:7px 18px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;margin-left:auto}
+.src-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:1px;background:rgba(71,85,105,.15);color:#94a3b8}
+.src-badge .dot{width:6px;height:6px;border-radius:50%;background:#475569}
+.src-badge.live{color:#22c55e;background:rgba(34,197,94,.1)}.src-badge.live .dot{background:#22c55e;box-shadow:0 0 5px rgba(34,197,94,.7)}
+.src-badge.err{color:#ef4444;background:rgba(239,68,68,.08)}.src-badge.err .dot{background:#ef4444}
+.top-strip{background:#0f172a;border-radius:12px;padding:10px 16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
+.chip-label{font-size:8px;font-weight:700;letter-spacing:1.5px}
+.chip{min-width:72px;padding:5px 10px;border-radius:8px;text-align:center;font-size:15px;font-weight:900;letter-spacing:3px;border:1.5px solid;transition:all .3s}
+.chip.WAIT{background:rgba(245,179,1,.12);color:#f5b301;border-color:rgba(245,179,1,.3)}
+.chip.UP{background:rgba(34,197,94,.2);color:#22c55e;border-color:rgba(34,197,94,.5)}
+.chip.DOWN{background:rgba(239,68,68,.2);color:#ef4444;border-color:rgba(239,68,68,.5)}
+.bar-wrap{width:72px;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;display:flex}
+.bar-up{height:100%;background:#22c55e;border-radius:3px 0 0 3px;transition:width .3s}
+.bar-dn{height:100%;background:#ef4444;border-radius:0 3px 3px 0;transition:width .3s}
+.chip-hint{font-size:9px;font-family:var(--mono);color:#64748b}
+.vdiv{width:1px;height:44px;background:rgba(255,255,255,.1);flex-shrink:0}
+.cons-chip{padding:6px 16px;border-radius:10px;text-align:center;font-size:18px;font-weight:900;letter-spacing:3px;border:2px solid;transition:all .3s}
+.cons-chip.WAIT{background:rgba(245,179,1,.1);color:#f5b301;border-color:rgba(245,179,1,.4)}
+.cons-chip.UP{background:rgba(34,197,94,.15);color:#22c55e;border-color:rgba(34,197,94,.5)}
+.cons-chip.DOWN{background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.5)}
+.src-tracker{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:12px 16px;margin-bottom:12px;position:relative}
+.src-tracker-title{font-size:9px;font-weight:800;letter-spacing:2.5px;color:#475569;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.src-tracker-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}
+.tracker-freeze-overlay{display:none;position:absolute;inset:0;border-radius:12px;background:rgba(245,179,1,.08);border:2px solid rgba(245,179,1,.4);pointer-events:none;z-index:5;}
+.tracker-freeze-overlay.active{display:block}
+.tracker-freeze-label{position:absolute;top:8px;right:12px;font-size:9px;font-weight:800;letter-spacing:2px;color:#f5b301;font-family:var(--mono);background:rgba(15,23,42,.9);padding:2px 8px;border-radius:4px;border:1px solid rgba(245,179,1,.3);}
+.combined-totals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.comb-box{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;}
+.comb-box.green-box{border-color:rgba(34,197,94,.35)}
+.comb-box.red-box{border-color:rgba(239,68,68,.35)}
+.comb-lbl{font-size:8px;font-weight:800;letter-spacing:2px;color:#475569;text-transform:uppercase;margin-bottom:2px}
+.comb-val{font-size:32px;font-weight:900;line-height:1;font-family:var(--mono)}
+.comb-val.green{color:#22c55e}
+.comb-val.red{color:#ef4444}
+.comb-breakdown{font-size:10px;font-family:var(--mono);color:#475569}
+.comb-mini-bar{width:100%;height:5px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;display:flex;margin-top:4px}
+.comb-mini-bar-up{height:100%;background:#22c55e;border-radius:2px 0 0 2px;transition:width .3s}
+.comb-mini-bar-dn{height:100%;background:#ef4444;border-radius:0 2px 2px 0;transition:width .3s}
+.src-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.src-card{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;transition:border-color .3s}
+.src-card.active{border-color:#22c55e}.src-card.dead{border-color:#ef444440}
+.src-card-header{display:flex;align-items:center;justify-content:space-between}
+.src-card-name{font-size:10px;font-weight:800;letter-spacing:2px}
+.src-card-dot{width:7px;height:7px;border-radius:50%;background:#334155;transition:all .3s;flex-shrink:0}
+.src-card-dot.live{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.6)}.src-card-dot.dead{background:#ef4444}
+.src-tick-row{display:flex;gap:6px;align-items:center}
+.src-tick-box{flex:1;text-align:center;background:#0f172a;border-radius:5px;padding:5px 4px}
+.src-tick-val{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1}
+.src-tick-lbl{font-size:8px;font-weight:600;letter-spacing:1px;color:#475569;margin-top:2px}
+.src-mini-bar{width:100%;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;display:flex}
+.src-mini-bar-up{height:100%;background:#22c55e;border-radius:2px 0 0 2px;transition:width .3s}
+.src-mini-bar-dn{height:100%;background:#ef4444;border-radius:0 2px 2px 0;transition:width .3s}
+.src-last-price{font-family:var(--mono);font-size:10px;color:#64748b;text-align:right}
+.src-total-badge{font-size:9px;font-family:var(--mono);color:#64748b;text-align:center;background:#0f172a;border-radius:4px;padding:2px 6px;align-self:flex-start}
+.kpi-toggle-btn{width:100%;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border:1px solid #334155;border-radius:10px;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;font-size:12px;font-weight:700;color:#94a3b8;letter-spacing:1.5px;text-transform:uppercase;font-family:var(--font)}
+.kpi-toggle-btn .ktb-left{display:flex;align-items:center;gap:10px}
+.ktb-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.6);flex-shrink:0}
+.ktb-caret{font-size:14px;transition:transform .25s;color:#475569}
+.kpi-toggle-btn.kpi-collapsed .ktb-caret{transform:rotate(-90deg)}
+.kpi-inner-section{overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .3s;max-height:2000px;opacity:1}
+.kpi-inner-section.kpi-hidden{max-height:0;opacity:0;pointer-events:none}
+.kpi-panel{display:grid;grid-template-columns:1fr;gap:0;background:var(--white);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.kpi-section{padding:18px 22px}
+.kpi-section+.kpi-section{border-top:1px solid var(--border)}
+.kpi-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:14px}
+.kpi-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.kpi-sub{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px}
+.kpi-val{font-size:20px;font-weight:800}
+.kpi-bar{width:100%;height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;display:flex;margin:8px 0}
+.kpi-bar-up{height:100%;background:#22c55e;border-radius:4px 0 0 4px;transition:width .3s}
+.kpi-bar-dn{height:100%;background:#ef4444;border-radius:0 4px 4px 0;transition:width .3s}
+.kpi-sig-row{display:flex;justify-content:space-between;align-items:center}
+.kpi-note{font-size:10px;color:#64748b;font-family:var(--mono);margin-top:6px}
+.flags-bar{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:8px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.stat-box{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
+.stat-num{font-size:26px;font-weight:800}
+.stat-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pill{background:rgba(15,23,42,.85);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 16px;display:flex;align-items:center;gap:10px;flex:1;min-width:130px}
+.pill-src{font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.45)}
+.pill-sig{font-size:16px;font-weight:900;letter-spacing:2px}
+.pill-sig.UP{color:#22c55e}.pill-sig.DOWN{color:#ef4444}.pill-sig.WAIT{color:#f5b301}
+.tick-log{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:12px}
+.tick-log-title{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.tick-log-inner{font-family:var(--mono);font-size:11px;color:#475569;display:flex;flex-direction:column;gap:3px}
+.debug-bar{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:6px 12px;margin-bottom:10px;font-family:var(--mono);font-size:10px;color:#64748b;display:flex;gap:12px;flex-wrap:wrap}
+@keyframes glowPulse{0%{box-shadow:0 0 6px 2px var(--gc)}50%{box-shadow:0 0 18px 6px var(--gc),0 0 30px 10px var(--gcs)}100%{box-shadow:0 0 6px 2px var(--gc)}}
+#flashOverlay{display:none;position:fixed;inset:0;z-index:9999;pointer-events:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+#flashOverlay.active{display:flex;}
+@keyframes flashFade{0%{opacity:0.93}60%{opacity:0.85}100%{opacity:0}}
+#flashOverlay.active{animation:flashFade 1s ease-out forwards;}
+#flashOverlay .flash-label{font-family:var(--mono);font-size:48px;font-weight:900;letter-spacing:6px;color:#fff;text-shadow:0 0 30px currentColor,0 0 60px currentColor;}
+#flashOverlay .flash-sub{font-family:var(--mono);font-size:16px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:3px;}
+.chip-glow{animation:glowPulse 1.4s ease-in-out infinite!important;border-width:2px!important}
+.cycle-bar-wrap{width:100%;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:4px}
+.cycle-bar-fill{height:100%;border-radius:2px;transition:width .5s linear,background .5s}
+.lock-badge{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:1px}
+.lock-badge.watching{background:rgba(20,184,166,.2);color:#14b8a6}
+.lock-badge.locked{background:rgba(245,179,1,.2);color:#f5b301}
+.version-tag{position:fixed;bottom:8px;right:8px;font-size:9px;font-family:var(--mono);color:#334155;background:#0f172a;padding:2px 6px;border-radius:4px;border:1px solid #1e293b;z-index:999}
+@media(max-width:700px){.stat-row{grid-template-columns:1fr 1fr}.src-cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-<!-- PERIOD ID -->
-<div class="pid-box">
-  <div class="pid-label">Period ID (optional — tracking ke liye)</div>
-  <div class="pid-row">
-    <input class="pid-input" id="pid-input" type="text" inputmode="numeric"
-           pattern="[0-9]*" placeholder="e.g. 20250718055"/>
-    <button class="pid-set" onclick="setPeriod()">Set ✓</button>
+<div class="version-tag">v6.14</div>
+<div id="flashOverlay">
+  <div class="flash-label" id="flashLabel">▲ UP</div>
+  <div class="flash-sub" id="flashSub">G:0 R:0 · DIFF:4</div>
+</div>
+<button class="collapse-btn" id="collapseBtn" onclick="toggleSection()">
+  <span>📊 VED Signal Dashboard v6.14</span><span class="caret">▼</span>
+</button>
+<div class="collapsible-section" id="mainSection">
+<div class="filter-bar">
+  <div><div class="filter-label">Symbol</div><div class="filter-val">EUR / USD</div></div>
+  <div class="filter-sep"></div>
+  <div><div class="filter-label">Session</div><div class="filter-val" id="sessionLabel">--</div></div>
+  <div class="filter-sep"></div>
+  <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text)" id="clock">IST --:--:--</div>
+  <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
+    <span class="src-badge err" id="badgeTD"><span class="dot"></span> TD</span>
+    <span class="src-badge err" id="badgeFH"><span class="dot"></span> FH</span>
   </div>
-  <div class="pid-cur" id="pid-cur">Current: <span id="pid-cur-val">—</span></div>
+  <button class="btn-clear" onclick="location.reload()">RESET</button>
+  <button class="btn-live">LIVE ▶</button>
 </div>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="sc"><div class="sv sv-w" id="wc">0</div><div class="sl">Wins ✓</div></div>
-  <div class="sc"><div class="sv sv-l" id="lc">0</div><div class="sl">Losses ✗</div></div>
-  <div class="sc"><div class="sv sv-t" id="tc">0</div><div class="sl">Total</div></div>
+<div class="debug-bar" id="debugBar">
+  <span>NM_G:<b id="dbNmG" style="color:#22c55e">0</b></span>
+  <span>NM_R:<b id="dbNmR" style="color:#ef4444">0</b></span>
+  <span>ELAPSED:<b id="dbElapsed" style="color:#f5b301">0</b>s</span>
+  <span>LOCKED:<b id="dbLocked" style="color:#94a3b8">NO</b></span>
+  <span>TRACKER_FREEZE:<b id="dbTrackerFreeze" style="color:#f5b301">NO</b></span>
+  <span>TD_LP:<b id="dbTDlp" style="color:#38bdf8">null</b></span>
+  <span>FH_LP:<b id="dbFHlp" style="color:#a78bfa">null</b></span>
+  <span>CYCLE:<b id="dbCycleId" style="color:#64748b">-</b></span>
+  <span>FLASH_AFTER_LOCK:<b id="dbFlashAfterLock" style="color:#f5b301">NO</b></span>
 </div>
-
-<!-- VERDICT -->
-<div class="verdict" id="verdict">
-  <span class="vico" id="vico"></span>
-  <span id="vtxt"></span>
-</div>
-
-<!-- PATTERN ANALYZER -->
-<div class="pa-box">
-  <div class="pa-head">
-    <div class="pa-title">⬡ Pattern Analyzer</div>
-    <div class="pa-confidence" id="pa-conf">Waiting...</div>
+<div class="top-strip">
+  <div style="display:flex;flex-direction:column;gap:2px;min-width:100px">
+    <span style="font-size:9px;font-weight:700;letter-spacing:2px;color:#475569">EUR/USD</span>
+    <span style="font-family:var(--mono);font-size:22px;font-weight:700;color:#f8fafc" id="stripPrice">-.-----</span>
+    <span style="font-size:9px;color:#475569;font-family:var(--mono)" id="stripSrc">LAST: --</span>
+    <div class="cycle-bar-wrap"><div class="cycle-bar-fill" id="cycleBar" style="width:0%;background:#14b8a6"></div></div>
   </div>
-  <div class="pa-body" id="pa-body">
-    <div class="pa-wait">
-      <div class="pa-wait-num" id="pa-wait-num">5</div>
-      aur digits chahiye pattern analyze karne ke liye
+  <div class="vdiv"></div>
+  <div class="chip-wrap">
+    <span class="chip-label" style="color:#38bdf8">PB-NM</span>
+    <div class="chip WAIT" id="chipPB3">WAIT</div>
+    <div class="bar-wrap"><div class="bar-up" id="pb3BarUp" style="width:50%"></div><div class="bar-dn" id="pb3BarDn" style="width:50%"></div></div>
+    <span class="chip-hint" id="pb3Hint">G:0 R:0</span>
+  </div>
+  <div class="vdiv"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+    <span style="font-size:8px;font-weight:700;letter-spacing:1.5px;color:#475569">CONSENSUS</span>
+    <div class="cons-chip WAIT" id="chipConsensus">--</div>
+  </div>
+  <div class="vdiv"></div>
+  <div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:10px;font-weight:700;color:#475569">SESSION:</span>
+      <span style="font-size:12px;font-weight:800;color:#f8fafc" id="stripSession">--</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="lock-badge watching" id="lockBadge">WATCHING</span>
+      <span style="font-size:9px;font-family:var(--mono);color:#475569" id="stripTimer">⏱ 30s</span>
+    </div>
+    <div style="display:flex;gap:6px">
+      <span id="flagNews" style="display:none;font-size:9px;font-weight:800;background:#ef4444;color:#fff;padding:2px 7px;border-radius:5px">📰 NEWS</span>
+      <span id="flagHvol" style="display:none;font-size:9px;font-weight:800;background:#f5b301;color:#000;padding:2px 7px;border-radius:5px">⚡ HVOL</span>
     </div>
   </div>
 </div>
-
-<!-- VOICE BAR -->
-<div class="voice-bar" id="voice-bar">
-  <div class="voice-dot idle" id="voice-dot"></div>
-  <div class="voice-status" id="voice-status"><b>Starting...</b> — Mic on ho rahi hai</div>
-  <button class="voice-toggle" id="voice-toggle" onclick="toggleVoice()">⏹ Stop</button>
+<div class="src-tracker" id="srcTrackerBlock">
+  <div class="tracker-freeze-overlay" id="trackerFreezeOverlay">
+    <div class="tracker-freeze-label" id="trackerFreezeLabel">🔒 LOCKED — Signal Frozen</div>
+  </div>
+  <div class="src-tracker-title">🔍 Per-Source Tick Tracker · <span id="trackerStatusText" style="color:#22c55e;font-size:9px;font-weight:800">LIVE</span></div>
+  <div class="combined-totals">
+    <div class="comb-box green-box">
+      <div class="comb-lbl">🟢 TD + FH Green Total</div>
+      <div class="comb-val green" id="combGreen">0</div>
+      <div class="comb-breakdown" id="combGreenBreak">TD:0 + FH:0</div>
+      <div class="comb-mini-bar">
+        <div class="comb-mini-bar-up" id="combGreenBar" style="width:50%"></div>
+        <div class="comb-mini-bar-dn" id="combRedBar" style="width:50%"></div>
+      </div>
+    </div>
+    <div class="comb-box red-box">
+      <div class="comb-lbl">🔴 TD + FH Red Total</div>
+      <div class="comb-val red" id="combRed">0</div>
+      <div class="comb-breakdown" id="combRedBreak">TD:0 + FH:0</div>
+    </div>
+  </div>
+  <div class="src-cards">
+    <div class="src-card dead" id="srcCardTD">
+      <div class="src-card-header">
+        <span class="src-card-name" style="color:#38bdf8">TD</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:8px;font-family:var(--mono);color:#475569" id="srcTDStatus">CONNECTING</span>
+          <div class="src-card-dot dead" id="srcDotTD"></div>
+        </div>
+      </div>
+      <div class="src-tick-row">
+        <div class="src-tick-box"><div class="src-tick-val" style="color:#22c55e" id="srcTDG">0</div><div class="src-tick-lbl">GREEN ↑</div></div>
+        <div class="src-tick-box"><div class="src-tick-val" style="color:#ef4444" id="srcTDR">0</div><div class="src-tick-lbl">RED ↓</div></div>
+      </div>
+      <div class="src-mini-bar"><div class="src-mini-bar-up" id="srcTDBarUp" style="width:50%"></div><div class="src-mini-bar-dn" id="srcTDBarDn" style="width:50%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="src-total-badge" id="srcTDTot">TOT: 0</span>
+        <span class="src-last-price" id="srcTDPrice">-.-----</span>
+      </div>
+    </div>
+    <div class="src-card dead" id="srcCardFH">
+      <div class="src-card-header">
+        <span class="src-card-name" style="color:#a78bfa">FH</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:8px;font-family:var(--mono);color:#475569" id="srcFHStatus">CONNECTING</span>
+          <div class="src-card-dot dead" id="srcDotFH"></div>
+        </div>
+      </div>
+      <div class="src-tick-row">
+        <div class="src-tick-box"><div class="src-tick-val" style="color:#22c55e" id="srcFHG">0</div><div class="src-tick-lbl">GREEN ↑</div></div>
+        <div class="src-tick-box"><div class="src-tick-val" style="color:#ef4444" id="srcFHR">0</div><div class="src-tick-lbl">RED ↓</div></div>
+      </div>
+      <div class="src-mini-bar"><div class="src-mini-bar-up" id="srcFHBarUp" style="width:50%"></div><div class="src-mini-bar-dn" id="srcFHBarDn" style="width:50%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="src-total-badge" id="srcFHTot">TOT: 0</span>
+        <span class="src-last-price" id="srcFHPrice">-.-----</span>
+      </div>
+    </div>
+  </div>
 </div>
-
-<!-- BUTTONS -->
-<div class="btn-section">
-  <div class="btn-label">↓ Down (0–4) &nbsp;·&nbsp; ↑ Up (5–9)</div>
-  <div class="dgrid" id="dg-down"></div>
-  <div class="dgrid" id="dg-up"></div>
+<button class="kpi-toggle-btn" id="kpiToggleBtn" onclick="toggleKpiSection()">
+  <div class="ktb-left"><div class="ktb-dot"></div>
+    <span style="font-size:11px">📈 KPI PANEL — PB-NM tick ratio · v6.14</span>
+  </div><span class="ktb-caret">▼</span>
+</button>
+<div class="kpi-inner-section" id="kpiInnerSection">
+<div class="kpi-panel">
+  <div class="kpi-section">
+    <div class="kpi-title" style="color:#38bdf8">◈ PB-NM  TICK COUNT</div>
+    <div class="kpi-row">
+      <div><div class="kpi-sub">🟢 Green</div><div class="kpi-val" style="color:#22c55e" id="pb3G">0</div></div>
+      <div style="text-align:right"><div class="kpi-sub">🔴 Red</div><div class="kpi-val" style="color:#ef4444" id="pb3R">0</div></div>
+    </div>
+    <div class="kpi-bar"><div class="kpi-bar-up" id="pb3KpiUp" style="width:50%"></div><div class="kpi-bar-dn" id="pb3KpiDn" style="width:50%"></div></div>
+    <div class="kpi-sig-row">
+      <div><div class="kpi-sub">Total</div><div class="kpi-val" style="color:#38bdf8;font-size:14px" id="pb3Tot">0</div></div>
+      <div style="text-align:right"><div class="kpi-sub">Signal</div><div class="kpi-val" style="color:#38bdf8;font-size:14px" id="pb3KpiSig">WAIT</div></div>
+    </div>
+    <div class="kpi-note" id="pb3Ratio">Ratio: 50/50</div>
+    <div class="kpi-note">G&gt;58% = UP · R&gt;58% = DOWN</div>
+  </div>
 </div>
-<div class="undo-row">
-  <button class="ubtn" id="ubtn" onclick="undoLast()" disabled>↩ Undo</button>
+<div class="flags-bar">
+  <span style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted)">MARKET FLAGS</span>
+  <span style="font-family:var(--mono);font-size:12px;font-weight:700" id="marketFlags">—</span>
+  <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)">
+    NEWS: <b id="newsModeFlag" style="color:#94a3b8">OFF</b> &nbsp;|&nbsp;
+    HVOL: <b id="hvolFlag" style="color:#94a3b8">OFF</b> &nbsp;|&nbsp;
+    WATCH: <b style="color:#14b8a6">12</b>s / <b style="color:#64748b">30</b>s
+  </span>
 </div>
-
-<!-- HISTORY -->
-<div class="hlbl">History — [Analyzer] [W/L]</div>
-<div class="harea" id="harea"><span class="hempty">Koi history nahi</span></div>
-<button class="resetbtn" onclick="resetAll()">↺ Reset All</button>
 </div>
-<div class="toast" id="toast"></div>
-
-<!-- 100% CONFIDENCE OVERLAY -->
-<div class="conf100-overlay" id="conf100-overlay">
-  <div class="conf100-dir" id="conf100-dir">↑</div>
-  <div class="conf100-label">100% Confidence</div>
-  <div class="conf100-badge" id="conf100-badge">UP</div>
+<div class="stat-row">
+  <div class="stat-box"><div class="stat-num" id="statPrice" style="color:#22c55e">-.-----</div><div class="stat-lbl">Live EUR/USD</div></div>
+  <div class="stat-box"><div class="stat-num" id="statTotalTicks">0</div><div class="stat-lbl">Total Real Ticks</div></div>
+  <div class="stat-box"><div class="stat-num" id="statConsensus" style="font-size:18px">--</div><div class="stat-lbl">Consensus Signal</div></div>
+</div>
+<div class="pill-row">
+  <div class="pill" style="border-color:rgba(56,189,248,.3)">
+    <div class="pill-src" style="color:#38bdf8">PB-NM</div>
+    <div class="pill-sig WAIT" id="pillPB3">WAIT</div>
+    <div style="margin-left:auto;font-size:9px;font-family:var(--mono);color:#64748b" id="pillPB3Sub">G:0 R:0</div>
+  </div>
+</div>
+<div class="tick-log">
+  <div class="tick-log-title">TICK LOG (last 8)</div>
+  <div class="tick-log-inner" id="tickLog"><span style="color:#334155">Waiting for ticks…</span></div>
+</div>
 </div>
 
 <script>
-let digits   = [];
-let wins = 0, losses = 0, total = 0;
-let history  = [];
-let periodId = null;
-let pidStack = [];
+/* ═══════════════════════════════════════════════════════
+   VED Dashboard v6.14
 
-// ── Direction helpers ──────────────────────────────────
-function isDown(d)    { return d <= 4; }
-function dirLabel(d)  { return isDown(d) ? '↓ Down' : '↑ Up'; }
-function sumToSingle(n) {
-  while (n >= 10)
-    n = String(n).split('').reduce((a,b) => a + parseInt(b), 0);
-  return n;
-}
-function dirOf(d) { return isDown(d) ? 'down' : 'up'; }
+   FIX vs v6.13:
+   ─────────────
+   PROBLEM: Flash screen sirf WATCHING window (0-12s) mein
+   chal rahi thi. Lock hone ke baad (12-30s) jab combined
+   G/R mein 4+ ka difference hota tha, flash nahi hoti thi.
 
-// ── 100% Confidence Overlay ───────────────────────────
-function show100Overlay(dir) {
-  const ov  = document.getElementById('conf100-overlay');
-  const dirEl = document.getElementById('conf100-dir');
-  const badge = document.getElementById('conf100-badge');
-  ov.classList.remove('up-bg','down-bg','show');
-  void ov.offsetWidth; // reflow for re-animation
-  if (dir === 'up') {
-    ov.classList.add('up-bg');
-    dirEl.textContent = '↑ UP';
-    badge.textContent = 'UP';
-  } else {
-    ov.classList.add('down-bg');
-    dirEl.textContent = '↓ DOWN';
-    badge.textContent = 'DOWN';
-  }
-  ov.classList.add('show');
-  clearTimeout(ov._t);
-  ov._t = setTimeout(() => { ov.classList.remove('show'); }, 5000);
-}
+   FIX APPLIED (2 changes):
+   1. lockChips() — ab lock hote waqt turant flash check
+      karta hai (combined G vs R diff >= 4)
+   2. flashAfterLock flag — ek baar hi flash hoti hai per
+      cycle (locked state mein) — repeated flash band hai
+      lekin agar pehle diff < 4 tha aur baad mein >= 4 ho
+      jaye to bhi trigger hoga
+═══════════════════════════════════════════════════════ */
 
-// ── Toast ──────────────────────────────────────────────
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + (type||'') + ' show';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => { t.className = 'toast '+(type||''); }, 1800);
-}
+const TWELVE_KEY  = "7d8ec8ca7bf8483b81ff4490c76dfe88";
+const FINNHUB_KEY = "d97ltghr01qicrqvhid0d97ltghr01qicrqvhidg";
+const WATCH_SEC   = 12;
+const TOTAL_SEC   = 30;
 
-// ── Period ID ──────────────────────────────────────────
-function setPeriod() {
-  const v = document.getElementById('pid-input').value.trim();
-  if (!v || !/^\d+$/.test(v)) return;
-  periodId = v; pidStack = [];
-  updatePeriodDisplay();
-}
-function updatePeriodDisplay() {
-  const el = document.getElementById('pid-cur');
-  if (!periodId) { el.classList.remove('show'); return; }
-  el.classList.add('show');
-  document.getElementById('pid-cur-val').textContent = periodId;
-}
-function advancePeriod() {
-  if (!periodId) return;
-  pidStack.push(periodId);
-  periodId = String(BigInt(periodId) + 1n);
-  updatePeriodDisplay();
-}
-function undoPeriod() {
-  if (!periodId || !pidStack.length) return;
-  periodId = pidStack.pop();
-  updatePeriodDisplay();
-}
-
-// ════════════════════════════════════════════════════════
-//  HARD PATTERN ANALYZER
-// ════════════════════════════════════════════════════════
-
-function analyzePatterns(digitArr) {
-  if (digitArr.length < 5) return null;
-
-  const recent = digitArr.slice(-10);
-  const n      = recent.length;
-  const dirs   = recent.map(d => isDown(d) ? -1 : 1);
-  const roots  = recent.map(d => sumToSingle(d));
-
-  let votes = [];
-
-  // P1: Last Digit Direction
-  {
-    const last = dirs[n-1];
-    const lastD = recent[n-1];
-    votes.push({
-      name:'P1 Last Result',
-      desc:`Aakhri digit ${lastD} → ${last > 0 ? '↑ Up' : '↓ Down'} tha`,
-      dir: last > 0 ? 'up' : 'down',
-      weight:1, detail:`${lastD}`
-    });
-  }
-
-  // P2: Current Streak Reversal
-  {
-    let streakLen = 1;
-    for (let i = n-2; i >= 0; i--) {
-      if (dirs[i] === dirs[n-1]) streakLen++; else break;
-    }
-    if (streakLen >= 2) {
-      const reversalDir = dirs[n-1] > 0 ? 'down' : 'up';
-      const strength = streakLen >= 3 ? 3 : 2;
-      votes.push({
-        name:`P2 Streak-${streakLen} Reversal`,
-        desc:`${streakLen} same digits in a row → reversal`,
-        dir:reversalDir, weight:strength, detail:`Streak ${streakLen}`
-      });
-    }
-  }
-
-  // P3: Alternating Wave
-  if (n >= 4) {
-    const tail = dirs.slice(-4);
-    const isAlt = tail[0] !== tail[1] && tail[1] !== tail[2] && tail[2] !== tail[3];
-    if (isAlt) {
-      const nextDir = tail[3] > 0 ? 'down' : 'up';
-      votes.push({
-        name:'P3 Alternating Wave', desc:'U/D/U/D pattern → next flips',
-        dir:nextDir, weight:2, detail:tail.map(d=>d>0?'↑':'↓').join('')
-      });
-    }
-  }
-
-  // P4: Majority Last 5
-  {
-    const tail5 = dirs.slice(-5);
-    const upCount   = tail5.filter(d=>d>0).length;
-    const downCount = tail5.filter(d=>d<0).length;
-    if (upCount >= 4) {
-      votes.push({
-        name:'P4 Over-Up Correction',desc:`${upCount}/5 Up → reversion likely`,
-        dir:'down', weight: upCount === 5 ? 2 : 1, detail:`${upCount}↑ ${downCount}↓`
-      });
-    } else if (downCount >= 4) {
-      votes.push({
-        name:'P4 Over-Down Correction',desc:`${downCount}/5 Down → reversion likely`,
-        dir:'up', weight: downCount === 5 ? 2 : 1, detail:`${downCount}↓ ${upCount}↑`
-      });
-    }
-  }
-
-  // P5: Double End
-  if (n >= 3) {
-    const l1 = dirs[n-1], l2 = dirs[n-2], l3 = dirs[n-3];
-    if (l1 === l2 && l2 !== l3) {
-      const flipDir = l1 > 0 ? 'down' : 'up';
-      votes.push({
-        name:'P5 Wave Turn (Double)',
-        desc:'2 same after different → wave turn signal',
-        dir:flipDir, weight:2,
-        detail:`${l3>0?'↑':'↓'}→${l2>0?'↑':'↓'}→${l1>0?'↑':'↓'}`
-      });
-    }
-  }
-
-  // P6: Triple End
-  if (n >= 4) {
-    const l1 = dirs[n-1], l2 = dirs[n-2], l3 = dirs[n-3], l4 = dirs[n-4];
-    if (l1 === l2 && l2 === l3 && l3 !== l4) {
-      const flipDir = l1 > 0 ? 'down' : 'up';
-      votes.push({
-        name:'P6 Triple End — Strong Reversal',
-        desc:'3 same in a row after a break → strong reversal',
-        dir:flipDir, weight:3,
-        detail:`${l4>0?'↑':'↓'}→${l3>0?'↑':'↓'}→${l2>0?'↑':'↓'}→${l1>0?'↑':'↓'}`
-      });
-    }
-  }
-
-  // P7: Sum Trend
-  if (n >= 3) {
-    const r1 = roots[n-3], r2 = roots[n-2], r3 = roots[n-1];
-    if (r3 > r2 && r2 > r1) {
-      votes.push({
-        name:'P7 Rising Sum Trend', desc:'Digital roots rising → Up momentum',
-        dir:'up', weight:1, detail:`${r1}→${r2}→${r3}`
-      });
-    } else if (r3 < r2 && r2 < r1) {
-      votes.push({
-        name:'P7 Falling Sum Trend', desc:'Digital roots falling → Down momentum',
-        dir:'down', weight:1, detail:`${r1}→${r2}→${r3}`
-      });
-    }
-  }
-
-  // P8: Wave Peak / Trough
-  if (n >= 3) {
-    const r1 = roots[n-3], r2 = roots[n-2], r3 = roots[n-1];
-    if (r2 < r1 && r2 < r3) {
-      votes.push({
-        name:'P8 Wave Trough Recovery', desc:'Previous was trough → Up continuation',
-        dir:'up', weight:2, detail:`${r1}→${r2}(low)→${r3}`
-      });
-    } else if (r2 > r1 && r2 > r3) {
-      votes.push({
-        name:'P8 Wave Peak Drop', desc:'Previous was peak → Down continuation',
-        dir:'down', weight:2, detail:`${r1}→${r2}(peak)→${r3}`
-      });
-    }
-  }
-
-  let upScore = 0, downScore = 0;
-  for (const v of votes) {
-    if (v.dir === 'up') upScore += v.weight;
-    else               downScore += v.weight;
-  }
-  const totalScore = upScore + downScore;
-  const finalDir   = upScore > downScore ? 'up' : downScore > upScore ? 'down' : null;
-  const confidence = totalScore === 0 ? 0 : Math.round((Math.max(upScore,downScore) / totalScore) * 100);
-
-  return { votes, upScore, downScore, totalScore, finalDir, confidence, recent };
-}
-
-// ── Render Pattern Analyzer ────────────────────────────
-function renderAnalyzer() {
-  const body   = document.getElementById('pa-body');
-  const confEl = document.getElementById('pa-conf');
-
-  if (digits.length < 5) {
-    const need = 5 - digits.length;
-    confEl.textContent = 'Waiting...';
-    body.innerHTML = `<div class="pa-wait">
-      <div class="pa-wait-num">${need}</div>
-      aur digits chahiye analyze karne ke liye
-    </div>`;
-    return;
-  }
-
-  const result = analyzePatterns(digits);
-  if (!result) {
-    confEl.textContent = '—';
-    body.innerHTML = '<div class="pa-wait" style="color:#333">Analyzing...</div>';
-    return;
-  }
-
-  const { votes, upScore, downScore, finalDir, confidence, recent } = result;
-
-  confEl.textContent = finalDir
-    ? `${confidence}% ${finalDir === 'up' ? '↑' : '↓'}`
-    : '50/50';
-
-  // 100% confidence → show full-screen overlay
-  if (confidence === 100 && finalDir) {
-    show100Overlay(finalDir);
-  }
-
-  let recentBar = '';
-  for (let i = 0; i < 10; i++) {
-    if (i < recent.length) {
-      const d   = recent[i];
-      const cls = isDown(d) ? 'pa-rb-d' : 'pa-rb-u';
-      const arr = isDown(d) ? '↓' : '↑';
-      recentBar += `<div class="pa-rb ${cls}"><span>${d}</span><span class="pa-rb-arr">${arr}</span></div>`;
-    } else {
-      recentBar += `<div class="pa-rb pa-rb-empty">·</div>`;
-    }
-  }
-
-  const sortedVotes = [...votes].sort((a,b) => b.weight - a.weight);
-  let patternsHtml = '';
-  for (const v of sortedVotes) {
-    const strength = v.weight >= 3 ? 'strong' : v.weight >= 2 ? 'found' : 'weak';
-    const voteClass = v.dir === 'up' ? 'pa-pat-vote-u' : 'pa-pat-vote-d';
-    const voteSymbol = v.dir === 'up' ? '↑' : '↓';
-    patternsHtml += `
-      <div class="pa-pattern ${strength}">
-        <div class="pa-pat-left">
-          <div class="pa-pat-name">${v.name}</div>
-          <div class="pa-pat-desc">${v.desc} <span style="color:#3a3a5a">[${v.detail}]</span></div>
-        </div>
-        <div class="pa-pat-right">
-          <div class="pa-pat-vote ${voteClass}">${voteSymbol}</div>
-          <div class="pa-pat-pct">wt:${v.weight}</div>
-        </div>
-      </div>`;
-  }
-  if (!patternsHtml) {
-    patternsHtml = '<div style="font-size:11px;color:#333;padding:4px 0">Koi strong pattern nahi mila...</div>';
-  }
-
-  let sigDirHtml, sigBadgeHtml, sigScore;
-  if (!finalDir) {
-    sigDirHtml   = '<div class="pa-sig-dir pa-sig-n">—</div>';
-    sigBadgeHtml = '<span class="pa-sig-badge pa-sig-badge-n">Tie</span>';
-    sigScore = `↑${upScore} = ↓${downScore}`;
-  } else {
-    const isUp = finalDir === 'up';
-    sigDirHtml   = `<div class="pa-sig-dir ${isUp?'pa-sig-u':'pa-sig-d'}">${isUp?'↑ UP':'↓ DOWN'}</div>`;
-    sigBadgeHtml = `<span class="pa-sig-badge ${isUp?'pa-sig-badge-u':'pa-sig-badge-d'}">${isUp?'↑ Up':'↓ Down'}</span>`;
-    sigScore = `↑${upScore} vs ↓${downScore} (margin:${Math.abs(upScore-downScore)})`;
-  }
-
-  body.innerHTML = `
-    <div class="pa-recent-lbl">Recent 10 Digits</div>
-    <div class="pa-recent-bar">${recentBar}</div>
-    <div class="pa-patterns">${patternsHtml}</div>
-    <div class="pa-signal">
-      <div class="pa-sig-left">
-        <div class="pa-sig-lbl">Analyzer Output</div>
-        ${sigDirHtml}
-      </div>
-      <div class="pa-sig-right">
-        ${sigBadgeHtml}
-        <div class="pa-sig-score">${sigScore}</div>
-      </div>
-    </div>`;
-}
-
-// ── ADD DIGIT ──────────────────────────────────────────
-function addDigit(d) {
-  advancePeriod();
-  digits.push(d);
-  document.getElementById('ubtn').disabled = false;
-
-  renderAnalyzer();
-
-  // Only track W/L from 6th digit onward (need 5 prev for analyzer)
-  if (digits.length <= 5) {
-    document.getElementById('verdict').className = 'verdict';
-    return;
-  }
-
-  // Analyzer on digits BEFORE this one
-  const prevDigits = digits.slice(0, -1);
-  const anaResult  = analyzePatterns(prevDigits);
-  const anaDir     = anaResult ? anaResult.finalDir : null;
-  const actualDir  = dirOf(d);
-
-  let won = null;
-
-  if (anaDir !== null) {
-    won = anaDir === actualDir;
-    if (won) wins++; else losses++;
-    total++;
-    document.getElementById('wc').textContent = wins;
-    document.getElementById('lc').textContent = losses;
-    document.getElementById('tc').textContent = total;
-  }
-
-  // Verdict
-  const v  = document.getElementById('verdict');
-  const vi = document.getElementById('vico');
-  const vt = document.getElementById('vtxt');
-  v.style = '';
-
-  if (anaDir !== null) {
-    if (won) {
-      v.className    = 'verdict show v-w';
-      vi.textContent = '✓';
-      vt.textContent = `WIN! Analyzer → ${anaDir==='down'?'↓ Down':'↑ Up'} — Actual: ${d} ${dirLabel(d)} ✓`;
-      showToast('✓ WIN!','');
-    } else {
-      v.className    = 'verdict show v-l';
-      vi.textContent = '✗';
-      vt.textContent = `Loss. Analyzer → ${anaDir==='down'?'↓ Down':'↑ Up'} — Actual: ${d} ${dirLabel(d)} ✗`;
-      showToast('✗ Loss','loss');
-    }
-  } else {
-    v.className    = 'verdict show';
-    v.style.background='#111';v.style.border='1px solid #222';v.style.color='#444';
-    vi.textContent = '—';
-    vt.textContent = `Analyzer: no signal — Skip (no count)`;
-  }
-
-  history.unshift({
-    anaDir, won,
-    actualDigit: d, actualDir,
-    anaCon: anaResult ? anaResult.confidence : null,
-  });
-  if (history.length > 20) history.pop();
-  renderHistory();
-}
-
-// ── HISTORY ────────────────────────────────────────────
-function renderHistory() {
-  const area=document.getElementById('harea');
-  if(!history.length){area.innerHTML='<span class="hempty">Koi history nahi</span>';return;}
-  area.innerHTML=history.map(h=>{
-    const acls=isDown(h.actualDigit)?'hpd':'hpu';
-    const aArr=isDown(h.actualDigit)?'↓':'↑';
-    let anaHtml='';
-    if(h.anaDir){
-      const arr=h.anaDir==='up'?'↑':'↓';
-      const pct=h.anaCon!==null?`${h.anaCon}%`:'';
-      anaHtml=`<span class="hpa">⬡${arr}${pct}</span>`;
-    } else {
-      anaHtml=`<span class="hpa" style="color:#333;border-color:#1a1a2e">⬡—</span>`;
-    }
-    if(h.anaDir && h.won!==null){
-      const wcls=h.won?'hwl hww':'hwl hwll';
-      return `<div class="hrow">
-        ${anaHtml}
-        <span class="harrow">→</span>
-        <span class="hp ${acls}">${h.actualDigit}${aArr}</span>
-        <span class="${wcls}">${h.won?'✓W':'✗L'}</span></div>`;
-    }
-    return `<div class="hrow">
-      ${anaHtml}
-      <span class="harrow">→</span>
-      <span class="hp ${acls}">${h.actualDigit}${aArr}</span>
-      <span class="hskip">skip</span></div>`;
-  }).join('');
-}
-
-// ── UNDO ───────────────────────────────────────────────
-function undoLast(){
-  if(!digits.length) return;
-  undoPeriod();
-
-  const wasTrack = digits.length > 5;
-  digits.pop();
-
-  if(wasTrack && history.length>0){
-    const h=history[0];
-    if(h.anaDir && h.won!==null){
-      if(h.won) wins--; else losses--;
-      total--;
-      document.getElementById('wc').textContent=wins;
-      document.getElementById('lc').textContent=losses;
-      document.getElementById('tc').textContent=total;
-    }
-    history.shift(); renderHistory();
-    document.getElementById('verdict').className='verdict';
-    document.getElementById('verdict').style='';
-  }
-
-  if(!digits.length) document.getElementById('ubtn').disabled=true;
-  renderAnalyzer();
-}
-
-// ── RESET ──────────────────────────────────────────────
-function resetAll(){
-  digits=[];wins=0;losses=0;total=0;history=[];periodId=null;pidStack=[];
-  ['wc','lc','tc'].forEach(id=>document.getElementById(id).textContent='0');
-  document.getElementById('ubtn').disabled=true;
-  document.getElementById('verdict').className='verdict';
-  document.getElementById('verdict').style='';
-  document.getElementById('pid-input').value='';
-  document.getElementById('pid-cur').classList.remove('show');
-  renderAnalyzer(); renderHistory();
-}
-
-// ── BUILD BUTTONS ──────────────────────────────────────
-function buildBtns(){
-  const dg=document.getElementById('dg-down');
-  const ug=document.getElementById('dg-up');
-  for(let i=0;i<=9;i++){
-    const b=document.createElement('button');
-    b.className='dbtn '+(isDown(i)?'dbtn-d':'dbtn-u');
-    b.innerHTML=`<span>${i}</span><span class="barr">${isDown(i)?'↓':'↑'}</span>`;
-    b.onclick=()=>addDigit(i);
-    isDown(i)?dg.appendChild(b):ug.appendChild(b);
-  }
-}
-document.getElementById('pid-input').addEventListener('keydown',e=>{if(e.key==='Enter')setPeriod();});
-buildBtns();
-renderAnalyzer();
-
-// ════════════════════════════════════════════════════════
-//  VOICE RECOGNITION
-//  Flow: "ok" → waiting for digit → digit spoken → addDigit
-// ════════════════════════════════════════════════════════
-
-let voiceOn      = false;
-let voiceReady   = false; // true = heard "ok", now waiting for digit
-let recognition  = null;
-let voiceRestartTimer = null;
-
-// Word → digit map (Hindi + English variants)
-const DIGIT_MAP = {
-  // English
-  'zero':0,'one':1,'two':2,'three':3,'four':4,
-  'five':5,'six':6,'seven':7,'eight':8,'nine':9,
-  // Hindi words
-  'shunya':0,'ek':1,'do':2,'teen':3,'char':4,'chaar':4,
-  'paanch':5,'paunch':5,'chhe':6,'che':6,'saat':7,'sat':7,
-  'aath':8,'nau':9,'nav':9,
-  // number words that STT might produce
-  '0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,
+const PER_SRC = {
+  td: { lastPrice:null, g:0, r:0, tot:0 },
+  fh: { lastPrice:null, g:0, r:0, tot:0 },
 };
 
-// "ok" trigger words
-const OK_WORDS = ['ok','okay','o.k.','okey','ओके','ठीक'];
+/* ── Tracker freeze state ── */
+let trackerFrozen = false;
+let trackerSnapTDG=0, trackerSnapTDR=0, trackerSnapFHG=0, trackerSnapFHR=0;
+let trackerFreezeAppliedForCycle = false;
 
-function setVoiceUI(state, msg) {
-  const dot    = document.getElementById('voice-dot');
-  const status = document.getElementById('voice-status');
-  dot.className = 'voice-dot ' + state;
-  status.innerHTML = msg;
+/* ── NM Watch window counts ── */
+const WC = { nmG:0, nmR:0,
+  reset(){ this.nmG=0; this.nmR=0; } };
+
+/* ── NM chip snapshot ── */
+let snapNM=null, chipsLocked=false;
+
+/* ── Flash state ── */
+let flashTimer=null;
+let lastFlashDir=null;
+
+/* ── v6.14: Post-lock flash tracking ── */
+let flashAfterLockDone = false;  // per cycle — sirf ek baar flash after lock
+
+/* ── Cycle tracking ── */
+let cycleId=-1;
+
+function srcKey(name){ return name.toLowerCase().startsWith('f') ? 'fh' : 'td'; }
+function srcColour(k){ return k==='fh'?'#a78bfa':'#38bdf8'; }
+
+/* ══ RESET CYCLE ══ */
+function resetCycle(){
+  WC.reset();
+  chipsLocked=false; snapNM=null;
+
+  lastFlashDir=null;
+  flashAfterLockDone = false;  // v6.14: reset per-cycle flash flag
+  if(flashTimer){ clearTimeout(flashTimer); flashTimer=null; }
+  const ov=document.getElementById('flashOverlay');
+  if(ov) ov.classList.remove('active');
+
+  trackerFrozen=false;
+  trackerFreezeAppliedForCycle=false;
+  trackerSnapTDG=0; trackerSnapTDR=0;
+  trackerSnapFHG=0; trackerSnapFHR=0;
+  updateTrackerFreezeUI();
+
+  Object.values(PER_SRC).forEach(s=>{
+    s.g=0; s.r=0; s.tot=0;
+  });
+  ['td','fh'].forEach(k => renderSrcCard(k));
+  renderCombinedTotals();
+
+  clearGlow();
+  glowLocked=false;
 }
 
-function parseDigitFromText(text) {
-  const t = text.toLowerCase().trim();
-  // Direct single digit char
-  if (/^\d$/.test(t)) return parseInt(t);
-  // Check full word match
-  for (const [word, val] of Object.entries(DIGIT_MAP)) {
-    if (t === word) return val;
-  }
-  // Check if any token in multi-word result matches
-  const tokens = t.split(/\s+/);
-  for (const tok of tokens) {
-    const clean = tok.replace(/[^a-z0-9]/g,'');
-    if (DIGIT_MAP[clean] !== undefined) return DIGIT_MAP[clean];
-  }
-  return null;
+/* Returns {elapsed, cycleChanged} */
+function checkCycleElapsed(nowMs){
+  const cid=Math.floor(nowMs/30000);
+  let cycleChanged=false;
+  if(cid!==cycleId){ cycleId=cid; resetCycle(); cycleChanged=true; }
+  const elapsed=Math.floor((nowMs%30000)/1000);
+  return {elapsed, cycleChanged};
 }
 
-function parseOkFromText(text) {
-  const t = text.toLowerCase().trim();
-  return OK_WORDS.some(w => t.includes(w));
-}
+/* ══ FULLSCREEN FLASH ══
+   v6.14: `forceRetrigger` param — lock ke baad call karne
+   par lastFlashDir check bypass karo (warna same dir repeat block ho jata)
+*/
+function triggerFlash(dir, g, r, forceRetrigger){
+  const diff = Math.abs(g - r);
+  if(diff < 4) return false; // threshold
 
-function initRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    setVoiceUI('error', '<b style="color:#ef4444">Browser support nahi hai</b> — Chrome use karo');
-    return false;
-  }
+  const isGreen = g > r;
+  const overlay = document.getElementById('flashOverlay');
+  const label   = document.getElementById('flashLabel');
+  const sub     = document.getElementById('flashSub');
+  if(!overlay) return false;
 
-  recognition = new SpeechRecognition();
-  recognition.continuous    = true;
-  recognition.interimResults = false;
-  recognition.lang           = 'hi-IN'; // Hindi + English numbers work well
+  overlay.style.background = isGreen
+    ? 'rgba(22,163,74,0.55)'
+    : 'rgba(220,38,38,0.55)';
+  label.style.color = '#fff';
+  label.textContent = isGreen ? '▲ UP' : '▼ DOWN';
+  sub.textContent   = 'G:'+g+' R:'+r+' · DIFF:'+diff;
 
-  recognition.onstart = () => {
-    if (!voiceReady) {
-      setVoiceUI('listening', '<b>Bol do "OK"</b> — phir digit bolo');
-    }
-  };
+  overlay.classList.remove('active');
+  if(flashTimer) clearTimeout(flashTimer);
+  void overlay.offsetWidth;
+  overlay.classList.add('active');
 
-  recognition.onresult = (e) => {
-    const result = e.results[e.results.length - 1];
-    if (!result.isFinal) return;
-    const text = result[0].transcript.trim();
-    console.log('[Voice]', text);
-
-    if (!voiceReady) {
-      // Listening for "ok"
-      if (parseOkFromText(text)) {
-        voiceReady = true;
-        setVoiceUI('waiting', '<b style="color:#7c6ef0">OK suna! ✓</b> — Ab digit bolo (0–9)');
-      }
-    } else {
-      // Listening for digit
-      const digit = parseDigitFromText(text);
-      if (digit !== null) {
-        voiceReady = false;
-        addDigit(digit);
-        setVoiceUI('heard', `<b style="color:#22c55e">✓ ${digit} add hua!</b> — Agli entry ke liye "OK" bolo`);
-        // After brief success show, go back to listening state
-        setTimeout(() => {
-          if (voiceOn) setVoiceUI('listening', '<b>Bol do "OK"</b> — phir digit bolo');
-        }, 1200);
-      } else {
-        // Couldn't parse digit — stay in waiting state, show what was heard
-        setVoiceUI('waiting', `<b style="color:#7c6ef0">Suna: "${text}"</b> — Digit clearly bolo`);
-        // Auto reset after 3s if no digit
-        clearTimeout(voiceRestartTimer);
-        voiceRestartTimer = setTimeout(() => {
-          if (voiceOn && voiceReady) {
-            voiceReady = false;
-            setVoiceUI('listening', '<b>Bol do "OK"</b> — phir digit bolo');
-          }
-        }, 3000);
-      }
-    }
-  };
-
-  recognition.onerror = (e) => {
-    if (e.error === 'no-speech') return; // ignore silence
-    if (e.error === 'aborted') return;
-    setVoiceUI('error', `<b style="color:#ef4444">Error: ${e.error}</b>`);
-  };
-
-  recognition.onend = () => {
-    // Auto-restart if still on
-    if (voiceOn) {
-      setTimeout(() => {
-        try { recognition.start(); } catch(ex) {}
-      }, 200);
-    }
-  };
+  flashTimer = setTimeout(()=>{
+    overlay.classList.remove('active');
+    flashTimer = null;
+  }, 1000);
 
   return true;
 }
 
-function toggleVoice() {
-  const btn = document.getElementById('voice-toggle');
-  if (!voiceOn) {
-    startVoice();
+/* ══ PROCESS TICK ══ */
+function processTick(price, nowMs, srcName){
+  if(!isFinite(price)||price<=0) return;
+
+  const k=srcKey(srcName);
+  const S=PER_SRC[k];
+
+  let dir=null;
+  if(S.lastPrice!==null){
+    if(price>S.lastPrice)      dir='GREEN';
+    else if(price<S.lastPrice) dir='RED';
+  }
+
+  if(dir==='GREEN') S.g++;
+  else if(dir==='RED') S.r++;
+  S.tot++;
+  S.lastPrice=price;
+
+  const {elapsed}=checkCycleElapsed(nowMs);
+
+  if(elapsed<WATCH_SEC && !chipsLocked && dir!==null){
+    if(dir==='GREEN') WC.nmG++;
+    else if(dir==='RED') WC.nmR++;
+  }
+
+  if(!trackerFrozen) renderSrcCard(k);
+  updatePriceDisplay(price, nowMs, dir, srcName);
+  addTickLog(price, dir, srcName, nowMs);
+  updateDebug(elapsed);
+}
+
+/* ── Source card render ── */
+function renderSrcCard(k){
+  const S=PER_SRC[k], u=k.toUpperCase();
+  const tot=S.g+S.r||1, upPct=Math.round(S.g/tot*100);
+  setEl('src'+u+'G',S.g); setEl('src'+u+'R',S.r);
+  setEl('src'+u+'Tot','TOT: '+S.tot);
+  if(S.lastPrice) setEl('src'+u+'Price',S.lastPrice.toFixed(5));
+  wid('src'+u+'BarUp',upPct); wid('src'+u+'BarDn',100-upPct);
+}
+
+/* ── Combined totals render ── */
+function renderCombinedTotals(){
+  const tdG = trackerFrozen ? trackerSnapTDG : PER_SRC.td.g;
+  const tdR = trackerFrozen ? trackerSnapTDR : PER_SRC.td.r;
+  const fhG = trackerFrozen ? trackerSnapFHG : PER_SRC.fh.g;
+  const fhR = trackerFrozen ? trackerSnapFHR : PER_SRC.fh.r;
+
+  const totalG = tdG + fhG;
+  const totalR = tdR + fhR;
+  const grandTot = totalG + totalR || 1;
+  const gPct = Math.round(totalG / grandTot * 100);
+
+  setEl('combGreen', totalG);
+  setEl('combRed', totalR);
+  setEl('combGreenBreak', 'TD:'+tdG+' + FH:'+fhG);
+  setEl('combRedBreak', 'TD:'+tdR+' + FH:'+fhR);
+  wid('combGreenBar', gPct);
+  wid('combRedBar', 100 - gPct);
+}
+
+/* ── Tracker freeze management ── */
+function applyTrackerFreeze(){
+  if(trackerFreezeAppliedForCycle) return;
+  trackerFreezeAppliedForCycle=true;
+  trackerSnapTDG=PER_SRC.td.g;
+  trackerSnapTDR=PER_SRC.td.r;
+  trackerSnapFHG=PER_SRC.fh.g;
+  trackerSnapFHR=PER_SRC.fh.r;
+  ['td','fh'].forEach(k=>{
+    const u=k.toUpperCase();
+    const snap_g = k==='td'?trackerSnapTDG:trackerSnapFHG;
+    const snap_r = k==='td'?trackerSnapTDR:trackerSnapFHR;
+    const tot=snap_g+snap_r||1, upPct=Math.round(snap_g/tot*100);
+    setEl('src'+u+'G',snap_g); setEl('src'+u+'R',snap_r);
+    setEl('src'+u+'Tot','TOT: '+(snap_g+snap_r));
+    wid('src'+u+'BarUp',upPct); wid('src'+u+'BarDn',100-upPct);
+  });
+  trackerFrozen = true;
+}
+
+function updateTrackerFreezeUI(){
+  const overlay = document.getElementById('trackerFreezeOverlay');
+  const label   = document.getElementById('trackerFreezeLabel');
+  const statTxt = document.getElementById('trackerStatusText');
+
+  if(trackerFrozen){
+    if(overlay) overlay.classList.add('active');
+    if(label) label.textContent = '🔒 LOCKED — Signal Frozen';
+    if(statTxt){ statTxt.textContent='FROZEN (LOCKED)'; statTxt.style.color='#f5b301';}
   } else {
-    stopVoice();
+    if(overlay) overlay.classList.remove('active');
+    if(statTxt){ statTxt.textContent='LIVE'; statTxt.style.color='#22c55e';}
+  }
+
+  const dbTF = document.getElementById('dbTrackerFreeze');
+  if(dbTF) dbTF.textContent = trackerFrozen ? 'YES' : 'NO';
+}
+
+let priceHistory=[], totalRealTicks=0;
+function updatePriceDisplay(price, nowMs, dir, srcName){
+  priceHistory.push(price);
+  if(priceHistory.length>60) priceHistory.shift();
+  totalRealTicks++;
+  const isUp=dir==='GREEN';
+  const col=isUp?'#22c55e':'#ef4444';
+  setElColor('statPrice',col); setEl('statPrice',price.toFixed(5));
+  setElColor('stripPrice',col); setEl('stripPrice',price.toFixed(5));
+  setEl('statTotalTicks',totalRealTicks);
+  setEl('stripSrc','LAST: '+srcName.toUpperCase());
+}
+
+const tickLogBuf=[];
+function addTickLog(price, dir, srcName, nowMs){
+  const k=srcKey(srcName);
+  const em=dir==='GREEN'?'🟢':dir==='RED'?'🔴':'⚪';
+  const t=new Date(nowMs).toISOString().slice(11,23);
+  tickLogBuf.unshift({em,price:price.toFixed(5),src:srcName,t,col:srcColour(k)});
+  if(tickLogBuf.length>8) tickLogBuf.pop();
+  const el=document.getElementById('tickLog');
+  if(el) el.innerHTML=tickLogBuf.map(e=>
+    `<span style="display:flex;gap:8px;align-items:center">` +
+    `<span style="color:#334155;min-width:90px">${e.t}</span>` +
+    `<span style="min-width:24px">${e.em}</span>` +
+    `<span style="font-weight:700;color:#94a3b8">${e.price}</span>` +
+    `<span style="color:${e.col};font-size:10px;font-weight:800">${e.src}</span>` +
+    `</span>`).join('');
+}
+
+function updateDebug(elapsed){
+  setEl('dbNmG',WC.nmG); setEl('dbNmR',WC.nmR);
+  setEl('dbElapsed',elapsed);
+  setEl('dbLocked',chipsLocked?'YES':'NO');
+  setEl('dbCycleId',cycleId);
+  const td=PER_SRC.td, fh=PER_SRC.fh;
+  setEl('dbTDlp',td.lastPrice?td.lastPrice.toFixed(5):'null');
+  setEl('dbFHlp',fh.lastPrice?fh.lastPrice.toFixed(5):'null');
+  /* v6.14: Flash after lock debug */
+  const fal=document.getElementById('dbFlashAfterLock');
+  if(fal) fal.textContent = flashAfterLockDone ? 'DONE' : 'NO';
+}
+
+function sigNM(g,r){
+  const t=g+r; if(t<3) return 'WAIT';
+  if(g/t>0.58) return 'UP';
+  if(r/t>0.58) return 'DOWN';
+  return 'WAIT';
+}
+
+/* ══ LOCK CHIPS ══
+   v6.14 FIX: Lock hone ke baad combined G+R diff check karo
+   aur agar >= 4 hai to flash trigger karo.
+   flashAfterLockDone flag se ensure hota hai per cycle
+   sirf ek hi flash hogi (unless diff baad mein bhi badhe
+   aur pehle diff < 4 tha).
+*/
+function lockChips(){
+  if(chipsLocked) return;
+  chipsLocked=true;
+  snapNM={g:WC.nmG, r:WC.nmR, sig:sigNM(WC.nmG,WC.nmR)};
+  applyTrackerFreeze();
+
+  /* ── v6.14: Flash at lock moment if combined diff >= 4 ── */
+  const totalG = trackerSnapTDG + trackerSnapFHG;
+  const totalR = trackerSnapTDR + trackerSnapFHR;
+  const diff = Math.abs(totalG - totalR);
+  if(diff >= 4 && !flashAfterLockDone){
+    const dir = totalG > totalR ? 'UP' : 'DOWN';
+    const flashed = triggerFlash(dir, totalG, totalR, true);
+    if(flashed) flashAfterLockDone = true;
   }
 }
 
-function startVoice() {
-  const btn = document.getElementById('voice-toggle');
-  if (!recognition) {
-    if (!initRecognition()) return;
-  }
-  voiceOn    = true;
-  voiceReady = false;
-  btn.textContent = '⏹ Stop';
-  btn.classList.add('on');
-  try { recognition.start(); } catch(ex) {}
-  setVoiceUI('listening', '<b>Bol do "OK"</b> — phir digit bolo');
+/* ── Render NM chip ── */
+function renderChips(){
+  const nmG  = chipsLocked ? snapNM.g   : WC.nmG;
+  const nmR  = chipsLocked ? snapNM.r   : WC.nmR;
+  const nmSig= chipsLocked ? snapNM.sig : sigNM(WC.nmG,WC.nmR);
+  const nmT  = nmG+nmR||1, nmPct=Math.round(nmG/nmT*100);
+  chip('chipPB3',nmSig);
+  wid('pb3BarUp',nmPct); wid('pb3BarDn',100-nmPct);
+  wid('pb3KpiUp',nmPct); wid('pb3KpiDn',100-nmPct);
+  setEl('pb3Hint','G:'+nmG+' R:'+nmR);
+  setEl('pb3G',nmG); setEl('pb3R',nmR); setEl('pb3Tot',nmG+nmR);
+  setEl('pb3Ratio','Ratio: '+nmPct+'% G / '+(100-nmPct)+'% R');
+  kpiSig('pb3KpiSig',nmSig,nmSig==='UP'?'#22c55e':nmSig==='DOWN'?'#ef4444':'#38bdf8');
+  const p3=document.getElementById('pillPB3');
+  if(p3){p3.textContent=nmSig;p3.className='pill-sig '+(nmSig==='UP'?'UP':nmSig==='DOWN'?'DOWN':'WAIT');}
+  setEl('pillPB3Sub','G:'+nmG+' R:'+nmR);
+  return {nmSig};
 }
 
-function stopVoice() {
-  const btn = document.getElementById('voice-toggle');
-  voiceOn    = false;
-  voiceReady = false;
-  btn.textContent = '🎤 Start';
-  btn.classList.remove('on');
-  try { recognition.stop(); } catch(ex) {}
-  setVoiceUI('idle', '<b>Voice Off</b> — Toggle dabao');
+function chip(id,sig){ const e=document.getElementById(id); if(e){e.textContent=sig;e.className='chip '+sig;} }
+function kpiSig(id,txt,col){ const e=document.getElementById(id); if(e){e.textContent=txt;e.style.color=col;} }
+
+/* ── Sources ── */
+const SOURCES={td:{live:false},fh:{live:false}};
+let wsTD=null,wsFH=null,tdRetry=null,fhRetry=null;
+
+function connectTD(){
+  if(wsTD) try{wsTD.close()}catch(e){}
+  setBadge('badgeTD','err','TD …');
+  try{
+    wsTD=new WebSocket("wss://ws.twelvedata.com/v1/quotes/price?apikey="+TWELVE_KEY);
+    wsTD.onopen=()=>{wsTD.send(JSON.stringify({action:"subscribe",params:{symbols:"EUR/USD"}}));SOURCES.td.live=true;setBadge('badgeTD','live','TD LIVE');updateSrcStatus('td','live');};
+    wsTD.onmessage=(ev)=>{try{const m=JSON.parse(ev.data);if(m.event==="price"&&m.price!=null)processTick(parseFloat(m.price),Date.now(),'TD');}catch(e){}};
+    wsTD.onerror=()=>{SOURCES.td.live=false;setBadge('badgeTD','err','TD ERR');updateSrcStatus('td','dead');};
+    wsTD.onclose=()=>{SOURCES.td.live=false;setBadge('badgeTD','err','TD …');updateSrcStatus('td','dead');tdRetry=setTimeout(connectTD,5000);};
+  }catch(e){SOURCES.td.live=false;setBadge('badgeTD','err','TD ERR');tdRetry=setTimeout(connectTD,5000);}
+}
+function connectFH(){
+  if(wsFH) try{wsFH.close()}catch(e){}
+  setBadge('badgeFH','err','FH …');
+  try{
+    wsFH=new WebSocket("wss://ws.finnhub.io?token="+FINNHUB_KEY);
+    wsFH.onopen=()=>{wsFH.send(JSON.stringify({type:"subscribe",symbol:"OANDA:EUR_USD"}));SOURCES.fh.live=true;setBadge('badgeFH','live','FH LIVE');updateSrcStatus('fh','live');};
+    wsFH.onmessage=(ev)=>{try{const m=JSON.parse(ev.data);if(m.type==="trade"&&m.data){m.data.forEach(d=>{const p=parseFloat(d.p);if(isFinite(p)&&p>0.5&&p<2.0)processTick(p,d.t||Date.now(),'FH');});}if(m.type==="ping")wsFH.send(JSON.stringify({type:"pong"}));}catch(e){}};
+    wsFH.onerror=()=>{SOURCES.fh.live=false;setBadge('badgeFH','err','FH ERR');updateSrcStatus('fh','dead');};
+    wsFH.onclose=()=>{SOURCES.fh.live=false;setBadge('badgeFH','err','FH …');updateSrcStatus('fh','dead');fhRetry=setTimeout(connectFH,5000);};
+  }catch(e){SOURCES.fh.live=false;setBadge('badgeFH','err','FH ERR');fhRetry=setTimeout(connectFH,5000);}
 }
 
-// ── Auto-start on page load ────────────────────────────
-window.addEventListener('load', () => {
-  // Small delay to let browser settle
-  setTimeout(() => {
-    startVoice();
-  }, 800);
-});
+function updateSrcStatus(k,status){
+  const u=k.toUpperCase();
+  const dot=document.getElementById('srcDot'+u);
+  const card=document.getElementById('srcCard'+u);
+  const stat=document.getElementById('src'+u+'Status');
+  if(dot)dot.className='src-card-dot '+(status==='live'?'live':'dead');
+  if(card)card.className='src-card '+(status==='live'?'active':'dead');
+  if(stat){stat.textContent=status==='live'?'LIVE':'OFFLINE';stat.style.color=status==='live'?'#22c55e':'#ef4444';}
+}
 
-// ── Resume when tab becomes visible again ─────────────
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && voiceOn) {
-    voiceReady = false;
-    try { recognition.stop(); } catch(ex) {}
-    setTimeout(() => {
-      try { recognition.start(); } catch(ex) {}
-      setVoiceUI('listening', '<b>Tab wapas aaya ✓</b> — "OK" bolo phir digit');
-    }, 400);
+/* ── Main loop 500ms ── */
+let glowLocked=false, glowCycleId=-1;
+setInterval(()=>{
+  const nowMs=Date.now();
+  const {elapsed, cycleChanged}=checkCycleElapsed(nowMs);
+  const rem=TOTAL_SEC-elapsed;
+
+  /* Cycle bar */
+  const cb=document.getElementById('cycleBar');
+  if(cb){cb.style.width=(elapsed<WATCH_SEC?Math.min(100,elapsed/WATCH_SEC*100):100)+'%';cb.style.background=elapsed<WATCH_SEC?'#14b8a6':'#f5b301';}
+
+  /* Lock badge */
+  const lb=document.getElementById('lockBadge');
+  if(lb){if(elapsed<WATCH_SEC){lb.textContent='WATCHING';lb.className='lock-badge watching';}else{lb.textContent='🔒 LOCKED';lb.className='lock-badge locked';}}
+
+  if(elapsed>=WATCH_SEC && !cycleChanged) lockChips();
+
+  /* Tracker freeze UI update */
+  updateTrackerFreezeUI();
+
+  /* Combined totals always re-render */
+  renderCombinedTotals();
+
+  const {nmSig}=renderChips();
+
+  /* Consensus */
+  let ct,cc;
+  if(!chipsLocked){ct='WAIT';cc='#f5b301';}
+  else if(nmSig==='UP'){ct='UP';cc='#22c55e';}
+  else if(nmSig==='DOWN'){ct='DOWN';cc='#ef4444';}
+  else{ct='WAIT';cc='#f5b301';}
+  const cEl=document.getElementById('chipConsensus'),sCEl=document.getElementById('statConsensus');
+  if(cEl){cEl.textContent=ct;cEl.style.color=cc;cEl.className='cons-chip '+(nmSig==='UP'?'UP':nmSig==='DOWN'?'DOWN':'WAIT');}
+  if(sCEl){sCEl.textContent=ct;sCEl.style.color=cc;}
+
+  /* Glow */
+  const cid=Math.floor(nowMs/30000);
+  if(cid!==glowCycleId){glowLocked=false;glowCycleId=cid;clearGlow();}
+  if(elapsed>=WATCH_SEC&&!glowLocked&&!cycleChanged){
+    glowLocked=true;
+    if(nmSig==='UP')applyGlow('chipPB3','rgba(34,197,94,');
+    else if(nmSig==='DOWN')applyGlow('chipPB3','rgba(239,68,68,');
   }
-});
+  if(elapsed<WATCH_SEC&&glowLocked){glowLocked=false;clearGlow();}
+
+  updateDebug(elapsed);
+
+  setEl('stripTimer','⏱ '+rem+'s');
+  const fnEl=document.getElementById('flagNews');if(fnEl)fnEl.style.display='none';
+  const fhvEl=document.getElementById('flagHvol');if(fhvEl)fhvEl.style.display='none';
+  const nmEl=document.getElementById('newsModeFlag');if(nmEl){nmEl.textContent='OFF';nmEl.style.color='#94a3b8';}
+  const hvEl=document.getElementById('hvolFlag');if(hvEl){hvEl.textContent='OFF';hvEl.style.color='#94a3b8';}
+  const sesEl=document.getElementById('stripSession');if(sesEl)sesEl.textContent=getSession(istNow().getHours());
+  const mf=[];
+  mf.push('NM_G:'+WC.nmG+' NM_R:'+WC.nmR+(chipsLocked?' [FROZEN]':' [LIVE]'));
+  const mfEl=document.getElementById('marketFlags');if(mfEl){mfEl.textContent=mf.join(' · ')||'—';mfEl.style.color='#22c55e';}
+
+  if(!SOURCES.td.live&&!SOURCES.fh.live&&tickLogBuf.length===0){
+    const logEl=document.getElementById('tickLog');if(logEl)logEl.innerHTML='<span style="color:#f5b301;font-family:var(--mono)">⚠ Sources connecting…</span>';
+  }
+},500);
+
+function applyGlow(id,cb){const e=document.getElementById(id);if(e){e.style.setProperty('--gc',cb+'0.75)');e.style.setProperty('--gcs',cb+'0.2)');e.classList.add('chip-glow');}}
+function clearGlow(){const e=document.getElementById('chipPB3');if(e){e.style.removeProperty('--gc');e.style.removeProperty('--gcs');e.classList.remove('chip-glow');}}
+
+function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function setElColor(id,c){const e=document.getElementById(id);if(e)e.style.color=c;}
+function wid(id,p){const e=document.getElementById(id);if(e)e.style.width=p+'%';}
+function setBadge(id,cls,lbl){const el=document.getElementById(id);if(!el)return;el.className='src-badge'+(cls?' '+cls:'');el.innerHTML='<span class="dot"></span> '+lbl;}
+function istNow(){return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));}
+function getSession(h){if(h>=13&&h<17)return'London';if(h>=17&&h<22)return'New York';if(h>=22||h<5)return'Tokyo';return'Pre-Market';}
+setInterval(()=>{const d=istNow();setEl('clock','IST '+d.toTimeString().slice(0,8));setEl('sessionLabel',getSession(d.getHours()));},1000);
+function toggleSection(){document.getElementById('collapseBtn').classList.toggle('collapsed');document.getElementById('mainSection').classList.toggle('hidden');}
+function toggleKpiSection(){const btn=document.getElementById('kpiToggleBtn');const sec=document.getElementById('kpiInnerSection');const c=btn.classList.toggle('kpi-collapsed');sec.classList.toggle('kpi-hidden',c);}
+
+setTimeout(connectTD,100);setTimeout(connectFH,300);
+window.addEventListener('beforeunload',()=>{if(wsTD)wsTD.close();if(wsFH)wsFH.close();if(tdRetry)clearTimeout(tdRetry);if(fhRetry)clearTimeout(fhRetry);});
 </script>
 </body>
 </html>
